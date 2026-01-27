@@ -26,13 +26,14 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 ## Your Group
 <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
 
-
-- Group member 1, name, email, role
-- Group member 2, name, email, role
-- Group member 3, name, email, role
-- Group member 4, name, email, role
-- Group member 5, name, email, role
-- Group member 6, name, email, role
+| Name                  | Email       | Role        | 
+| --------------------- | ----------- | ----------- |
+| Helen Wong            | Title       | Title       |
+| Prapulla Naidu Tangi  | Text        | Text        |
+| Rishabh Gautam        | Text        | Text        |
+| Ciyang Weng           | Text        | Text        |
+| Josh Thompson         | Text        | Text        |
+| Zoquan Liu            | Text        | Text        |
 
 ## Project Report
 
