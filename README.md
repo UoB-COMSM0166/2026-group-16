@@ -28,12 +28,12 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 
 | Name                  | Email       | Role        | 
 | --------------------- | ----------- | ----------- |
-| Helen Wong            | Title       | Title       |
-| Prapulla Naidu Tangi  | Text        | Text        |
-| Rishabh Gautam        | Text        | Text        |
-| Ciyang Weng           | Text        | Text        |
-| Josh Thompson         | Text        | Text        |
-| Zoquan Liu            | Text        | Text        |
+| Helen Wong            |             |             |
+| Prapulla Naidu Tangi  |             |             |
+| Rishabh Gautam        |             |             |
+| Ciyang Weng           |             |             |
+| Josh Thompson         |             |             |
+| Zoquan Liu            |             |             |
 
 ## Project Report
 
