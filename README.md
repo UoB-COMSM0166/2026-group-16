@@ -24,9 +24,8 @@ LINK. Add a link here to your deployed game, you can also make the image above l
 VIDEO. Include a demo video of your game here (you don't have to wait until the end, you can insert a work in progress video)
 
 ## Your Group
-
-GROUP PHOTO. Add a group photo here.
 <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
+
 
 - Group member 1, name, email, role
 - Group member 2, name, email, role
