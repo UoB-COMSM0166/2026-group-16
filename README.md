@@ -33,7 +33,7 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 | Rishabh Gautam        |             |             |
 | Ciyang Weng           |             |             |
 | Josh Thompson         |             |             |
-| Zoquan Liu            |             |             |
+| Ziquan Liu            |             |             |
 
 ## Project Report
 
