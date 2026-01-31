@@ -3,46 +3,98 @@
 We have gathered a variety of game concepts, mechanics, and design experiments for our project.    
 🎯 Rough drafts welcome.
 
-## 1. Shoot the Duck 
+# 1. Tower-Building
 
-**Description:**
->A fast-paced arcade shooter where players aim and shoot ducks under time pressure.  
->Built with physics-based duck movement, collision detection, scoring, and a clear, user-friendly interface that prioritises fast reflexes and captivating gameplay.
+<img width="868" height="720" alt="image" src="https://github.com/user-attachments/assets/3d927f47-9db0-43bd-a4a7-990314b92f26" />
 
-[Play here](https://thegamermarket.com/play?game=shoot-the-duck&time=1769291748)
+## 1.1 Statement
 
-<img width="987" height="501" alt="image" src="https://github.com/user-attachments/assets/7734224e-7b87-48a6-8c89-900eb50b6225" />
+**DINS (Dependency Is Not Stable)** is a tower-building game that translates the fragility of modern software development into **visceral, physics-based gameplay**.  
 
+Players construct and maintain a tower of software dependencies, balancing rapid growth against inevitable decay — until **catastrophic collapse**.
 
-## 2. Arrow Combo
+---
 
-**Description**
->A combo‑based archery challenge that rewards timing, precision, and linking shots.  
->It is excellent for researching skill-based gameplay design since it integrates physics, collision detection, scoring, and an easy-to-use user interface.
+## 1.2 Inspiration
 
-[Play here](https://thegamermarket.com/play?game=arrow-combo)
+The game is inspired by [xkcd #2347, "Dependency"](https://xkcd.com/2347/) (Munroe, 2020). The comic highlights the instability of modern software practices by depicting a tower of digital infrastructure, precariously propped up by:
 
-<img width="290" height="504" alt="image" src="https://github.com/user-attachments/assets/d0b5e878-cc6a-43a1-b872-82b5ec0665de" />
+> "a project some random person in Nebraska has been thanklessly maintaining since 2003."
 
+DINS also builds on the concept of the **software crisis** discussed in our module lectures, and reflects real-world events such as the **left-pad incident (2016)** — when the removal of an 11-line npm package broke thousands of projects, including major platforms like Facebook and Netflix.
 
-## 3. Fleabag vs Mutt
+---
 
-**Description**
->A cheeky cat and dog engage in a light-hearted combat in this one or two-player browser game. Designed with scoring, responsive click controls, collision detection, and a cartoonish, entertaining user interface that emphasises competitive action.
+## 1.3 The Twist
+
+DINS blends the **spatial strategy of Tetris** with the **instability of Jenga**, while introducing **time as a core mechanic**:  
+
+- Blocks **age**, **decay**, and demand ongoing attention.  
+- Players must balance growth and maintenance under pressure.  
+
+The game is also **meta-reflexive**: it demonstrates software engineering principles by simulating the consequences of software engineering failures.
+
+---
+
+## 1.4 Working Title
+
+The working title, **"DINS"**, follows the tradition of recursive acronyms in computer science (e.g., **GNU's Not Unix**, **WINE Is Not an Emulator**), adding an extra layer of **irony and humor** to the game's story.
+
+---
+
+## 1.5 Alternative Titles
+
+- **STACKS** — *Software Towers Always Collapse, Keep Stacking*  
+- **YAG** — *Yet Another Game*  
+- **FOSS** — *Falling Open Source Software*
+
+# 2. Fleabag vs Mutt
 
 [Play here](https://www.twoplayergames.org/game/cat)
 
-<img width="941" height="622" alt="image" src="https://github.com/user-attachments/assets/fd167be8-6fd3-4eeb-bcdc-a41c7ab36340" />
+<img width="941" height="622" alt="Fleabag vs Mutt screenshot" src="https://github.com/user-attachments/assets/fd167be8-6fd3-4eeb-bcdc-a41c7ab36340" />
+
+---
+
+## 2.1 Statement
+
+*Cat* is a casual browser game that can be played by **one or two players**, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their **timing, reflexes, and strategy**, until one side dominates the round.  
+
+The game emphasizes **fast, fun, and lighthearted competition**, making it ideal for both solo and multiplayer play.
+
+---
+
+## 2.2 Inspiration
+
+The game draws inspiration from **classic mini-games and animal rivalries**, where simplicity and humor drive the gameplay.  
+
+It transforms the playful conflict between a cat and a dog into an **interactive and entertaining experience** for casual players.
+
+---
+
+## 2.3 The Twist
+
+The twist lies in the **dynamic and unpredictable gameplay**:  
+
+- Items thrown by the cat and dog vary in size and speed, requiring players to react quickly.  
+- Each round is **chaotic yet fun**, creating tense and humorous interactions.  
+- Works equally well in **single-player mode** (against AI) or in **two-player mode** (against another human).
+
+---
+
+## 2.4 Working Title
+
+The game is simply titled **“Cat vs Dog”**, reflecting the **central character and minimalistic design**. The name highlights the casual, approachable nature of the game.
+
+---
+
+## 2.5 Alternative Titles
+
+- **Bug vs Feature** — classic developer humor; every “feature” is secretly a bug.  
+- **MEOW vs BARK** — simple, direct, and playful.  
+- **PAW‑WER STRUGGLE** — pun on “power struggle” + paws.
 
 
-## 4. The illusionist's Dream
-
-**Description**
->A platform adventure with puzzle mechanics and shape-shifting for fun game play designed to facilitate easy player interaction with collision detection, transformation mechanisms, physics-based movement, and a stylised user interface.
-
-[Play here](https://www.crazygames.com/game/the-illusionist-s-dream)
-
-<img width="861" height="424" alt="image" src="https://github.com/user-attachments/assets/84cc96b4-91b4-40f0-b622-9c09f349e975" />
 
 
  
