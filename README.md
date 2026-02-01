@@ -26,14 +26,14 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 ## Your Group
 <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
 
-| Name                  | Email       | Role        | 
-| --------------------- | ----------- | ----------- |
-| Helen Wong            |             |             |
-| Prapulla Naidu Tangi  |             |             |
-| Rishabh Gautam        |             |             |
-| Ciyang Weng           |             |             |
-| Josh Thompson         |             |             |
-| Ziquan Liu            |             |             |
+| Name                  | Email                 | Role        | 
+| --------------------- | --------------------- | ----------- |
+| Helen Wong            | bs25971@bristol.ac.uk |             |
+| Prapulla Naidu Tangi  | sz25875@bristol.ac.uk |             |
+| Rishabh Gautam        | jk25370@bristol.ac.uk |             |
+| Ciyang Weng           | qe25002@bristol.ac.uk |             |
+| Josh Thompson         | kx25617@bristol.ac.uk |             |
+| Ziquan Liu            | nb25183@bristol.ac.uk |             |
 
 ## Project Report
 
