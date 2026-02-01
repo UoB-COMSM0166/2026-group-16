@@ -76,9 +76,17 @@ It transforms the playful conflict between a cat and a dog into an **interactive
 
 The twist lies in the **dynamic and unpredictable gameplay**:  
 
-- Items thrown by the cat and dog vary in size and speed, requiring players to react quickly.  
+- Before entering the game, players can choose among 3-5 characters, each is with different specialty and strength and performs better with specific weapons
+    -> Suggested characteristics include:
+       1. HP
+       2. Strength
+       3. Recharge power
+       4. Healing power
+- Items thrown by the character vary in size and speed, requiring players to react quickly.  
 - Each round is **chaotic yet fun**, creating tense and humorous interactions.  
 - Works equally well in **single-player mode** (against AI) or in **two-player mode** (against another human).
+- Background scenario will be changed every 2 or 3 rounds of attack, some characters are advantaged at specific scenarios (similar to home turf)
+    -> For example, attack strength doubled, attack ranged maximized, opponent's weapon weakened, recharge efficiency raised
 
 ---
 
@@ -93,6 +101,8 @@ The game is simply titled **“Cat vs Dog”**, reflecting the **central charact
 - **Bug vs Feature** — classic developer humor; every “feature” is secretly a bug.  
 - **MEOW vs BARK** — simple, direct, and playful.  
 - **PAW‑WER STRUGGLE** — pun on “power struggle” + paws.
+- **GODS OF CODING** -- characters of legendary figures involved in each round of battle
+- **CLASH OF CODES** -- game developed with heavy CS context and developer humor
 
 
 
