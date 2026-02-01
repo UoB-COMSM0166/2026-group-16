@@ -77,7 +77,7 @@ It transforms the playful conflict between a cat and a dog into an **interactive
 The twist lies in the **dynamic and unpredictable gameplay**:  
 
 - Before entering the game, players can choose among 3-5 characters, each is with different specialty and strength and performs better with specific weapons
-    -> Suggested characteristics include:
+-     -> Suggested characteristics include:
        1. HP
        2. Strength
        3. Recharge power
@@ -86,7 +86,7 @@ The twist lies in the **dynamic and unpredictable gameplay**:
 - Each round is **chaotic yet fun**, creating tense and humorous interactions.  
 - Works equally well in **single-player mode** (against AI) or in **two-player mode** (against another human).
 - Background scenario will be changed every 2 or 3 rounds of attack, some characters are advantaged at specific scenarios (similar to home turf)
-    -> For example, attack strength doubled, attack ranged maximized, opponent's weapon weakened, recharge efficiency raised
+-     -> For example, attack strength doubled, attack ranged maximized, opponent's weapon weakened, recharge efficiency raised
 
 ---
 
