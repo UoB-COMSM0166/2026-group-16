@@ -1,6 +1,6 @@
 # **Game Ideas**
 
-We have gathered a variety of game concepts, mechanics, and design experiments for our project.    
+We started by experimenting with many different game ideas, mechanics, and design approaches. After reviewing what worked best, we narrowed our exploration down to the two strongest concepts to develop further.  
 🎯 Rough drafts welcome.
 
 # 1. Tower-Building
