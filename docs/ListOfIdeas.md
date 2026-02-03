@@ -5,7 +5,7 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 
 # 1. Slice It All
 
-### Description:
+### Description
 > Slice It All is a casual 3D action game where players control a flipping knife that moves forward through a series of obstacles.
 > The game relies on basic physics simulation, including gravity, momentum, and rotational motion, combined with collision detection to determine successful slices or failures.
 > Precise timing and interaction with objects drive the gameplay, as accurate collisions allow the knife to cut through materials while missed or incorrect impacts cause the run to end.
@@ -18,7 +18,7 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 
 # 2. Arrow Combo
  
-### Description:
+### Description
 > Arrow Combo is a casual arcade game where players aim and shoot arrows at moving targets to build score-boosting combos.
 > The game uses projectile physics to simulate arrow trajectory and speed, along with collision detection to determine accurate hits and misses.
 > Timing, precision, and a combo-based scoring system drive progression, rewarding consistent accuracy while penalizing failed shots.
@@ -31,7 +31,7 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 
 # 3. Fleabag vs Mutt
 
-### Description:
+### Description
 > Fleabag vs Mutt (Cat vs Dog) is a casual one- or two-player browser game where a cat and a dog engage in a fast-paced item-throwing duel.
 > The game uses simple physics and collision detection to handle projectile motion, hit registration, cooldowns, and character stats such as health, strength, and recharge power.
 > Dynamic characters, varied weapons, and changing environments create chaotic, reflex-driven gameplay that works equally well against AI or another player.
@@ -81,7 +81,7 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 
 # 7. The Illusionist's Dreams
 
-###Description
+### Description
 > In Illusionist’s Dreams, player navigates in the game environment under the "dream logic".
 > Shapeshifting is the primary hook of the game. Player will start as a human but would have to transform into different creatures and utilize thier ability so as to reach the exit of each level.
 > The art style of the game is typically atmospheric and minimalist, emphasizing the "dreamy" aspect of the background scene.
