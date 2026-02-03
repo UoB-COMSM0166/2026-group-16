@@ -66,6 +66,8 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 
 <img width="971" height="486" alt="image" src="https://github.com/user-attachments/assets/20f93368-7a7b-41a2-84c9-2a99f4022199" />
 
+---
+
 # 6. Tower-Building
 
 ### Description
@@ -74,6 +76,20 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 > Players must strategically choose between rapid expansion and ongoing maintenance, as neglected dependencies decay and trigger cascading failures.
 
 <img width="868" height="720" alt="image" src="https://github.com/user-attachments/assets/3d927f47-9db0-43bd-a4a7-990314b92f26" />
+
+---
+
+# 7. The Illusionist's Dreams
+
+###Description
+> In Illusionist’s Dreams, player navigates in the game environment under the "dream logic".
+> Shapeshifting is the primary hook of the game. Player will start as a human but would have to transform into different creatures and utilize thier ability so as to reach the exit of each level.
+> The art style of the game is typically atmospheric and minimalist, emphasizing the "dreamy" aspect of the background scene.
+
+https://www.crazygames.com/game/the-illusionist-s-dream
+
+<img width="1019" height="575" alt="image" src="https://github.com/user-attachments/assets/48adba38-a4f7-4a62-8102-f7fe0d99e039" />
+
 
 
 
