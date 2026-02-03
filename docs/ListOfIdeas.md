@@ -86,7 +86,7 @@ We have gathered a variety of game concepts, mechanics, and design experiments f
 > Shapeshifting is the primary hook of the game. Player will start as a human but would have to transform into different creatures and utilize thier ability so as to reach the exit of each level.
 > The art style of the game is typically atmospheric and minimalist, emphasizing the "dreamy" aspect of the background scene.
 
-https://www.crazygames.com/game/the-illusionist-s-dream
+[Play here](https://www.crazygames.com/game/the-illusionist-s-dream)
 
 <img width="1019" height="575" alt="image" src="https://github.com/user-attachments/assets/48adba38-a4f7-4a62-8102-f7fe0d99e039" />
 
