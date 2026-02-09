@@ -1,4 +1,4 @@
-## Idea A – Cat vs Dog (Paper Prototype)
+## Idea A – Cat vs Dog (TBA)
 This paper prototype explores a fast-paced, turn-based action game inspired by casual browser games.
 For the purpose of the prototype, the original animal characters are re-themed as the five Term 1 lecturers, while the core mechanics remain simple and physical.
 
