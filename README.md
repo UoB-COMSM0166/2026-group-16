@@ -23,6 +23,11 @@ LINK. Add a link here to your deployed game, you can also make the image above l
 
 VIDEO. Include a demo video of your game here (you don't have to wait until the end, you can insert a work in progress video)
 
+
+https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
+
+
+
 ## Your Group
 <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
 
