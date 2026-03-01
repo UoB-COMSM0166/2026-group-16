@@ -16,7 +16,12 @@ const LABEL_STYLE = {
   boxStrokeWeight: 2,
 };
 
-const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+function clamp(v, min, max) {
+  if (v < min) return min;
+  if (v > max) return max;
+  return v;
+}
+
 const sign  = (v) => (v < 0 ? -1 : 1);
 function vec2(x = 0, y = 0) { return { x, y }; }
 function vecLen(a) { return Math.hypot(a.x, a.y); }
@@ -24,17 +29,38 @@ function vecNorm(a) { const l = vecLen(a) || 1; return { x: a.x / l, y: a.y / l 
 
 // ─── ANGLE ────────────────────────────────────────────────────────────────────
 class ANGLE {
-  constructor({ direction = 1, angleDeg = 45, minDeg = 0, maxDeg = 80, stepDeg = 1 } = {}) {
+  direction;
+  angleDeg;
+  minDeg;
+  maxDeg;
+  stepDeg;
+  upKey;
+  downKey;
+
+  constructor({ direction = 1, angleDeg = 45, minDeg = 0, maxDeg = 80, stepDeg = 1, upKey = UP_ARROW, downKey = DOWN_ARROW } = {}) {
     this.direction = direction;
     this.angleDeg  = angleDeg;
     this.minDeg    = minDeg;
     this.maxDeg    = maxDeg;
     this.stepDeg   = stepDeg;
+    this.upKey     = upKey;
+    this.downKey   = downKey;
   }
-  setDirection(dir) { this.direction = dir >= 0 ? 1 : -1; }
+  setDirection(dir) {
+    if (dir >= 0) {
+      this.direction = 1;
+    } else {
+      this.direction = -1;
+    }
+  }
   update() {
-    if (keyIsDown(UP_ARROW))   this.angleDeg += this.stepDeg;
-    if (keyIsDown(DOWN_ARROW)) this.angleDeg -= this.stepDeg;
+    if (keyIsDown(this.upKey)) {
+      this.angleDeg += this.stepDeg;
+    } else {
+      if (keyIsDown(this.downKey)) {
+        this.angleDeg -= this.stepDeg;
+      }
+    }
     this.angleDeg = clamp(this.angleDeg, this.minDeg, this.maxDeg);
   }
   get angleRad() {
@@ -45,7 +71,17 @@ class ANGLE {
 
 // ─── POWER ────────────────────────────────────────────────────────────────────
 class POWER {
-  constructor({ min = 0, max = 100, chargeRatePerSec = 70, decayRatePerSec = 0 } = {}) {
+  min;
+  max;
+  chargeRatePerSec;
+  decayRatePerSec;
+  value;
+  isCharging;
+  justReleased;
+  _wasCharging;
+  fireKey;
+
+  constructor({ min = 0, max = 100, chargeRatePerSec = 70, decayRatePerSec = 0, fireKey = 32 } = {}) {
     this.min              = min;
     this.max              = max;
     this.chargeRatePerSec = chargeRatePerSec;
@@ -54,10 +90,11 @@ class POWER {
     this.isCharging       = false;
     this.justReleased     = false;
     this._wasCharging     = false;
+    this.fireKey          = fireKey;
   }
   update(dt) {
     this.justReleased = false;
-    this.isCharging   = keyIsDown(32);
+    this.isCharging   = keyIsDown(this.fireKey)
     if (this.isCharging) {
       this.value = clamp(this.value + this.chargeRatePerSec * dt, this.min, this.max);
     } else if (this.decayRatePerSec > 0) {
@@ -66,7 +103,10 @@ class POWER {
     if (this._wasCharging && !this.isCharging) this.justReleased = true;
     this._wasCharging = this.isCharging;
   }
-  consume() { const out = this.value; this.value = this.min; return out; }
+  consume() {
+    const out = this.value;
+    this.value = this.min;
+    return out; }
 }
 
 // ─── COLLISION DETECTION ──────────────────────────────────────────────────────
@@ -87,7 +127,9 @@ class CollisionDetection {
     this._nextId      = 1;
   }
 
-  _cellKey(cx, cy) { return `${cx},${cy}`; }
+  _cellKey(cx, cy) {
+    return `${cx},${cy}`;
+  }
 
   _getCellRangeForAABB(aabb) {
     const minCx = clamp(Math.floor(aabb.x / this.cellSize), 0, this.cols - 1);
@@ -127,12 +169,14 @@ class CollisionDetection {
     return body;
   }
 
-  addCharacter({ x, y, w = 60, h = 60, speed = 280, tag = "player" }) {
+  addCharacter({ x, y, w = 60, h = 60, speed = 280, tag = "player", leftKey = LEFT_ARROW, rightKey = RIGHT_ARROW}) {
     const ch = {
       id: this._nextId++, type: "character", tag,
       x, y, w, h, vx: 0, vy: 0, speed,
       onGround: false, facing: 1,
       controllable: tag === "player",
+      leftKey,
+      rightKey
     };
     this.characters.push(ch);
     return ch;
@@ -185,11 +229,10 @@ class CollisionDetection {
       else            { dynamic.y += penY; dynamic.vy = 0; }
     }
   }
-
   _updateCharacter(ch, dt, angleObj) {
     if (ch.controllable) {
-      const left  = keyIsDown(LEFT_ARROW)  || keyIsDown(65);
-      const right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
+      const left  = keyIsDown(ch.leftKey);
+      const right = keyIsDown(ch.rightKey);
       ch.vx = left ? -ch.speed : right ? ch.speed : 0;
       ch.vy = 0;
       if (ch.vx !== 0) {
@@ -225,8 +268,7 @@ class CollisionDetection {
 
     if (p.x < -200 || p.x > this.worldWidth + 200 || p.y > this.worldHeight + 200) {
       p.alive = false;
-      if (turn === "waiting_rish")   { turn = "ciyang"; }
-      if (turn === "waiting_ciyang") { turn = "rish"; }
+
       return;
     }
 
@@ -239,14 +281,13 @@ class CollisionDetection {
           dogHP = Math.max(0, dogHP - 15);
           this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
             text: dogHP <= 0 ? "Ciyang defeated! 💀" : "-15 HP!" });
-          turn = "ciyang";
         } else if (ch.tag === "player") {
           catHP = Math.max(0, catHP - 15);
           this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
             text: catHP <= 0 ? "Rish defeated! 💀" : "-15 HP!" });
-          turn = "rish";
         }
-        p.alive = false; return;
+        p.alive = false;
+        return;
       }
     }
 
@@ -256,9 +297,9 @@ class CollisionDetection {
       if (!stat) continue;
       const hit = CollisionDetection.circleAABBHit(p, stat);
       if (hit) {
-        if (turn === "waiting_rish")   { turn = "ciyang"; }
-        if (turn === "waiting_ciyang") { turn = "rish"; }
-        p.alive = false; return;
+
+        p.alive = false;
+        return;
       }
     }
   }
@@ -475,13 +516,8 @@ function drawAimTrajectoryDog(ch, angleObj, powerObj) {
 let cd, angleObj, powerObj, player, dogBody;
 let catHP = 100;
 let dogHP = 100;
-
-let turn = "rish";
-
 let ciyangAngleObj, ciyangPowerObj;
-
 const GROUND_Y = 850;
-
 function preload() {
   imgBg     = loadImage("bg.jpg");
   imgPlayer = loadImage("player.png");
@@ -491,12 +527,39 @@ function preload() {
 
 function setup() {
   createCanvas(1600, 900);
+  // W/S to aim, F to fire
+  angleObj = new ANGLE({
+    direction: 1,
+    angleDeg: 45,
+    minDeg: 0,
+    maxDeg: 80,
+    stepDeg: 1,
+    upKey: 87,
+    downKey: 83
+  });
+  powerObj = new POWER({
+    min: 0,
+    max: 100,
+    chargeRatePerSec: 70,
+    fireKey: 70
+  });
 
-  angleObj = new ANGLE({ direction: 1, angleDeg: 45, minDeg: 0, maxDeg: 80, stepDeg: 1 });
-  powerObj = new POWER({ min: 0, max: 100, chargeRatePerSec: 70 });
-
-  ciyangAngleObj = new ANGLE({ direction: -1, angleDeg: 45, minDeg: 0, maxDeg: 80, stepDeg: 1 });
-  ciyangPowerObj = new POWER({ min: 0, max: 100, chargeRatePerSec: 70 });
+  // ↑/↓ to aim, space to fire
+  ciyangAngleObj = new ANGLE({
+    direction: -1,
+    angleDeg: 45,
+    minDeg: 0,
+    axDeg: 80,
+    stepDeg: 1,
+    upKey: UP_ARROW,
+    downKey:DOWN_ARROW
+  });
+  ciyangPowerObj = new POWER({
+    min: 0,
+    max: 100,
+    chargeRatePerSec: 70,
+    fireKey: 32
+  });
 
   cd = new CollisionDetection({
     worldWidth: 1600, worldHeight: 900,
@@ -514,7 +577,7 @@ function setup() {
   dogBody = cd.addCharacter({
     x: 1100, y: GROUND_Y - DOG_H,
     w: 120, h: DOG_H,
-    speed: 0, tag: "dog",
+    speed: 280, tag: "dog", leftKey: LEFT_ARROW, rightKey: RIGHT_ARROW
   });
   dogBody.facing = -1; // starts facing left toward cat
 
@@ -524,61 +587,44 @@ function setup() {
     x: 380, y: GROUND_Y - CAT_H,
     w: 120, h: CAT_H,
     speed: 280, tag: "player",
+    leftKey: 65, rightKey: 68
   });
 }
 
 function draw() {
   const dt = Math.min(deltaTime / 1000, 0.033);
-
   const gameOver = catHP <= 0 || dogHP <= 0;
 
   if (!gameOver) {
-    // ── RISH'S TURN ─────────────────────────────────────────────────────────
-    if (turn === "rish") {
       player.controllable  = true;
-      dogBody.controllable = false;
+      dogBody.controllable = true;
       angleObj.update();
       powerObj.update(dt);
-      for (const ch of cd.characters) cd._updateCharacter(ch, dt, angleObj);
-      if (powerObj.justReleased && powerObj.value > 0) {
-        const fromX = player.x + player.w * (player.facing === 1 ? 0.9 : 0.1);
-        const fromY = player.y + player.h * 0.35;
-        cd.spawnProjectile({ fromX, fromY, radius: 12, angleObj, powerObj, powerScale: 8, owner: "player" });
-        turn = "waiting_rish";
-      }
-
-    // ── RISH PAN FLYING ──────────────────────────────────────────────────────
-    } else if (turn === "waiting_rish") {
-      player.controllable = false;
-
-    // ── CIYANG'S TURN ────────────────────────────────────────────────────────
-    } else if (turn === "ciyang") {
-      player.controllable  = false;
-      dogBody.controllable = true;
-      dogBody.speed        = 280;
       ciyangAngleObj.update();
       ciyangPowerObj.update(dt);
-      for (const ch of cd.characters) cd._updateCharacter(ch, dt, ciyangAngleObj);
+
+    cd._updateCharacter(player,  dt, angleObj);
+    cd._updateCharacter(dogBody, dt, ciyangAngleObj);
+
+    if (powerObj.justReleased && powerObj.value > 0) {
+      const fromX = player.x + player.w * (player.facing === 1 ? 0.9 : 0.1);
+      const fromY = player.y + player.h * 0.35;
+      cd.spawnProjectile({fromX, fromY, radius: 12, angleObj, powerObj, powerScale: 8, owner: "player"});
+    }
       if (ciyangPowerObj.justReleased && ciyangPowerObj.value > 0) {
         const fromX = dogBody.x + dogBody.w * (dogBody.facing === 1 ? 0.9 : 0.1);
         const fromY = dogBody.y + dogBody.h * 0.35;
         cd.spawnProjectile({ fromX, fromY, radius: 12, angleObj: ciyangAngleObj, powerObj: ciyangPowerObj, powerScale: 8, owner: "dog" });
         dogBody.controllable = false;
-        turn = "waiting_ciyang";
       }
 
-    // ── CIYANG PAN FLYING ────────────────────────────────────────────────────
-    } else if (turn === "waiting_ciyang") {
-      player.controllable = false;
-    }
-
-    for (const p of cd.projectiles) if (p.alive) cd._updateProjectile(p, dt);
-    cd.floatTexts.forEach(t => { t.y += t.vy * dt; t.life -= dt; });
-    cd.floatTexts = cd.floatTexts.filter(t => t.life > 0);
+      for (const p of cd.projectiles) if (p.alive) cd._updateProjectile(p, dt);
+      cd.floatTexts.forEach(t => { t.y += t.vy * dt; t.life -= dt; });
+      cd.floatTexts = cd.floatTexts.filter(t => t.life > 0);
   }
 
   // ── DRAW ──────────────────────────────────────────────────────────────────
-  drawImageCover(imgBg, 0, 0, width, height);
+  drawImageCover(imgBg,0, 0, width, height);
 
   // Floor
   noStroke();
@@ -611,8 +657,8 @@ function draw() {
   drawHeadLabel(LABELS.target, dogBody.x + dogBody.w / 2, dogBody.y);
 
   // Aim trajectory
-  if (turn === "rish")   drawAimTrajectory(player, angleObj, powerObj);
-  if (turn === "ciyang") drawAimTrajectoryDog(dogBody, ciyangAngleObj, ciyangPowerObj);
+  drawAimTrajectory(player, angleObj, powerObj);
+  drawAimTrajectoryDog(dogBody, ciyangAngleObj, ciyangPowerObj);
 
   // ── Cat (Rish) — mirror based on facing ──
   push();
@@ -648,37 +694,13 @@ function draw() {
   fill(0);
   textSize(16);
   textAlign(LEFT);
-  if (turn === "ciyang") {
     text(`Angle: ${ciyangAngleObj.angleDeg.toFixed(0)}°`, 20, 82);
     text(`Power: ${ciyangPowerObj.value.toFixed(0)}`,     20, 102);
-  } else {
     text(`Angle: ${angleObj.angleDeg.toFixed(0)}°`,       20, 82);
     text(`Power: ${powerObj.value.toFixed(0)}`,           20, 102);
-  }
-  text(`Move: A/D  |  Aim: ↑↓  |  Charge & Fire: Space`, 20, 122);
+    text(`${LABELS.player}: A/D move  W/S aim  F fire   |   ${LABELS.target}: ←/→ move  ↑/↓ aim  Space fire`, 20, 122);
 
-  // Turn banner
-  const bannerTurn = turn === "rish"
-    ? `🐱 ${LABELS.player}'s Turn — Aim & Fire!`
-    : turn === "ciyang"
-    ? `🐶 ${LABELS.target}'s Turn — Aim & Fire!`
-    : (turn === "waiting_rish" || turn === "waiting_ciyang")
-    ? "💨 Projectile flying..."
-    : "";
 
-  if (bannerTurn && !gameOver) {
-    const bx = width / 2, by = 148;
-    push();
-    textAlign(CENTER, CENTER);
-    textSize(20);
-    const bw = textWidth(bannerTurn) + 28;
-    fill(0, 0, 0, 160);
-    rect(bx - bw / 2, by - 16, bw, 32, 8);
-    fill(turn === "rish" ? color(100, 200, 255) : color(255, 180, 80));
-    noStroke();
-    text(bannerTurn, bx, by);
-    pop();
-  }
 
   // Health bars
   drawHealthBars();
