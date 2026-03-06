@@ -26,7 +26,8 @@ VIDEO. Include a demo video of your game here (you don't have to wait until the 
 
 https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 
-
+## Current version of the game
+Check out our latest version of [p5.js Mini-Game](https://uob-comsm0166.github.io/2026-group-16/whitebox-prototype/)
 
 ## Your Group
 <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
