@@ -1,0 +1,21 @@
+{"frames": {
+
+"battle-white-bg.png":
+{
+	"frame": {"x":1,"y":1,"w":1920,"h":1080},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1920,"h":1080},
+	"sourceSize": {"w":1920,"h":1080}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "battle_scene-1.png",
+	"format": "RGBA8888",
+	"size": {"w":1922,"h":1082},
+	"scale": "1",
+	"related_multi_packs": [ "battle_scene-0.json" ],
+	"smartupdate": "$TexturePacker:SmartUpdate:64d93378816ea941b1d0e2f38c7922fa:ebb89b00a1ff7af85b872c64edec78fa:aa52f0b156800e0b5acea5fd98849839$"
+}
+}
