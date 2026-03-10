@@ -13,21 +13,19 @@ You will be developing your game using [P5.js](https://p5js.org) a javascript li
 - [P5.js tutorials](https://p5js.org/tutorials/) 
 - [Coding Train P5.js](https://thecodingtrain.com/tracks/code-programming-with-p5-js) course - go here for enthusiastic video tutorials from Dan Shiffman (recommended!)
 
-## Your Game (change to title of your game)
+## Merchant Fighters!
 
-STRAPLINE. Add an exciting one sentence description of your game here.
+## Introduction
+"Merchant Fighters!" is a casual browser game that can be played by one or two players, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their timing, reflexes, and strategy, until one's HP bar is empty and is defeated.
 
-IMAGE. Add an image of your game here, keep this updated with a snapshot of your latest development.
-
-LINK. Add a link here to your deployed game, you can also make the image above link to your game if you wish. Your game lives in the [/docs](/docs) folder, and is published using Github pages. 
-
-VIDEO. Include a demo video of your game here (you don't have to wait until the end, you can insert a work in progress video)
-
-
-https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
+<img width="1594" height="898" alt="Latest_Game_Image1" src="https://github.com/user-attachments/assets/f722d8cc-37fa-47f6-bdfd-838c5cfba5b7" />
 
 ## Current version of the game
 Check out our latest version of [p5.js Mini-Game](https://uob-comsm0166.github.io/2026-group-16/whitebox-prototype/)
+
+## Paper prototype
+https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
+
 
 ## Your Group
 <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
