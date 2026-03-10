@@ -67,8 +67,12 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 - 15% ~750 words 
 - System architecture. Class diagrams, behavioural diagrams.
 
-##Class Diagram
+## Class Diagram
 <img width="896" height="878" alt="ClassDiagram_sprint1" src="https://github.com/user-attachments/assets/647cec1c-27a8-4989-8786-95e4ecd65142" />
+
+## Heuristic Evaluation
+<img width="1242" height="888" alt="Heuristic Evaluation" src="https://github.com/user-attachments/assets/1b988a92-eac5-45ed-bc9f-07e16f6f54b4" />
+
 
 ### Implementation
 
