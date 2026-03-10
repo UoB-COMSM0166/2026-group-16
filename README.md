@@ -49,12 +49,26 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 ### Requirements 
 
 - 15% ~750 words
-- Early stages design. Ideation process. How did you decide as a team what to develop? Use case diagrams, user stories. 
+- Early stages design. Ideation process. How did you decide as a team what to develop? Use case diagrams, user stories.
+
+## Users stories:
+- Scrum master: as a scrum master, I want to gather all the requirements and ensure smooth development of the game (set up branch contributing rules to prevent accidental force pushes and deletions).
+- Backend developers: as a backend developers, I want to make sure the good physics in the game so that motions within the game is reasonable.
+- UI designer: as an UI designer, I want to make sure the visuals of the game is appealing to players so that it attracts them to play the game.
+- QA tester: as a QA tester, I want to make sure the game is bug-free and function correctly so that it meets users’ requirement before release.
+- Frequent gamer: as a frequent gamer, I want the movements of objects to be smooth and realistic so that I can have a good gaming experience. I want to have some new elements observed in the game so that it’s not just like the other typical shooting games.
+- Casual gamer: as a casual gamer, I want to easily get hands-on with the game so that the navigation is straight forward and learning curve is small.
+- Real-life people depicted in the game: as a real-life figure portrayed in the game, I want the character to be true-to-life so that it curates my public persona and safeguards my reputation.
+- UOB students: as a UOB students, I want the game to portray familiar set-ups so that it brings better experience of game immersion.
+
 
 ### Design
 
 - 15% ~750 words 
-- System architecture. Class diagrams, behavioural diagrams. 
+- System architecture. Class diagrams, behavioural diagrams.
+
+##Class Diagram
+<img width="896" height="878" alt="ClassDiagram_sprint1" src="https://github.com/user-attachments/assets/647cec1c-27a8-4989-8786-95e4ecd65142" />
 
 ### Implementation
 
