@@ -1,6 +1,3 @@
-//testing for minor changes on github
-
-
 // 背景=bg.jpg（希腊沉船湾） // 玩家=player.png（猫） 目标=target.png（狗） 弹体=pan.png（平底锅）
 // 操作：A/D 或 ←/→ 移动；↑↓调角度；按住空格蓄力，松开发射
 const LABELS = {
@@ -32,6 +29,8 @@ function vecNorm(a) { const l = vecLen(a) || 1; return { x: a.x / l, y: a.y / l 
 
 // ─── IMAGES ───────────────────────────────────────────────────────────────────
 let imgBg, imgPlayer, imgTarget, imgPan;
+let keyA, keyD, keyUp, keyDown, keyLeft, keyRight, keySpace;
+let difficultyUI;
 
 function drawImageCover(img, dx, dy, dw, dh) {
   const sr = img.width / img.height, dr = dw / dh;
@@ -71,7 +70,7 @@ function drawHeadLabel(textStr, centerX, topY) {
 // ─── AIM TRAJECTORY (RISH / CAT) ─────────────────────────────────────────────
 function drawAimTrajectory(ch, angleObj, powerObj) {
   
-  if (!powerObj.isCharging && powerObj.value <= 0 && selectedDifficulty=="DIFFICULT") return;
+  if (!powerObj.isCharging && powerObj.value <= 0 && selectedDifficulty=="HARD") return;
 
   const fromX = ch.x + ch.w * (ch.facing === 1 ? 0.9 : 0.1);
   const fromY = ch.y + ch.h * 0.35;
@@ -124,7 +123,7 @@ function drawAimTrajectory(ch, angleObj, powerObj) {
 
 // ─── AIM TRAJECTORY (CIYANG / DOG) ───────────────────────────────────────────
 function drawAimTrajectoryDog(ch, angleObj, powerObj) {
-  if (powerObj.value <= 0 && selectedDifficulty=="DIFFICULT") return;
+  if (powerObj.value <= 0 && selectedDifficulty=="HARD") return;
 
   const fromX = ch.x + ch.w * (ch.facing === 1 ? 0.9 : 0.1);
   const fromY = ch.y + ch.h * 0.35;
@@ -397,62 +396,189 @@ function drawPlayScreen(){
 // ─── START SCREEN ─────────────────────────────────────────────────────────────
 function drawStartScreen(){
   drawImageCover(imgBg,0, 0, width, height);
+
   textSize(60);
-  fill('black');
-  text("Merchant Fighters!", width/2, height/2-110);
-  
-  //Draw "Play" Button
-  fill(100, 200, 100);
-  rect(750, 225, 100, 50);
+  fill(0, 0, 0, 200);
+  rect(0, 0, width, height);
+
+  //text shadow
+  fill(0, 0, 0, 150);
+  textSize(90);
+  text("🐱 MERCHANT FIGHTER 🐶", width / 2 + 6, height / 3 + 6);
+
+  //main title
+  fill(255, 220, 50);
+  text("🐱 MERCHANT FIGHTER 🐶", width / 2, height / 3);
+
+  //subtitle
   fill(255);
-  textSize(20);
-  text("PLAY", width/2, 255);
+  textSize(30);
+  text("Rish vs Ciyang", width / 2, height / 3 + 80);
+
+
+    // shadow
+    fill(80, 200, 80);
+    rect(btnX -btnW/2, btnY - btnH/2, btnW, btnH, 25);
+
+    fill(255);
+    textSize(36);
+    text("START", btnX, btnY);
+
+  // ===== introduction: grid =====
+  const iconSize = 48;
+  const spacing = 20;
+  const rowStartY = height / 2 + 160;
+  const rowGap = 70;
+
+    // centerX for each of the three zones: left, center, right
+    const leftZoneX = width / 2 - 220;
+    const centerZoneX = width / 2;
+    const rightZoneX = width / 2 + 220;
+
+    // ---------- first row: move ----------
+    const row1Y = rowStartY;
+
+    image(keyLeft, leftZoneX - spacing, row1Y, iconSize, iconSize);
+    image(keyRight, leftZoneX + spacing, row1Y, iconSize, iconSize);
+
+    fill(255);
+    textSize(26);
+    text("MOVE", centerZoneX, row1Y);
+
+    image(keyA, rightZoneX - spacing, row1Y, iconSize, iconSize);
+    image(keyD, rightZoneX + spacing, row1Y, iconSize, iconSize);
+
+    // ---------- second row: aim ----------
+    const row2Y = rowStartY + rowGap;
+
+    image(keyUp, leftZoneX - spacing, row2Y, iconSize, iconSize);
+    image(keyDown, leftZoneX + spacing, row2Y, iconSize, iconSize);
+
+    fill(255);
+    textSize(26);
+    text("ADJUST ANGLE", centerZoneX, row2Y);
+
+    // ---------- third row: fire ----------
+    const row3Y = rowStartY + rowGap * 2;
+
+    fill(255);
+    textSize(22);
+    text("HOLD SPACE TO CHARGE • RELEASE TO FIRE", centerZoneX, row3Y);
+
+    const row4Y = row3Y + 50;
+    push();
+    imageMode(CENTER);
+    image(keySpace, centerZoneX, row4Y, 160, 40);
+    pop();
 }
 
 //Helenlabel
 // ─── LEVEL SCREEN ───────────────────────────────────────────────────────────── 
 function drawLevelScreen(){
-  drawImageCover(imgBg,0, 0, width, height);
-  
-  textSize(32);
-  fill('black');
-  text("Select Difficulty", width/2, 200);
-  
-  //Easy Button
-  fill(200, 200, 100);
-  rect(700, 300, 200, 50);
-  
-  //Difficult Button
-  fill(500, 200, 100);
-  rect(700, 500, 200, 50);
-  
-  fill(255);
-  text("EASY",width/2, 330);
-  text("DIFFICULT", width/2, 530);
-  
+  drawImageCover(imgPlayScreen, 0, 0, width, height);
+
+  //background overlay
+  fill(0, 0, 0, 200);
+  rect(0,0,width , height);
+
+  //title
+  fill(255, 220, 50);
+  textSize(70);
+  text("Select Difficulty", width / 2, height / 5);
+
+    push()
+    rectMode(CENTER);
+    textAlign(CENTER, CENTER);
+    textStyle(BOLD); //pixelated looks?
+
+    // buttons
+    let btnW = 320;
+    let btnH = btnW * 32 / 96;
+    let gap = 30;
+    let startY = height / 2 + 20 - (btnH * 3 + gap * 2) / 2 + btnH / 2; // center of first button:Y
+
+    let difficulties = ["EASY", "MEDIUM", "HARD"];
+
+    for (let i = 0; i < 3; i++) {
+        let cx = width / 2;
+        let cy = startY + i * (btnH + gap);
+        let label = difficulties[i];
+
+        // hover detection
+        let hover = mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
+            mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2;
+
+        // image turn blue on hover
+        if (hover) {
+            tint(200, 200, 255);
+        } else {
+            noTint();
+        }
+
+        // image button
+        image(difficultyUI, cx - btnW / 2, cy - btnH / 2, btnW, btnH);
+
+        // draw text on top of image
+        noTint();
+        fill(255);
+        stroke(0);
+        strokeWeight(4);
+        textSize(35); // adjest text size to fit better
+        text(label, cx, cy);
+        noStroke();
+    }
+
+    // return button
+    let backBtnW = 150;
+    let backBtnH = 50;
+    let backBtnY = height - 100;
+    fill(0, 0, 0, 120);
+    rect(width / 2 + 3, backBtnY + 3, backBtnW, backBtnH, 20);
+    fill(150, 150, 150);
+    rect(width / 2, backBtnY, backBtnW, backBtnH, 20);
+    fill(255);
+    textSize(24);
+    text("← BACK", width / 2, backBtnY);
+
+    pop();
+    rectMode(CORNER);
+    textStyle(NORMAL);
+
 }
 
 //Helenlabel
 // ─── NAVIGATION ───────────────────────────────────────────────────────────────
 function mousePressed(){
   if (gameState=="START"){
-    //clicking within the area of play button
-    //rect(750, 225, 100, 50);
-    if (mouseX>750 && mouseX<850 &&mouseY>225 &&mouseY<275){
+    if (mouseX>btnX -btnW/2 && mouseX<btnX +btnW/2 &&mouseY>btnY - btnH/2 &&mouseY<btnY + btnH/2){
       gameState = "CHOOSE";
     }
-  }else if(gameState=="CHOOSE"){
-    //Easy Button
-    if(mouseX>700 && mouseX<900 &&mouseY>300 &&mouseY<350){
-       gameState="PLAY";
-       selectedDifficulty="EASY";
-    }
-    //Difficult Button
-    if(mouseX>700 && mouseX<900 &&mouseY>500 &&mouseY<550){
-       gameState="PLAY";
-       selectedDifficulty="DIFFICULT";
-    }
+  }else if(gameState=="CHOOSE") {
+      let backBtnY = height - 100;
+      let backBtnW = 150;
+      let backBtnH = 50;
+      let btnW = 320;
+      let btnH = btnW * 32 / 96; // 134
+      let gap = 30;
+      let startY = height / 2 + 20 - (btnH * 3 + gap * 2) / 2 + btnH / 2;
+      let difficulties = ["EASY", "MEDIUM", "HARD"];
+      for (let i = 0; i < 3; i++) {
+          let cx = width / 2;
+          let cy = startY + i * (btnH + gap);
+          if (mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
+              mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2) {
+              selectedDifficulty = difficulties[i];
+              gameState = "PLAY";
+              break;
+          }
+      }
+      if (mouseX > width / 2 - backBtnW / 2 && mouseX < width / 2 + backBtnW / 2 &&
+          mouseY > backBtnY - backBtnH / 2 && mouseY < backBtnY + backBtnH / 2) {
+          gameState = "START";
+          return;
+      }
   }
+
 }
 
 // ─── GLOBALS ──────────────────────────────────────────────────────────────────
@@ -466,13 +592,33 @@ let ciyangAngleObj, ciyangPowerObj;
 let gameState = "START"; 
 //EASY/ DIFFICULT
 let selectedDifficulty ="";
+let width= 1600;
+let height = 900;
+
+// ===== START BUTTON =====
+let btnX = width / 2;
+let btnY = height / 2 + 40;
+let btnW = 260;
+let btnH = 80;
 
 const GROUND_Y = 850;
 function preload() {
   imgBg     = loadImage("bg.jpg");
+  imgPlayScreen = loadImage("assets/images/battle_scene-0.png");
   imgPlayer = loadImage("player.png");
   imgTarget = loadImage("target.png");
   imgPan    = loadImage("pan.png");
+
+    // UI images
+    keyA = loadImage("assets/ui/key_a.png");
+    keyD = loadImage("assets/ui/key_d.png");
+    keyUp = loadImage("assets/ui/key_up.png");
+    keyDown = loadImage("assets/ui/key_down.png");
+    keyLeft = loadImage("assets/ui/key_left.png");
+    keyRight = loadImage("assets/ui/key_right.png");
+    keySpace = loadImage("assets/ui/key_space.png");
+
+    difficultyUI = loadImage("assets/ui/difficult-select-01.png");
 }
 
 function setup() {
@@ -550,12 +696,12 @@ function draw() {
     drawLevelScreen();
   }else{
     //difficulty adjustment
-    if(selectedDifficulty=="DIFFICULT"){
+    if(selectedDifficulty=="HARD"){
       powerObj.difficultyAdjustment(200, 170);
       ciyangPowerObj.difficultyAdjustment(200, 170);
       cd.updateSpeed(player, 480);
       cd.updateSpeed(dogBody, 480);
-    }
+    } //pending for implementation for the medium level
     drawPlayScreen();
   }
 }
