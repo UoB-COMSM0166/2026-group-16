@@ -1,3 +1,6 @@
+//testing for minor changes on github
+
+
 // 背景=bg.jpg（希腊沉船湾） // 玩家=player.png（猫） 目标=target.png（狗） 弹体=pan.png（平底锅）
 // 操作：A/D 或 ←/→ 移动；↑↓调角度；按住空格蓄力，松开发射
 const LABELS = {
