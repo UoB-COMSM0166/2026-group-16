@@ -545,6 +545,135 @@ function drawLevelScreen(){
     textStyle(NORMAL);
 
 }
+// -----SE-24 Grace: Character Selection Screen -----
+function drawCharacterScreen() {
+
+  push();
+  rectMode(CENTER);
+
+  fill(0, 0, 0, 200);
+  rect(width / 2, height / 2, width, height);
+
+  // Title
+  textAlign(CENTER, CENTER);
+  fill(255, 220, 50);
+  textSize(70);
+  text("Choose Your Character", width / 2, height / 5);
+
+  // Character cards container
+  let cardW = 300;
+  let cardH = 400;
+  let gap = 80;
+  let leftCardX = width / 2 - cardW - gap / 2;
+  let rightCardX = width / 2 + gap / 2;
+
+  // ===== LEFT CHARACTER (Rish / Cat) =====
+  // Card background
+  fill(0, 0, 0, 150);
+  rect(leftCardX + 6, height / 2 + 6, cardW, cardH, 20);
+  if (mouseX > leftCardX - cardW / 2 && mouseX < leftCardX + cardW / 2 &&
+      mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+    fill(100, 150, 255, 200);
+  } else {
+    fill(50, 50, 80, 200);
+  }
+  rect(leftCardX, height / 2, cardW, cardH, 20);
+
+  // Character image placeholder (using existing player image)
+  let imgSize = 180;
+  push();
+  imageMode(CENTER);
+  if (imgPlayer) {
+    // Draw with contain to fit in circle
+    drawContain(imgPlayer, leftCardX - imgSize / 2, height / 2 - 150, imgSize, imgSize);
+  }
+  pop();
+
+  // Character name
+  fill(255);
+  textSize(36);
+  text(LABELS.player, leftCardX, height / 2 + 50);
+
+  // Character description (placeholder)
+  textSize(18);
+  fill(220, 220, 220);
+  text("The agile cat warrior", leftCardX, height / 2 + 90);
+  text("Balanced fighter", leftCardX, height / 2 + 120);
+
+  // ===== RIGHT CHARACTER (Ciyang / Dog) =====
+  // Card background
+  fill(0, 0, 0, 150);
+  rect(rightCardX + 6, height / 2 + 6, cardW, cardH, 20);
+  if (mouseX > rightCardX - cardW / 2 && mouseX < rightCardX + cardW / 2 &&
+      mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+    fill(255, 150, 100, 200);
+  } else {
+    fill(80, 50, 50, 200);
+  }
+  rect(rightCardX, height / 2, cardW, cardH, 20);
+
+  // Character image placeholder (using existing target image)
+  push();
+  imageMode(CENTER);
+  if (imgTarget) {
+    push();
+    translate(rightCardX, height / 2 - 60);
+    scale(-1, 1); // Flip to face right for the selection screen
+    drawContain(imgTarget, -imgSize / 2, -imgSize / 2, imgSize, imgSize);
+    pop();
+  }
+  pop();
+
+  // Character name
+  fill(255);
+  textSize(36);
+  text(LABELS.target, rightCardX, height / 2 + 50);
+
+  // Character description (placeholder)
+  textSize(18);
+  fill(220, 220, 220);
+  text("The powerful dog warrior", rightCardX, height / 2 + 90);
+  text("Heavy hitter", rightCardX, height / 2 + 120);
+
+  // Back button (same as difficulty screen)
+  let backBtnW = 150;
+  let backBtnH = 50;
+  let backBtnY = height - 60;
+  fill(0, 0, 0, 120);
+  rect(width / 2 + 3, backBtnY + 3, backBtnW, backBtnH, 20);
+  fill(150, 150, 150);
+  rect(width / 2, backBtnY, backBtnW, backBtnH, 20);
+  fill(255);
+  textSize(24);
+  text("← BACK", width / 2, backBtnY);
+
+  pop();
+  rectMode(CORNER);
+}
+
+// ----- SE-24 Grace: Reset Game -----
+function resetGame() {
+  // RESET HEALTH
+  catHP = 100;
+  dogHP = 100;
+
+  // RESET CHARACTER POSITIONS
+  player.x = 380;
+  player.y = GROUND_Y - 120;
+  dogBody.x = 1100;
+  dogBody.y = GROUND_Y - 110;
+
+  // Restet angles
+  angleObj.angleDeg = 45;
+  ciyangAngleObj.angleDeg = 45;
+
+  // Reset power
+  powerObj.value = 0;
+  ciyangPowerObj.value = 0;
+
+  cd.projectiles = [];
+  turn = "rish";
+}
 
 //Helenlabel
 // ─── NAVIGATION ───────────────────────────────────────────────────────────────
@@ -568,7 +697,7 @@ function mousePressed(){
           if (mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
               mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2) {
               selectedDifficulty = difficulties[i];
-              gameState = "PLAY";
+              gameState = "CHARACTER";
               break;
           }
       }
@@ -577,8 +706,40 @@ function mousePressed(){
           gameState = "START";
           return;
       }
-  }
+  }else if(gameState="CHARACTER"){
+    // Character selection
+    let cardW = 300;
+    let cardH = 400;
+    let gap = 80;
+    let leftCardX = width / 2 - cardW - gap / 2;
+    let rightCardX = width / 2 + gap / 2;
+    let backBtnY = height - 60;
+    let backBtnW = 150;
+    let backBtnH = 50;
 
+    // Back button
+    if (mouseX > width / 2 - backBtnW / 2 && mouseX < width / 2 + backBtnW / 2 &&
+        mouseY > backBtnY - backBtnH / 2 && mouseY < backBtnY + backBtnH / 2) {
+      gameState = "CHOOSE";
+      return;
+    }
+
+    // Left character (Rish/Cat)
+    if (mouseX > leftCardX - cardW / 2 && mouseX < leftCardX + cardW / 2 &&
+        mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+      console.log("Rish selected");
+      gameState = "PLAY";
+      resetGame();
+    }
+
+    // Right character (Ciyang/Dog)
+    if (mouseX > rightCardX - cardW / 2 && mouseX < rightCardX + cardW / 2 &&
+        mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+      console.log("Ciyang selected");
+      gameState = "PLAY";
+      resetGame();
+    }
+  }
 }
 
 // ─── GLOBALS ──────────────────────────────────────────────────────────────────
@@ -609,16 +770,16 @@ function preload() {
   imgTarget = loadImage("target.png");
   imgPan    = loadImage("pan.png");
 
-    // UI images
-    keyA = loadImage("assets/ui/key_a.png");
-    keyD = loadImage("assets/ui/key_d.png");
-    keyUp = loadImage("assets/ui/key_up.png");
-    keyDown = loadImage("assets/ui/key_down.png");
-    keyLeft = loadImage("assets/ui/key_left.png");
-    keyRight = loadImage("assets/ui/key_right.png");
-    keySpace = loadImage("assets/ui/key_space.png");
+  // UI images
+  keyA = loadImage("assets/ui/key_a.png");
+  keyD = loadImage("assets/ui/key_d.png");
+  keyUp = loadImage("assets/ui/key_up.png");
+  keyDown = loadImage("assets/ui/key_down.png");
+  keyLeft = loadImage("assets/ui/key_left.png");
+  keyRight = loadImage("assets/ui/key_right.png");
+  keySpace = loadImage("assets/ui/key_space.png");
 
-    difficultyUI = loadImage("assets/ui/difficult-select-01.png");
+  difficultyUI = loadImage("assets/ui/difficult-select-01.png");
 }
 
 function setup() {
@@ -694,7 +855,10 @@ function draw() {
     drawStartScreen();
   }else if(gameState=="CHOOSE"){
     drawLevelScreen();
-  }else{
+  }else if(gameState=="CHARACTER"){
+    drawCharacterScreen();
+  }
+  else{
     //difficulty adjustment
     if(selectedDifficulty=="HARD"){
       powerObj.difficultyAdjustment(200, 170);
