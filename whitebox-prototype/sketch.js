@@ -416,13 +416,13 @@ function drawStartScreen(){
   text("Rish vs Ciyang", width / 2, height / 3 + 80);
 
 
-    // shadow
-    fill(80, 200, 80);
-    rect(btnX -btnW/2, btnY - btnH/2, btnW, btnH, 25);
+  // shadow
+  fill(80, 200, 80);
+  rect(btnX -btnW/2, btnY - btnH/2, btnW, btnH, 25);
 
-    fill(255);
-    textSize(36);
-    text("START", btnX, btnY);
+  fill(255);
+  textSize(36);
+  text("START", btnX, btnY);
 
   // ===== introduction: grid =====
   const iconSize = 48;
@@ -430,46 +430,46 @@ function drawStartScreen(){
   const rowStartY = height / 2 + 160;
   const rowGap = 70;
 
-    // centerX for each of the three zones: left, center, right
-    const leftZoneX = width / 2 - 220;
-    const centerZoneX = width / 2;
-    const rightZoneX = width / 2 + 220;
+  // centerX for each of the three zones: left, center, right
+  const leftZoneX = width / 2 - 220;
+  const centerZoneX = width / 2;
+  const rightZoneX = width / 2 + 220;
 
-    // ---------- first row: move ----------
-    const row1Y = rowStartY;
+  // ---------- first row: move ----------
+  const row1Y = rowStartY;
 
-    image(keyLeft, leftZoneX - spacing, row1Y, iconSize, iconSize);
-    image(keyRight, leftZoneX + spacing, row1Y, iconSize, iconSize);
+  image(keyLeft, leftZoneX - spacing, row1Y, iconSize, iconSize);
+  image(keyRight, leftZoneX + spacing, row1Y, iconSize, iconSize);
 
-    fill(255);
-    textSize(26);
-    text("MOVE", centerZoneX, row1Y);
+  fill(255);
+  textSize(26);
+  text("MOVE", centerZoneX, row1Y);
 
-    image(keyA, rightZoneX - spacing, row1Y, iconSize, iconSize);
-    image(keyD, rightZoneX + spacing, row1Y, iconSize, iconSize);
+  image(keyA, rightZoneX - spacing, row1Y, iconSize, iconSize);
+  image(keyD, rightZoneX + spacing, row1Y, iconSize, iconSize);
 
-    // ---------- second row: aim ----------
-    const row2Y = rowStartY + rowGap;
+  // ---------- second row: aim ----------
+  const row2Y = rowStartY + rowGap;
 
-    image(keyUp, leftZoneX - spacing, row2Y, iconSize, iconSize);
-    image(keyDown, leftZoneX + spacing, row2Y, iconSize, iconSize);
+  image(keyUp, leftZoneX - spacing, row2Y, iconSize, iconSize);
+  image(keyDown, leftZoneX + spacing, row2Y, iconSize, iconSize);
 
-    fill(255);
-    textSize(26);
-    text("ADJUST ANGLE", centerZoneX, row2Y);
+  fill(255);
+  textSize(26);
+  text("ADJUST ANGLE", centerZoneX, row2Y);
 
-    // ---------- third row: fire ----------
-    const row3Y = rowStartY + rowGap * 2;
+  // ---------- third row: fire ----------
+  const row3Y = rowStartY + rowGap * 2;
 
-    fill(255);
-    textSize(22);
-    text("HOLD SPACE TO CHARGE • RELEASE TO FIRE", centerZoneX, row3Y);
+  fill(255);
+  textSize(22);
+  text("HOLD SPACE TO CHARGE • RELEASE TO FIRE", centerZoneX, row3Y);
 
-    const row4Y = row3Y + 50;
-    push();
-    imageMode(CENTER);
-    image(keySpace, centerZoneX, row4Y, 160, 40);
-    pop();
+  const row4Y = row3Y + 50;
+  push();
+  imageMode(CENTER);
+  image(keySpace, centerZoneX, row4Y, 160, 40);
+  pop();
 }
 
 //Helenlabel
@@ -500,32 +500,32 @@ function drawLevelScreen(){
     let difficulties = ["EASY", "MEDIUM", "HARD"];
 
     for (let i = 0; i < 3; i++) {
-        let cx = width / 2;
-        let cy = startY + i * (btnH + gap);
-        let label = difficulties[i];
+      let cx = width / 2;
+      let cy = startY + i * (btnH + gap);
+      let label = difficulties[i];
 
-        // hover detection
-        let hover = mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
-            mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2;
+      // hover detection
+      let hover = mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
+          mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2;
 
-        // image turn blue on hover
-        if (hover) {
-            tint(200, 200, 255);
-        } else {
-            noTint();
-        }
-
-        // image button
-        image(difficultyUI, cx - btnW / 2, cy - btnH / 2, btnW, btnH);
-
-        // draw text on top of image
+      // image turn blue on hover
+      if (hover) {
+        tint(200, 200, 255);
+      } else {
         noTint();
-        fill(255);
-        stroke(0);
-        strokeWeight(4);
-        textSize(35); // adjest text size to fit better
-        text(label, cx, cy);
-        noStroke();
+      }
+
+      // image button
+      image(difficultyUI, cx - btnW / 2, cy - btnH / 2, btnW, btnH);
+
+      // draw text on top of image
+      noTint();
+      fill(255);
+      stroke(0);
+      strokeWeight(4);
+      textSize(35); // adjest text size to fit better
+      text(label, cx, cy);
+      noStroke();
     }
 
     // return button
