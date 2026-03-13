@@ -1,4 +1,4 @@
-// ─── COLLISION DETECTION ──────────────────────────────────────────────────────
+// ---------- COLLISION DETECTION --------------------------
 class CollisionDetection {
   constructor({ worldWidth = 1600, worldHeight = 900, cellSize = 128, gravity = 900, windAccel = 50 } = {}) {
     this.worldWidth   = worldWidth;
