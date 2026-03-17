@@ -83,11 +83,41 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 
 - One qualitative evaluation (of your choice) 
 
-- One quantitative evaluation (of your choice) 
+- One quantitative evaluation (of your choice)
+
+
 ## Heuristic Evaluation
 <img width="1242" height="888" alt="Heuristic Evaluation" src="https://github.com/user-attachments/assets/1b988a92-eac5-45ed-bc9f-07e16f6f54b4" />
 
-- Description of how code was tested. 
+- Description of how code was tested.
+
+## Quantitative evaluation
+
+Set-up: 
+We have conducted a study with 11 respondents to measure the perceived workload between “Easy Level” and “Hard Level” of the game. This evaluation allowed us to further determine how to adjust the difficulty of the game while striking a balance between the usability of the game and the workload experienced by players. The survey are structured in two sessions, namely System Usability Scale (SUS) and NASA Task Load Index (NASA-TLX). The former measures the overall usability of the game while the latter access the perceived workload experienced by players during gameplay.
+
+Data Analysis & Key Findings:
+
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/039c08a7-2004-4649-a891-d99562f1fbbd" />
+Easy Level
+
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/ff4178a3-5c0e-445c-8612-0ad8beb52a56" />
+Hard Level
+
+NASA-TLX result:
+Among different aspects of demand, there is a significant surge in temporal demand. Players find that the pace of the game increases much more in the hard level. This is an intended behaviour to build up the difficulty of the game as players are trying on harder levels of the game. To further confirm this, upon the Wilcoxon Signed-Rank Test, there is a W statistics of 31.5 with 11 non-tied pairs. Since w-test value is far more than the critical value for n=11. This suggests that there is no strong evidence that participants found the hard level more temporally demanding than easy level. 
+
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/6d643874-de88-4adc-b5de-aedc84869c36" />
+Easy Level
+
+<img width="940" height="447" alt="image" src="https://github.com/user-attachments/assets/3fed1d71-c80a-4daa-8749-00311f80049b" />
+Hard Level
+
+SUS result:
+According to the responses, the result shows the most differences on the question regarding support of a technical person is needed to use the system. Surprisingly, more respondents found that a technical person would be helpful in the easy level. Responses spread across the scale of 1, 2, 3 and 4 while most respondents responses with a scale of 1 in the hard level. This might suggest that people need more assistance when they are on the easy level of the game. To confirm this, according to the w-test result of 18 and the number of non-tied pairs of 9, this suggests that there is no strong evidence that perceived need for technical support differed between the easy and hard levels. Therefore, participants’ feelings about needing technical support were broadly similar regardless of whether they played the easy or hard level. This makes intuitive sense — the interface and controls remain the same across difficulty levels, so perceptions of usability and technical complexity would not necessarily change just because the game got harder. The non-significance here is arguably an expected and logical finding. 
+
+In general, the difficulty seems to be balanced among levels, however, after further development of the game, another survey with a larger sample size would be conducted to further ensure the perceived workload of the player and system usability of the game.
+
 
 ### Process 
 
