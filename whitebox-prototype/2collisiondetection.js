@@ -118,6 +118,7 @@ class CollisionDetection {
       else            { dynamic.y += penY; dynamic.vy = 0; }
     }
   }
+
   _updateCharacter(ch, dt, angleObj) {
     if (ch.controllable) {
       const left  = keyIsDown(ch.leftKey);
@@ -157,7 +158,6 @@ class CollisionDetection {
 
     if (p.x < -200 || p.x > this.worldWidth + 200 || p.y > this.worldHeight + 200) {
       p.alive = false;
-
       return;
     }
 
@@ -170,10 +170,12 @@ class CollisionDetection {
           dogHP = Math.max(0, dogHP - 15);
           this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
             text: dogHP <= 0 ? "Ciyang defeated! 💀" : "-15 HP!" });
+          tryPlaySound(sndHit);
         } else if (ch.tag === "player") {
           catHP = Math.max(0, catHP - 15);
           this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
             text: catHP <= 0 ? "Rish defeated! 💀" : "-15 HP!" });
+          tryPlaySound(sndHit);
         }
         p.alive = false;
         return;
@@ -186,14 +188,13 @@ class CollisionDetection {
       if (!stat) continue;
       const hit = CollisionDetection.circleAABBHit(p, stat);
       if (hit) {
-
         p.alive = false;
         return;
       }
     }
   }
-  
-  updateSpeed(ch, speed){
-    ch.speed=speed;
+
+  updateSpeed(ch, speed) {
+    ch.speed = speed;
   }
 }
