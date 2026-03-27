@@ -53,16 +53,16 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 - Early stages design. Ideation process. How did you decide as a team what to develop? Use case diagrams, user stories. 
 
 ### Design
-## Screen Flow
+### Screen Flow
 ![Screen Flow](docs/design/Screen_Flow.png)
 
-## Character Selection
-![Character Select](docs/design/character_select.jpg)
+### Character Selection
+![Character Select](docs/design/caracter_select(sketch).jpg)
 
-## Battle Scene
-![Battle Scene](docs/design/battle_scene.jpg)
+### Battle Scene
+![Battle Scene](docs/design/battle_scence(sketch).jpg)
 
-## Assets Tracker
+### Assets Tracker
 ![Assets Tracker](docs/design/AssetsTracker.png)
 
 - 15% ~750 words 
