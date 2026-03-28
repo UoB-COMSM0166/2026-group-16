@@ -40,19 +40,6 @@
  
 ---
 
-## Introduction
-**Merchant Fighters!** is a casual browser game that can be played by one or two players, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their timing, reflexes, and strategy, until one's HP bar is empty and is defeated. Inspired by the classic Flash game Fleabag vs Mutt, Merchant Fighters modernises the formula for the browser with two distinct visual themes, a live timer, and full bilingual support.
-The game's defining twist is hot surface bouncing: rather than landing and stopping, every projectile a flying frying pan bounces off the ground, walls, and obstacles before disappearing. Each pan can bounce up to three times, which completely changes how players aim. A shot fired too low might loop back and strike the shooter. A clever angle can send the pan curving around a wall that would otherwise block a direct hit. What begins as a simple aiming game becomes a spatial puzzle, where reading the bounce is just as important as lining up the shot.
-
-
-<img width="1594" height="898" alt="Latest_Game_Image1" src="https://github.com/user-attachments/assets/eb2ac26e-8c40-4ef3-9119-e52bc3e2ce31" />
-
-## Paper prototype
-https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
-
-## Stakeholders
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/52afd217-25a7-4110-a688-f8178e3bb23b" width="500">
 </p>
 
 ## Project Report
@@ -60,7 +47,13 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 ### Introduction
 
 - 5% ~250 words 
-- Describe your game, what is based on, what makes it novel? (what's the "twist"?) 
+- Describe your game, what is based on, what makes it novel? (what's the "twist"?)
+- **Merchant Fighters!** is a casual browser game that can be played by one or two players, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their timing, reflexes, and strategy, until one's HP bar is empty and is defeated. Inspired by the classic Flash game Fleabag vs Mutt, Merchant Fighters modernises the formula for the browser with two distinct visual themes, a live timer, and full bilingual support.
+The game's defining twist is hot surface bouncing: rather than landing and stopping, every projectile a flying frying pan bounces off the ground, walls, and obstacles before disappearing. Each pan can bounce up to three times, which completely changes how players aim. A shot fired too low might loop back and strike the shooter. A clever angle can send the pan curving around a wall that would otherwise block a direct hit. What begins as a simple aiming game becomes a spatial puzzle, where reading the bounce is just as important as lining up the shot.
+
+
+<img width="1594" height="898" alt="Latest_Game_Image1" src="https://github.com/user-attachments/assets/eb2ac26e-8c40-4ef3-9119-e52bc3e2ce31" />
+
 
 ### Requirements 
 
@@ -76,6 +69,13 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 - Casual gamer: as a casual gamer, I want to easily get hands-on with the game so that the navigation is straight forward and learning curve is small.
 - Real-life people depicted in the game: as a real-life figure portrayed in the game, I want the character to be true-to-life so that it curates my public persona and safeguards my reputation.
 - UOB students: as a UOB students, I want the game to portray familiar set-ups so that it brings better experience of game immersion.
+
+## Paper prototype
+https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
+
+## Stakeholders
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/52afd217-25a7-4110-a688-f8178e3bb23b" width="500">
 
 
 ### Design
