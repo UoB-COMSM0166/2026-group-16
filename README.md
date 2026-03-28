@@ -55,22 +55,6 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
   <img src="https://github.com/user-attachments/assets/52afd217-25a7-4110-a688-f8178e3bb23b" width="500">
 </p>
 
-
-
-## Your Group
-
-![D35484FB-F888-4093-98B1-115812E8C9AC](https://github.com/user-attachments/assets/ab6f08ff-b958-4985-b62f-3a1f02d03ef4)
-
-
-| Name                  | Email                 | Role        | 
-| --------------------- | --------------------- | ----------- |
-| Helen Wong            | bs25971@bristol.ac.uk |             |
-| Prapulla Naidu Tangi  | sz25875@bristol.ac.uk |             |
-| Rishabh Gautam        | jk25370@bristol.ac.uk |             |
-| Ciyang Weng           | qe25002@bristol.ac.uk |             |
-| Josh Thompson         | kx25617@bristol.ac.uk |             |
-| Ziquan Liu            | nb25183@bristol.ac.uk |             |
-
 ## Project Report
 
 ### Introduction
