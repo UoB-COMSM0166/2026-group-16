@@ -1,34 +1,66 @@
-# 2026-group-16
-2026 COMSM0166 group 16
+<div align="center" style="border:2px solid #e4572e; padding:20px; border-radius:10px;">
 
-# COMSM0166 Project Template
-A project template for the Software Engineering Discipline and Practice module (COMSM0166).
+# MERCHANT FIGHTERS
 
-## Info
+</div>
 
-This is the template for your group project repo/report. We'll be setting up your repo and assigning you to it after the group forming activity. You can delete this info section, but please keep the rest of the repo structure intact.
+<p align="center">
+  <a href="https://uob-comsm0166.github.io/2026-group-16/whitebox-prototype/">
+    <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/eb2ac26e-8c40-4ef3-9119-e52bc3e2ce31" alt="Merchant Fighters Banner" width="700">
+  </a>
+</p>
 
-You will be developing your game using [P5.js](https://p5js.org) a javascript library that provides you will all the tools you need to make your game. However, we won't be teaching you javascript, this is a chance for you and your team to learn a (friendly) new language and framework quickly, something you will almost certainly have to do with your summer project and in future. There is a lot of documentation online, you can start with:
+<div align="center">
+  <a href="https://uob-comsm0166.github.io/2026-group-16/whitebox-prototype/">
+    <img 
+      src="https://img.shields.io/badge/🎮%20PLAY%20GAME-red?style=for-the-badge&logo=gamepad"
+      width="300"
+    />
+  </a>
+</div>
 
-- [P5.js tutorials](https://p5js.org/tutorials/) 
-- [Coding Train P5.js](https://thecodingtrain.com/tracks/code-programming-with-p5-js) course - go here for enthusiastic video tutorials from Dan Shiffman (recommended!)
+---
 
-## Merchant Fighters!
+## Team
+ 
+<div align="center">
+
+  <img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
+
+| Name                  | Email                 | Role        | 
+| --------------------- | --------------------- | ----------- |
+| Helen Wong            | bs25971@bristol.ac.uk |             |
+| Prapulla Naidu Tangi  | sz25875@bristol.ac.uk |             |
+| Rishabh Gautam        | jk25370@bristol.ac.uk |             |
+| Ciyang Weng           | qe25002@bristol.ac.uk |             |
+| Josh Thompson         | kx25617@bristol.ac.uk |             |
+| Ziquan Liu            | nb25183@bristol.ac.uk |             |
+
+</div>
+ 
+---
 
 ## Introduction
-"Merchant Fighters!" is a casual browser game that can be played by one or two players, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their timing, reflexes, and strategy, until one's HP bar is empty and is defeated.
+**Merchant Fighters!** is a casual browser game that can be played by one or two players, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their timing, reflexes, and strategy, until one's HP bar is empty and is defeated. Inspired by the classic Flash game Fleabag vs Mutt, Merchant Fighters modernises the formula for the browser with two distinct visual themes, a live timer, and full bilingual support.
+The game's defining twist is hot surface bouncing: rather than landing and stopping, every projectile a flying frying pan bounces off the ground, walls, and obstacles before disappearing. Each pan can bounce up to three times, which completely changes how players aim. A shot fired too low might loop back and strike the shooter. A clever angle can send the pan curving around a wall that would otherwise block a direct hit. What begins as a simple aiming game becomes a spatial puzzle, where reading the bounce is just as important as lining up the shot.
 
-<img width="1594" height="898" alt="Latest_Game_Image1" src="https://github.com/user-attachments/assets/f722d8cc-37fa-47f6-bdfd-838c5cfba5b7" />
 
-## Current version of the game
-Check out our latest version of [p5.js Mini-Game](https://uob-comsm0166.github.io/2026-group-16/whitebox-prototype/)
+<img width="1594" height="898" alt="Latest_Game_Image1" src="https://github.com/user-attachments/assets/eb2ac26e-8c40-4ef3-9119-e52bc3e2ce31" />
 
 ## Paper prototype
 https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 
+## Stakeholders
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/52afd217-25a7-4110-a688-f8178e3bb23b" width="500">
+</p>
+
+
 
 ## Your Group
-<img width="1280" height="960" alt="image" src="https://github.com/user-attachments/assets/9d5851f9-ad27-4f02-8703-03ff351b21e5" />
+
+![D35484FB-F888-4093-98B1-115812E8C9AC](https://github.com/user-attachments/assets/ab6f08ff-b958-4985-b62f-3a1f02d03ef4)
+
 
 | Name                  | Email                 | Role        | 
 | --------------------- | --------------------- | ----------- |
