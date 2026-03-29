@@ -60,6 +60,30 @@ The game's defining twist is hot surface bouncing: rather than landing and stopp
 - 15% ~750 words
 - Early stages design. Ideation process. How did you decide as a team what to develop? Use case diagrams, user stories.
 
+## Early stages design:
+In the early stages, we began by each exploring different browser-based games to undersatnd what kind of ideas were possible. Each team member then came up with their own concepts, and we shared these in group discussion. We compared the ideas based on how engaging they seemed, whether they were realistic to compete within our time frame, looked at various animations to understand what kind of ideas were possible, how suitable they were for p5.js, and how easy they would be for new players to understand. This helped us narrow down to the strongest opinions.
+
+## Ideation process:
+After browsing different games, we were inspired by _Fleabag vs Mutt_, as it is a fun game with a simple and competitive style. This gave us the idea to design a fun two-player game with a playful and interactive feel.
+We then created simple **paper prototype** and shared them with our friends and classmates to get quick feedback. Through this process, we observed which idea felt more engaging and interactive. The two-player game caoncept stood out, as it encouraged excitement and strategy, leading us to choose it as the direction for our final game.
+## Paper prototype
+https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
+
+## Stakeholders
+Using the **Onion Ring Model** helped us clearly map out all the stakeholders involved in **Merchant Fighters** and understands their level of influence on the project. By organising stakeholders into different layers, we could seperate those directly involved in development from players, wider users, and externam influences. This made it easier to see who we needed to focus on most during design decisions.
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/52afd217-25a7-4110-a688-f8178e3bb23b" width="500">
+
+## Use Case diagram:
+<img width="909" height="533" alt="image" src="https://github.com/user-attachments/assets/93a960e9-5a98-43d2-8cdc-8d5a7cc7a36c" />
+
+- The central play use case sits at the heart of the diagram, with all other behaviours branching from it.
+- Two human characters- Player 1 and Player 2 interact wit the system through through their own dedicated keyboard controls. (Future Case - Player 1 uses dedicated keyboard, while Player 2 is AI system-controlled).
+- The game system handles 60-second countdown timer, overtime detection, and win condition evaluation.
+- Realationship marked <<include>> represent behaviours that alway occur as part of play  such as choosing character, shooting projectile, viewing result.
+- Relationship marked <<exteds>> represent conditional behaviours that only trigger under specific circustances.
+- The Navigate back button can be used at any time to return to the home page without closing the game.
+
 ## Users stories:
 - Scrum master: as a scrum master, I want to gather all the requirements and ensure smooth development of the game (set up branch contributing rules to prevent accidental force pushes and deletions).
 - Backend developers: as a backend developers, I want to make sure the good physics in the game so that motions within the game is reasonable.
@@ -69,13 +93,6 @@ The game's defining twist is hot surface bouncing: rather than landing and stopp
 - Casual gamer: as a casual gamer, I want to easily get hands-on with the game so that the navigation is straight forward and learning curve is small.
 - Real-life people depicted in the game: as a real-life figure portrayed in the game, I want the character to be true-to-life so that it curates my public persona and safeguards my reputation.
 - UOB students: as a UOB students, I want the game to portray familiar set-ups so that it brings better experience of game immersion.
-
-## Paper prototype
-https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
-
-## Stakeholders
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/52afd217-25a7-4110-a688-f8178e3bb23b" width="500">
 
 
 ### Design
