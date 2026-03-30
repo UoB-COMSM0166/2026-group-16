@@ -71,7 +71,7 @@ class CollisionDetection {
     return ch;
   }
 
-  spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player" }) {
+    spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player", maxBounces = 3 }) {
     const power = powerObj.consume();
     const speed = power * powerScale;
     const a     = angleObj.angleRad;
@@ -82,6 +82,8 @@ class CollisionDetection {
       vy: -Math.sin(a) * speed,
       alive: true,
       owner,
+      bounces: 0,          // 已反弹次数
+      maxBounces: maxBounces, // 最大反弹次数（可自己设置）
     };
     this.projectiles.push(p);
     return p;
@@ -150,19 +152,54 @@ class CollisionDetection {
     }
   }
 
-  _updateProjectile(p, dt) {
+_updateProjectile(p, dt) {
+    // 风力 & 重力
     p.vx += this.windAccel * dt;
     p.vy += this.gravity   * dt;
     p.x  += p.vx * dt;
     p.y  += p.vy * dt;
 
-    if (p.x < -200 || p.x > this.worldWidth + 200 || p.y > this.worldHeight + 200) {
+    // ── 1) 边界反弹 ──────────────────────────────────
+    let bounced = false;
+
+    // 左边界
+    if (p.x - p.r < 0) {
+      p.x  = p.r;
+      p.vx = Math.abs(p.vx) * 0.8;   // 0.8 = 能量衰减系数，可调
+      bounced = true;
+    }
+    // 右边界
+    if (p.x + p.r > this.worldWidth) {
+      p.x  = this.worldWidth - p.r;
+      p.vx = -Math.abs(p.vx) * 0.8;
+      bounced = true;
+    }
+    // 上边界
+    if (p.y - p.r < 0) {
+      p.y  = p.r;
+      p.vy = Math.abs(p.vy) * 0.8;
+      bounced = true;
+    }
+    // 下边界（掉出屏幕底部 — 直接消亡，不反弹）
+    if (p.y > this.worldHeight + 200) {
       p.alive = false;
       return;
     }
 
+    if (bounced) {
+      p.bounces++;
+      if (p.bounces > p.maxBounces) {
+        p.alive = false;
+        return;
+      }
+    }
+
+    // ── 2) 角色碰撞（反弹后依然能打中人）────────────
+    //    注意：去掉了 owner 跳过检测，反弹后可以打到所有人包括自己
     for (const ch of this.characters) {
-      if (ch.tag === p.owner) continue;
+      // 第一次发射时跳过自己（未反弹），反弹后可伤害任何人
+      if (p.bounces === 0 && ch.tag === p.owner) continue;
+
       const rect = { x: ch.x, y: ch.y, w: ch.w, h: ch.h };
       const hit  = CollisionDetection.circleAABBHit(p, rect);
       if (hit) {
@@ -182,14 +219,32 @@ class CollisionDetection {
       }
     }
 
+    // ── 3) 静态障碍物反弹 ────────────────────────────
     const box = { x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 };
     for (const id of this._queryNearbyAABB(box)) {
       const stat = this.staticBodies.find(b => b.id === id);
       if (!stat) continue;
       const hit = CollisionDetection.circleAABBHit(p, stat);
       if (hit) {
-        p.alive = false;
-        return;
+        // 超过反弹上限 → 销毁
+        p.bounces++;
+        if (p.bounces > p.maxBounces) {
+          p.alive = false;
+          return;
+        }
+
+        // 根据碰撞法线反射速度
+        const n = hit.normal;
+        // v_reflect = v - 2(v·n)n
+        const dot = p.vx * n.x + p.vy * n.y;
+        p.vx = (p.vx - 2 * dot * n.x) * 0.8;
+        p.vy = (p.vy - 2 * dot * n.y) * 0.8;
+
+        // 把弹体推出障碍物，防止卡在里面
+        p.x = hit.point.x + n.x * (p.r + 1);
+        p.y = hit.point.y + n.y * (p.r + 1);
+
+        break; // 每帧只处理一次碰撞
       }
     }
   }

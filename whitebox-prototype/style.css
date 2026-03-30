@@ -1,7 +1,62 @@
 html, body {
   margin: 0;
   padding: 0;
+  font-family: sans-serif;
 }
 canvas {
   display: block;
+}
+
+/* ── Language Dropdown Overlay ───────────────────────────── */
+#lang-wrapper {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#lang-label {
+  color: #ffe066;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px #000a;
+  user-select: none;
+  pointer-events: none;
+}
+
+#lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(20, 16, 40, 0.92);
+  color: #ffe066;
+  border: 1.5px solid #ffe06688;
+  border-radius: 8px;
+  padding: 5px 32px 5px 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 2px 12px #0008;
+  letter-spacing: 0.03em;
+  transition: border-color 0.18s, background 0.18s;
+  /* custom chevron */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffe066' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+#lang-select:hover,
+#lang-select:focus {
+  border-color: #ffe066;
+  background-color: rgba(40, 32, 70, 0.97);
+}
+
+#lang-select option {
+  background: #1a1428;
+  color: #ffe066;
+  font-weight: 700;
 }
