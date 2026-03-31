@@ -78,13 +78,13 @@ All sprite sheets: **128×128 per frame**
 ### 3.1 Easy / Medium
 
 | Asset Name | Dimensions | Description | Path |
-|---|---|---|---|---|
+|---|---|---|---|
 | **weapon_bow** | Player's bow — held weapon sprite. | `whitebox-prototype\assets\images` |
 
 ### 3.2 Hard
 
 | Asset Name | Dimensions | Description | Path |
-|---|---|---|---|---|
+|---|---|---|---|
 | **projectile_paper** | 80×24→120×48 | Scroll unfurls mid-flight — area hit. | `whitebox-prototype\assets\images` |
 
 ---

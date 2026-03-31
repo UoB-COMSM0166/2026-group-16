@@ -1,15 +1,39 @@
 const CHARACTERS_FANTASY = [
-  { name: "John", portrait: "portrait_John_fantasy.png", nameUI: "name_John.png", bioUI: "bio_John.png" },
-  { name: "Kira", portrait: "portrait_Kira_fantasy.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png" },
-  { name: "Mat", portrait: "portrait_Mat_fantasy.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png" },
-  { name: "Jo", portrait: "portrait_Jo_fantasy.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png" },
+  {
+    name: "John", portrait: "portrait_John_fantasy.png", nameUI: "name_John.png", bioUI: "bio_John.png",
+    bioText: { EN: "A fierce warrior from the northern lands. Master of the broadsword.", ZH: "来自北方的凶猛战士，阔剑大师。" }
+  },
+  {
+    name: "Kira", portrait: "portrait_Kira_fantasy.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
+    bioText: { EN: "Swift as the wind, she strikes before you blink.", ZH: "疾如风，瞬杀之刃。" }
+  },
+  {
+    name: "Mat", portrait: "portrait_Mat_fantasy.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
+    bioText: { EN: "Archer with a keen eye. Never misses.", ZH: "眼神锐利的弓箭手，百发百中。" }
+  },
+  {
+    name: "Jo", portrait: "portrait_Jo_fantasy.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
+    bioText: { EN: "A wandering monk who fights with bare hands.", ZH: "以空手战斗的流浪武僧。" }
+  }
 ];
 
 const CHARACTERS_MODERN = [
-  { name: "John", portrait: "portrait_John_modern.png", nameUI: "name_John.png", bioUI: "bio_John.png" },
-  { name: "Kira", portrait: "portrait_Kira_modern.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png" },
-  { name: "Mat", portrait: "portrait_Mat_modern.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png" },
-  { name: "Jo", portrait: "portrait_Jo_modern.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png" },
+  {
+    name: "John", portrait: "portrait_John_modern.png", nameUI: "name_John.png", bioUI: "bio_John.png",
+    bioText: { EN: "A modern warrior with high-tech armor.", ZH: "身着高科技盔甲的现代战士。" }
+  },
+  {
+    name: "Kira", portrait: "portrait_Kira_modern.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
+    bioText: { EN: "Cyber-enhanced assassin with lightning speed.", ZH: "拥有闪电速度的机械刺客。" }
+  },
+  {
+    name: "Mat", portrait: "portrait_Mat_modern.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
+    bioText: { EN: "Sniper with perfect aim and tactical gear.", ZH: "精准瞄准、装备齐全的狙击手。" }
+  },
+  {
+    name: "Jo", portrait: "portrait_Jo_modern.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
+    bioText: { EN: "Street fighter with improvised weapons.", ZH: "使用临时武器的街头格斗家。" }
+  }
 ];
 
 let charSelectIndex = 0;
@@ -80,5 +104,70 @@ function drawCharacterScreen() {
     fill(150, 150, 150); rect(btnX, btnY, btnW, btnH, 20);
     fill(255); textSize(24); textAlign(CENTER, CENTER);
     text("← BACK", 1600 / 2, btnY + btnH / 2);
+  }
+
+  // ========== 动态 Bio 面板（跟随鼠标） ==========
+  const portraitRect = { x: 211, y: 149, w: 479, h: 647 };
+  const isHovering = (mouseX > portraitRect.x && mouseX < portraitRect.x + portraitRect.w &&
+    mouseY > portraitRect.y && mouseY < portraitRect.y + portraitRect.h);
+
+  if (isHovering) {
+    const panelImg = isModern ? modernBioPanel : fantasyBioPanel;
+    const panelW = isModern ? 283 : 346;
+    const panelH = isModern ? 404 : 442;
+
+    // 跟随鼠标位置
+    let panelX = mouseX + 20;
+    let panelY = mouseY + 20;
+    if (panelX + panelW > width) panelX = mouseX - panelW - 20;
+    if (panelY + panelH > height) panelY = mouseY - panelH - 20;
+    panelX = constrain(panelX, 0, width - panelW);
+    panelY = constrain(panelY, 0, height - panelH);
+
+    if (panelImg) {
+      image(panelImg, panelX, panelY, panelW, panelH);
+
+      const bioTextObj = cur.bioText || { EN: "No description available.", ZH: "暂无描述。" };
+      const lang = LANG.current;
+      const bioStr = bioTextObj[lang] || bioTextObj.EN;
+
+      // 居中像素风格文字
+      push();
+      textAlign(CENTER, CENTER);
+      textFont('Courier New');
+      textStyle(BOLD);
+      textSize(18);
+      fill(0);
+      noStroke();
+
+      const textMargin = 15;
+      const textAreaW = panelW - textMargin * 2;
+      const textAreaX = panelX + panelW / 2;
+      const textAreaY = panelY + panelH / 2;
+
+      // 自动换行
+      let words = bioStr.split(' ');
+      let lines = [];
+      let currentLine = "";
+      for (let word of words) {
+        let testLine = currentLine ? currentLine + " " + word : word;
+        if (textWidth(testLine) > textAreaW) {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) lines.push(currentLine);
+
+      const lineHeight = 26;
+      const totalHeight = lines.length * lineHeight;
+      let startY = textAreaY - totalHeight / 2;
+
+      for (let i = 0; i < lines.length; i++) {
+        text(lines[i], textAreaX, startY + i * lineHeight);
+      }
+      pop();
+    }
   }
 }

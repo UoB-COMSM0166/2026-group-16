@@ -48,6 +48,7 @@ let overtimeActive = false;
 // Character Select Screen
 let fantasyArrowLeft, fantasyArrowRight, fantasyPlatformGlow, fantasyFrameDiamond, fantasyBtnConfirm, fantasyBgCharSelect;
 let modernArrowLeft, modernArrowRight, modernPlatformGlow, modernFrameDiamond, modernBtnConfirm, modernBgCharSelect;
+let fantasyBioPanel, modernBioPanel;
 let csAssets_fantasy = [];
 let csAssets_modern = [];
 
@@ -135,6 +136,8 @@ function preload() {
       portrait: loadImage(BASE_F + c.portrait),
       nameUI: loadImage(BASE_F + c.nameUI),
       bioUI: loadImage(BASE_F + c.bioUI),
+      bioText: c.bioText,
+      name: c.name
     });
   }
   // Fantasy UI
@@ -144,6 +147,7 @@ function preload() {
   fantasyFrameDiamond = loadImage(BASE_F + "frame_diamond.png");
   fantasyBtnConfirm = loadImage(BASE_F + "btn_confirm.png");
   fantasyBgCharSelect = loadImage(BASE_F + "bg_charselect_fantasy.png");
+  fantasyBioPanel = loadImage(BASE_F + "bio_panel_fantasy.png");
 
   // Modern UI
   const BASE_M = "assets/images/CharacterSelect/modern/";
@@ -154,6 +158,8 @@ function preload() {
       portrait: loadImage(BASE_M + c.portrait),
       nameUI: loadImage(BASE_M + c.nameUI),
       bioUI: loadImage(BASE_M + c.bioUI),
+      bioText: c.bioText,
+      name: c.name
     });
   }
 
@@ -163,6 +169,7 @@ function preload() {
   modernFrameDiamond = loadImage(BASE_M + "frame_diamond.png");
   modernBtnConfirm = loadImage(BASE_M + "btn_confirm.png");
   modernBgCharSelect = loadImage(BASE_M + "bg_charselect_modern.png");
+  modernBioPanel = loadImage(BASE_M + "bio_panel_modern.png");
 }
 
 function setup() {

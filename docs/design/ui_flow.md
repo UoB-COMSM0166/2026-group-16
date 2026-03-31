@@ -11,11 +11,11 @@
 flowchart TD
     A([🎮 Start Screen]) --> B([⚙️ Difficulty Select])
 
-    B -->|Easy / Medium| C([🗡️ Character Select\nFantasy Route])
-    B -->|Hard| D([🏫 Character Select\nModern Route])
+    B -->|Easy / Medium| C([🗡️ Character Select Fantasy Route])
+    B -->|Hard| D([🏫 Character Select Modern Route])
 
-    C -->|Select teacher| E([⚔️ Battle Screen\nFantasy])
-    D -->|Select teacher| F([⚔️ Battle Screen\nModern])
+    C -->|Select teacher| E([⚔️ Battle Screen Fantasy])
+    D -->|Select teacher| F([⚔️ Battle Screen Modern])
 
     E -->|Win / Lose| G([🏆 Victory / Defeat Screen])
     F -->|Win / Lose| G
