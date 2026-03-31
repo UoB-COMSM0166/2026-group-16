@@ -57,7 +57,7 @@ https://github.com/user-attachments/assets/7e17c2b0-c05f-4053-aa92-736817f2a9ee
 ![Screen Flow](docs/design/Screen_Flow.png)
 
 ### Character Selection
-![Character Select](docs/design/caracter_select(sketch)_1.jpg)
+![Character Select](docs/design/character_select(sketch)_1.jpg)
 
 ### Battle Scene
 ![Battle Scene](docs/design/battle_scence(sketch).jpg)
