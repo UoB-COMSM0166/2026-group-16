@@ -45,20 +45,13 @@ let gameTimer = 60;
 let timerRunning = false;
 let overtimeActive = false;
 
-// Character Select Screen
-let fantasyArrowLeft, fantasyArrowRight, fantasyPlatformGlow, fantasyFrameDiamond, fantasyBtnConfirm, fantasyBgCharSelect;
-let modernArrowLeft, modernArrowRight, modernPlatformGlow, modernFrameDiamond, modernBtnConfirm, modernBgCharSelect;
-let fantasyBioPanel, modernBioPanel;
-let csAssets_fantasy = [];
-let csAssets_modern = [];
-
 // ── sound helper ───────────────────────────────────────────
 function tryPlaySound(snd) {
   if (!snd || !soundUnlocked) return;
   try {
     if (snd.isPlaying()) snd.stop();
     snd.play();
-  } catch (e) { }
+  } catch(e) {}
 }
 // ──────────────────────────────────────────────────────────
 
@@ -66,15 +59,15 @@ function tryPlaySound(snd) {
 // at the right asset set
 function applyDifficultyAssets() {
   if (selectedDifficulty === "HARD") {
-    imgBg = imgBgModern;
+    imgBg         = imgBgModern;
     imgPlayScreen = imgCharSelectModern;
-    imgPlayer = imgPlayerModern;
-    imgTarget = imgTargetModern;
+    imgPlayer     = imgPlayerModern;
+    imgTarget     = imgTargetModern;
   } else {
-    imgBg = imgBgFantasy;
+    imgBg         = imgBgFantasy;
     imgPlayScreen = imgCharSelectFantasy;
-    imgPlayer = imgPlayerFantasy;
-    imgTarget = imgTargetFantasy;
+    imgPlayer     = imgPlayerFantasy;
+    imgTarget     = imgTargetFantasy;
   }
 }
 
@@ -86,11 +79,11 @@ function resetGame() {
 
   applyDifficultyAssets();
 
-  player.x = 380; player.y = GROUND_Y - 160; player.facing = 1;
+  player.x = 380;  player.y = GROUND_Y - 160; player.facing = 1;
   dogBody.x = 1100; dogBody.y = GROUND_Y - 160; dogBody.facing = -1;
 
   cd.projectiles = [];
-  cd.floatTexts = [];
+  cd.floatTexts  = [];
 
   powerObj.value = 0; powerObj._wasCharging = false;
   ciyangPowerObj.value = 0; ciyangPowerObj._wasCharging = false;
@@ -99,77 +92,35 @@ function resetGame() {
 // p5.js LIFECYCLE
 function preload() {
   // Fantasy assets
-  imgBgFantasy = loadImage("assets/images/bg/bg_battle_fantasy_1.png");
+  imgBgFantasy        = loadImage("assets/images/bg/bg_battle_fantasy_1.png");
   imgCharSelectFantasy = loadImage("assets/images/bg/bg_charselect_fantasy.png");
-  imgPlayerFantasy = loadImage("assets/images/Sprites/sprite_John_fantasy.png");
-  imgTargetFantasy = loadImage("assets/images/Sprites/sprite_Mattew_fantasy.png");
+  imgPlayerFantasy    = loadImage("assets/images/Sprites/sprite_John_fantasy.png");
+  imgTargetFantasy    = loadImage("assets/images/Sprites/sprite_Mattew_fantasy.png");
 
   // Modern assets
-  imgBgModern = loadImage("assets/images/bg/bg_battle_modern_1.png");
+  imgBgModern         = loadImage("assets/images/bg/bg_battle_modern_1.png");
   imgCharSelectModern = loadImage("assets/images/bg/bg_charselect_modern.png");
-  imgPlayerModern = loadImage("assets/images/Sprites/sprite_John_modern.png");
-  imgTargetModern = loadImage("assets/images/Sprites/sprite_Mattew_modern.png");
+  imgPlayerModern     = loadImage("assets/images/Sprites/sprite_John_modern.png");
+  imgTargetModern     = loadImage("assets/images/Sprites/sprite_Mattew_modern.png");
 
   // Defaults (fantasy) — will be overwritten by applyDifficultyAssets()
-  imgBg = imgBgFantasy;
+  imgBg         = imgBgFantasy;
   imgPlayScreen = imgCharSelectFantasy;
-  imgPlayer = imgPlayerFantasy;
-  imgTarget = imgTargetFantasy;
+  imgPlayer     = imgPlayerFantasy;
+  imgTarget     = imgTargetFantasy;
 
   // Shared
-  imgPan = loadImage("pan.png");
-  imgWall = loadImage("assets/images/bg/wall_fantasy.png");
-  keyA = loadImage("assets/ui/key_a.png");
-  keyD = loadImage("assets/ui/key_d.png");
-  keyUp = loadImage("assets/ui/key_up.png");
-  keyDown = loadImage("assets/ui/key_down.png");
-  keyLeft = loadImage("assets/ui/key_left.png");
-  keyRight = loadImage("assets/ui/key_right.png");
-  keySpace = loadImage("assets/ui/key_space.png");
-  difficultyUI = loadImage("assets/ui/difficult-select-01.png");
+  imgPan        = loadImage("pan.png");
+  imgWall       = loadImage("assets/images/bg/wall_fantasy.png");
+  keyA          = loadImage("assets/ui/key_a.png");
+  keyD          = loadImage("assets/ui/key_d.png");
+  keyUp         = loadImage("assets/ui/key_up.png");
+  keyDown       = loadImage("assets/ui/key_down.png");
+  keyLeft       = loadImage("assets/ui/key_left.png");
+  keyRight      = loadImage("assets/ui/key_right.png");
+  keySpace      = loadImage("assets/ui/key_space.png");
+  difficultyUI  = loadImage("assets/ui/difficult-select-01.png");
   // NOTE: sound is loaded in setup() so a bad path never blocks preload
-
-  // Grace3.31__Character Select Screen Assets — fantasy
-  const BASE_F = "assets/images/CharacterSelect/fantasy/";
-  for (const c of CHARACTERS_FANTASY) {
-    csAssets_fantasy.push({
-      portrait: loadImage(BASE_F + c.portrait),
-      nameUI: loadImage(BASE_F + c.nameUI),
-      bioUI: loadImage(BASE_F + c.bioUI),
-      bioText: c.bioText,
-      name: c.name
-    });
-  }
-  // Fantasy UI
-  fantasyArrowLeft = loadImage(BASE_F + "arrow_left.png");
-  fantasyArrowRight = loadImage(BASE_F + "arrow_right.png");
-  fantasyPlatformGlow = loadImage(BASE_F + "platform_glow.png");
-  fantasyFrameDiamond = loadImage(BASE_F + "frame_diamond.png");
-  fantasyBtnConfirm = loadImage(BASE_F + "btn_confirm.png");
-  fantasyBgCharSelect = loadImage(BASE_F + "bg_charselect_fantasy.png");
-  fantasyBioPanel = loadImage(BASE_F + "bio_panel_fantasy.png");
-
-  // Modern UI
-  const BASE_M = "assets/images/CharacterSelect/modern/";
-
-  csAssets_modern = [];
-  for (const c of CHARACTERS_MODERN) {
-    csAssets_modern.push({
-      portrait: loadImage(BASE_M + c.portrait),
-      nameUI: loadImage(BASE_M + c.nameUI),
-      bioUI: loadImage(BASE_M + c.bioUI),
-      bioText: c.bioText,
-      name: c.name
-    });
-  }
-
-  modernArrowLeft = loadImage(BASE_M + "arrow_left.png");
-  modernArrowRight = loadImage(BASE_M + "arrow_right.png");
-  modernPlatformGlow = loadImage(BASE_M + "platform_glow.png");
-  modernFrameDiamond = loadImage(BASE_M + "frame_diamond.png");
-  modernBtnConfirm = loadImage(BASE_M + "btn_confirm.png");
-  modernBgCharSelect = loadImage(BASE_M + "bg_charselect_modern.png");
-  modernBioPanel = loadImage(BASE_M + "bio_panel_modern.png");
 }
 
 function setup() {
@@ -185,17 +136,17 @@ function setup() {
   cd = new CollisionDetection({ worldWidth: 1600, worldHeight: 900, cellSize: 128, gravity: 900, windAccel: 50 });
   cd.addStaticRect({ x: 0, y: GROUND_Y, w: 1600, h: 10, tag: "ground" });
 
-  dogBody = cd.addCharacter({ x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog", leftKey: LEFT_ARROW, rightKey: RIGHT_ARROW });
+  dogBody = cd.addCharacter({ x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog",    leftKey: LEFT_ARROW, rightKey: RIGHT_ARROW });
   dogBody.facing = -1;
-  player = cd.addCharacter({ x: 380, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "player", leftKey: 65, rightKey: 68 });
+  player  = cd.addCharacter({ x: 380,  y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "player", leftKey: 65, rightKey: 68 });
 
   nav = new Navigator();
 
   // Load hit sound with callbacks — a wrong path warns but never hangs the game
   loadSound(
     "assets/sound/bamboo-hit-sound-effect.mp3",
-    function (s) { sndHit = s; console.log("Hit sound loaded OK"); },
-    function () { sndHit = null; console.warn("Hit sound not found — continuing without it"); }
+    function(s) { sndHit = s; console.log("Hit sound loaded OK"); },
+    function()  { sndHit = null; console.warn("Hit sound not found — continuing without it"); }
   );
 
   LANG_PATCHER.apply(); // apply language patches after p5 is ready
@@ -206,14 +157,14 @@ function draw() {
   textAlign(CENTER, CENTER);
   imageMode(CORNER);
   rectMode(CORNER);
-  if (gameState === "START") drawStartScreen();
-  else if (gameState === "CHOOSE") drawLevelScreen();
+  if      (gameState === "START")     drawStartScreen();
+  else if (gameState === "CHOOSE")    drawLevelScreen();
   else if (gameState === "CHARACTER") drawCharacterScreen();
   else {
     if (selectedDifficulty === "HARD") {
       powerObj.difficultyAdjustment(200, 170);
       ciyangPowerObj.difficultyAdjustment(200, 170);
-      cd.updateSpeed(player, 480);
+      cd.updateSpeed(player,  480);
       cd.updateSpeed(dogBody, 480);
     }
     drawPlayScreen();
