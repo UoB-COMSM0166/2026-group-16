@@ -238,3 +238,22 @@ function drawLevelScreen() {
   pop(); rectMode(CORNER); textStyle(NORMAL);
 }
 
+//  CHARACTER SCREEN 
+function drawCharacterScreen() {
+  resetMatrix();
+  push(); rectMode(CENTER);
+  fill(0, 0, 0, 200); rect(1600 / 2, 900 / 2, 1600, 900);
+  textAlign(CENTER, CENTER); fill(255, 220, 50); textSize(70);
+  text("Choose Your Character", 1600 / 2, 900 / 5);
+
+  let cardW = 300, cardH = 400, gap = 80;
+  let lx = 1600 / 2 - cardW - gap / 2, rx = 1600 / 2 + gap / 2;
+
+  drawCharCard(lx, cardW, cardH, imgPlayer, false, LABELS.player,
+    "The agile cat warrior", "Balanced fighter", [100, 150, 255, 200], [50, 50, 80, 200]);
+  drawCharCard(rx, cardW, cardH, imgTarget, false, LABELS.target,
+    "The powerful dog warrior", "Heavy hitter", [255, 150, 100, 200], [80, 50, 50, 200]);
+
+  drawBackBtn(900 - 60);
+  pop(); rectMode(CORNER);
+}
