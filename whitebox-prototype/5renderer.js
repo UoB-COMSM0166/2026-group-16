@@ -155,9 +155,13 @@ function drawHealthBars() {
 
 // SHARED: Back Button 
 function drawBackBtn(y) {
-  fill(0,0,0,120); rect(1600/2+3, y+3, 150, 50, 20);
-  fill(150,150,150); rect(1600/2, y, 150, 50, 20);
-  fill(255); textSize(24); text("← BACK", 1600/2, y);
+  const bkW = 150, bkH = 44, bkX = 1600/2 - bkW/2;
+  push(); rectMode(CORNER);
+  fill(0,0,0,120); noStroke(); rect(bkX+3, y+3, bkW, bkH, 14);
+  fill(80,80,100); rect(bkX, y, bkW, bkH, 14);
+  fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
+  text("← BACK", 1600/2, y + bkH/2);
+  pop();
 }
 
 //  SHARED: Character Card

@@ -11,11 +11,11 @@
 flowchart TD
     A([🎮 Start Screen]) --> B([⚙️ Difficulty Select])
 
-    B -->|Easy / Medium| C([🗡️ Character Select\nFantasy Route])
-    B -->|Hard| D([🏫 Character Select\nModern Route])
+    B -->|Easy / Medium| C([🗡️ Character Select Fantasy Route])
+    B -->|Hard| D([🏫 Character Select Modern Route])
 
-    C -->|Select teacher| E([⚔️ Battle Screen\nFantasy])
-    D -->|Select teacher| F([⚔️ Battle Screen\nModern])
+    C -->|Select teacher| E([⚔️ Battle Screen Fantasy])
+    D -->|Select teacher| F([⚔️ Battle Screen Modern])
 
     E -->|Win / Lose| G([🏆 Victory / Defeat Screen])
     F -->|Win / Lose| G
@@ -79,20 +79,32 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph CSF["🗡️ Character Select · Fantasy — 1920×1080"]
+    subgraph CSF["🗡️ Character Select · Fantasy (Carousel) — 1920×1080"]
         direction TB
-        BG[bg_charselect_fantasy\n1920×1080]
-        C1[Teacher 1\nportrait_t1_fantasy]
-        C2[Teacher 2\nportrait_t2_fantasy]
-        C3[Teacher 3\nportrait_t3_fantasy]
-        C4[Teacher 4\nportrait_t4_fantasy]
-        C5[Teacher 5\nportrait_t5_fantasy]
-        BIO[Character Bio Panel\n500×200]
-        OK[✔ Confirm Button\n200×70]
-        BK[← Back\n160×60]
+        
+        BG[bg_charselect_fantasy 1920×1080]
+
+        CHAR["Focused Character Display (current_character)"]
+
+        LEFT[◀ Previous Button 120×120]
+        RIGHT[Next ▶ Button 120×120]
+
+        BASE["Circle Platform (shared style)"]
+        NAME["Character Name Label"]
+
+        BIO["Character Bio Panel 500×200 (dynamic)"]
+
+        OK[✔ Confirm Button 200×70]
+        BK[← Back Button 160×60]
     end
 
-    OK -->|click| BF([Battle Screen\nFantasy])
+    LEFT -->|click| CHAR
+    RIGHT -->|click| CHAR
+
+    CHAR -->|update| NAME
+    CHAR -->|update| BIO
+
+    OK -->|click| BF([Battle Screen Fantasy])
     BK -->|click| DIFF([Difficulty Select])
 ```
 
@@ -102,20 +114,32 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    subgraph CSM["🏫 Character Select · Modern — 1920×1080"]
+    subgraph CSF["🗡️ Character Select · Modern (Carousel) — 1920×1080"]
         direction TB
-        BG[bg_charselect_modern\n1920×1080]
-        C1[Teacher 1\nportrait_t1_modern]
-        C2[Teacher 2\nportrait_t2_modern]
-        C3[Teacher 3\nportrait_t3_modern]
-        C4[Teacher 4\nportrait_t4_modern]
-        C5[Teacher 5\nportrait_t5_modern]
-        BIO[Character Bio Panel\n500×200]
-        OK[✔ Confirm Button\n200×70]
-        BK[← Back\n160×60]
+        
+        BG[bg_charselect_modern 1920×1080]
+
+        CHAR["Focused Character Display (current_character)"]
+
+        LEFT[◀ Previous Button 120×120]
+        RIGHT[Next ▶ Button 120×120]
+
+        BASE["Circle Platform (shared style)"]
+        NAME["Character Name Label"]
+
+        BIO["Character Bio Panel 500×200 (dynamic)"]
+
+        OK[✔ Confirm Button 200×70]
+        BK[← Back Button 160×60]
     end
 
-    OK -->|click| BM([Battle Screen\nModern])
+    LEFT -->|click| CHAR
+    RIGHT -->|click| CHAR
+
+    CHAR -->|update| NAME
+    CHAR -->|update| BIO
+
+    OK -->|click| BF([Battle Screen Modern])
     BK -->|click| DIFF([Difficulty Select])
 ```
 
