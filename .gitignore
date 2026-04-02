@@ -4,3 +4,4 @@
 *.iml
 *.ipr
 
+.DS_Store
