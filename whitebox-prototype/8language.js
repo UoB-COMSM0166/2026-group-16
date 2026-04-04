@@ -143,7 +143,8 @@ class LanguagePatcher {
     // Translate float damage texts in collision detection
     // Translate float damage texts in collision detection (with bounce)
     CollisionDetection.prototype._updateProjectile = function(p, dt) {
-      p.vx += this.windAccel * dt;
+      const windDir = p.windDir !== undefined ? p.windDir : 1;
+      p.vx += this.windAccel * windDir * dt;
       p.vy += this.gravity   * dt;
       p.x  += p.vx * dt;
       p.y  += p.vy * dt;

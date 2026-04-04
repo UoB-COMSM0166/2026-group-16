@@ -13,5 +13,3 @@ function vecNorm(a) { const l = vecLen(a) || 1; return { x: a.x / l, y: a.y / l 
 function hitRect(cx, cy, w, h) {
   return mouseX > cx - w/2 && mouseX < cx + w/2 && mouseY > cy - h/2 && mouseY < cy + h/2;
 }
-
-//
