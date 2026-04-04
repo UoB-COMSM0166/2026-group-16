@@ -65,6 +65,88 @@ function drawPlayScreen() {
     cd.floatTexts = cd.floatTexts.filter(t => t.life > 0);
   }
 
+  // ── BLACKOUT: lazy init ───────────────────────────────────────
+  if (!window._bo) {
+    window._bo = { active: false, timer: 0, cooldown: 0, nextIn: 20 + Math.random() * 20, _started: false };
+  }
+  var bo = window._bo;
+
+  // Reset on fresh game (both HP at 100 and not yet flagged)
+  if (catHP === 100 && dogHP === 100 && !bo._started) {
+    bo.active = false; bo.timer = 0; bo.cooldown = 0;
+    bo.nextIn = 20 + Math.random() * 20; bo._started = true;
+  }
+  if (catHP < 100 || dogHP < 100) bo._started = false;
+
+  if (!gameOver) {
+    if (bo.active) {
+      bo.timer -= dt;
+      if (bo.timer <= 0) {
+        bo.active = false; bo.cooldown = 0;
+        bo.nextIn = 20 + Math.random() * 20;
+      }
+    } else {
+      bo.cooldown += dt;
+      if (bo.cooldown >= bo.nextIn) {
+        bo.active = true; bo.timer = 5; bo.cooldown = 0;
+      }
+    }
+  } else {
+    bo.active = false;
+  }
+
+  // ── BLACKOUT DRAW MODE ────────────────────────────────────────
+  if (bo.active) {
+    background(0);
+    drawAimTrajectory(player, angleObj, powerObj);
+    drawAimTrajectoryDog(dogBody, ciyangAngleObj, ciyangPowerObj);
+    drawHealthBars();
+
+    // Timer
+    {
+      const secs = Math.ceil(Math.max(gameTimer, 0));
+      const isLow = secs <= 10 && !overtimeActive;
+      const pulse = isLow ? (0.5 + 0.5 * Math.sin(millis() * 0.01)) : 0;
+      const timerX = 1600 / 2, timerY = 82;
+      const boxW = overtimeActive ? 210 : 130, boxH = overtimeActive ? 46 : 38;
+      push(); rectMode(CENTER); textAlign(CENTER, CENTER);
+      fill(0, 0, 0, 120); rect(timerX + 3, timerY + 3, boxW, boxH, 10);
+      if (overtimeActive) fill(160, 80, 0, 230);
+      else if (isLow) fill(lerp(60, 180, pulse), 0, 0, 230);
+      else fill(20, 20, 40, 210);
+      stroke(255, 220, 50); strokeWeight(2);
+      rect(timerX, timerY, boxW, boxH, 10);
+      noStroke();
+      if (overtimeActive) {
+        fill(255, 180, 50); textSize(12); text("OVERTIME", timerX, timerY - 9);
+        fill(255, 230, 100); textSize(20); text(secs + "s", timerX, timerY + 10);
+      } else {
+        fill(isLow ? color(255, lerp(80, 255, pulse), 80) : color(255, 220, 50));
+        textStyle(BOLD); textSize(22);
+        const m = Math.floor(secs / 60), s2 = secs % 60;
+        text((m > 0 ? m + ":" : "") + (s2 < 10 && m > 0 ? "0" : "") + s2, timerX, timerY + 1);
+      }
+      textStyle(NORMAL); pop();
+    }
+
+    // Blackout label
+    push();
+    fill(180, 60, 60, 200); noStroke(); textSize(14); textAlign(CENTER, CENTER);
+    text("BLACKOUT  " + Math.ceil(bo.timer) + "s", 1600 / 2, 140);
+    pop();
+
+    // Back button
+    push(); rectMode(CORNER);
+    const bkX = 1600 / 2 - 75, bkY = 860, bkW2 = 150, bkH2 = 44;
+    fill(0, 0, 0, 120); noStroke(); rect(bkX + 3, bkY + 3, bkW2, bkH2, 14);
+    fill(80, 80, 100); rect(bkX, bkY, bkW2, bkH2, 14);
+    fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
+    text("← BACK", bkX + bkW2 / 2, bkY + bkH2 / 2);
+    pop();
+
+    return;
+  }
+
   // DRAW 
   drawImageCover(imgBg, 0, 0, 1600, 900);
 
