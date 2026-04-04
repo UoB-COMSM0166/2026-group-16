@@ -269,6 +269,7 @@ function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
 
 // ── Minimal AI for Single Player mode ───────────────────────────
 // The AI (dogBody / ciyangPowerObj) auto-charges and fires when facing the player.
+/*
 let _aiTimer = 0;
 function _updateAI(dt) {
   _aiTimer += dt;
@@ -304,6 +305,7 @@ function _updateAI(dt) {
     if (_aiTimer > 2.8) _aiTimer = 0;
   }
 }
+ */
 
 // START SCREEN 
 function drawStartScreen() {

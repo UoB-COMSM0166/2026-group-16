@@ -124,6 +124,10 @@ function resetGame() {
   player.x = 380; player.y = GROUND_Y - 160; player.facing = 1;
   dogBody.x = 1100; dogBody.y = GROUND_Y - 160; dogBody.facing = -1;
 
+  //make sure autoplayer always face left
+  ciyangAngleObj.setDirection(-1);
+  console.log("[GAME] AI reset to face LEFT (-1)");
+
   cd.projectiles = [];
   cd.floatTexts = [];
 
