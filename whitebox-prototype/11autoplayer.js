@@ -81,11 +81,11 @@ class AutoPlayer {
         this.shouldHitThisShot = false; //will be determined by the random variable imported
         this.lastShotTime = 0;
 
-        //random movement properties
-        this.movementTimer = 0;
-        this.randomMovementDuration = 0;
-        this.randomMovementDirection = 0;
-        this.isMovingRandomly = false;
+        //creating noise for smooth movements
+        this.noiseTime = 0;
+        this.noiseScale = 0.5;
+        this.preferredDistance = 600;
+        this.distanceTolerance = 100;
 
     }
 
@@ -101,6 +101,7 @@ class AutoPlayer {
         this.fireHolding = false;
         this.fireHoldUntil = 0;
         this.shouldHitThisShot = false;
+        this.noiseTime =0;
 
         console.log("[AUTO] setEnabled =", this.enabled, "| VKEY ready =", !!window.VKEY);
     }
@@ -226,53 +227,11 @@ class AutoPlayer {
         const dx = player.x - dogBody.x;
         const currentDistance = Math.abs(dx);
 
-        //random timer
-        if (!this.movementTimer) {
-            this.movementTimer = 0;
-            this.randomMovementDuration = 0;
-            this.randomMovementDirection = 0;
-            this.isMovingRandomly = false;
-        }
+        //update noise time
+        this.noiseTime += dt*this.noiseScale;
 
-        this.movementTimer += dt;
-
-        //weather to import random movement
-        if (currentDistance >= this.preferredDistance - this.distanceTolerance &&
-            currentDistance <= this.preferredDistance + this.distanceTolerance) {
-
-            // Generate new random movement/pause every 4-8 seconds
-            if (this.movementTimer > this.randomMovementDuration) {
-                // 60% chance to move, 40% chance to pause
-                this.isMovingRandomly = Math.random() < 0.6;
-
-                if (this.isMovingRandomly) {
-                    this.randomMovementDirection = Math.random() < 0.5 ? -1 : 1;
-                    this.randomMovementDuration = 13 + Math.random() * 2; // 3-6 seconds moving
-                    console.log("[AUTO] Random movement: direction=" + this.randomMovementDirection + ", duration=" + this.randomMovementDuration.toFixed(1) + "s");
-                } else {
-                    this.randomMovementDuration = 2 + Math.random() * 3; // 2-5 seconds pause
-                    console.log("[AUTO] Random pause: duration=" + this.randomMovementDuration.toFixed(1) + "s");
-                }
-
-                this.movementTimer = 0;
-            }
-
-            // Apply random movement or stay still
-            if (this.isMovingRandomly) {
-                if (this.randomMovementDirection > 0) {
-                    VKEY.press(keyRight);
-                    VKEY.release(keyLeft);
-                } else {
-                    VKEY.press(keyLeft);
-                    VKEY.release(keyRight);
-                }
-            } else {
-                // Pause phase - don't move
-                VKEY.release(keyLeft);
-                VKEY.release(keyRight);
-            }
-            return;
-        }
+        //getting smooth noise value (-1 to 1)
+        const noiseValue = noise(this.noiseTime)*2 -1;
 
         //will further shorten the code here by eliminating unecessary conditions but will keep below code to make sure
         //program runs smoothly first
@@ -288,7 +247,6 @@ class AutoPlayer {
                 VKEY.press(keyLeft);
                 VKEY.release(keyRight);
             }
-            this.movementTimer = 0; // Reset random timer
             console.log("[AUTO] Moving closer (dist=" + currentDistance.toFixed(0) + ")");
 
         }else if(currentDistance < this.preferredDistance -this.distanceTolerance){
@@ -302,14 +260,26 @@ class AutoPlayer {
                 VKEY.press(keyRight);
                 VKEY.release(keyLeft);
             }
-
-            this.movementTimer = 0; // Reset random timer
             console.log("[AUTO] Moving away (dist=" + currentDistance.toFixed(0) + ")");
+
         }else{
-            //perfect case, no further movement needed
-            //to be abolished-> testing with randomness
-            VKEY.release(keyLeft);
-            VKEY.release(keyRight);
+            //within comfort zone: use smooth noise for organic movement
+            //noiseValue ranges from -1 to 1
+            //deadzone: not moving ig noise is small (prevents constant jittering)
+
+            const deadzone = 0.3;
+
+            if (noiseValue < -deadzone){
+                VKEY.release(keyLeft);
+                VKEY.release(keyRight);
+            }else if (noiseValue > deadzone){
+                VKEY.release(keyRight);
+                VKEY.release(keyLeft);
+            }else{
+                VKEY.release(keyLeft);
+                VKEY.release(keyRight);
+            }
+
         }
     }
 
