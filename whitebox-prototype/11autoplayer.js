@@ -233,15 +233,30 @@ class AutoPlayer {
         }
 
         // Release and shoot (only if confident enough)
-        if (!this.fireHolding && powerErr > this.powerTolerance && confidence > shootThreshold * 0.7) {
-            VKEY.press(KEY_FIRE);
-            this.fireHolding = true;
+        if (!this.fireHolding && confidence > shootThreshold * 0.7) {
+            // Start charging if power is below target
+            if (powerErr > this.powerTolerance) {
+                VKEY.press(KEY_FIRE);
+                this.fireHolding = true;
 
-            const holdTime = 0.08 + (1 - confidence) * 0.25;
-            this.fireHoldUntil = now + holdTime;
+                const holdTime = 0.08 + (1 - confidence) * 0.25;
+                this.fireHoldUntil = now + holdTime;
 
-            console.log("[AUTO-CHARGE] Starting charge | confidence=" + confidence.toFixed(2) + " | holdTime=" + holdTime.toFixed(3) + "s");
-            return;
+                console.log(
+                    "[AUTO-CHARGE] Starting charge | confidence=" + confidence.toFixed(2) +
+                    " | powerErr=" + powerErr.toFixed(2) +
+                    " | holdTime=" + holdTime.toFixed(3) + "s"
+                );
+                return;
+            } else {
+                // Power is already good enough, just fire
+                VKEY.press(KEY_FIRE);
+                this.fireHolding = true;
+                this.fireHoldUntil = now + 0.01; // minimal hold
+                console.log("[AUTO-READY] Power is good, firing immediately");
+                return;
+            }
+
         }
 
         // Continue holding if not ready yet
@@ -259,7 +274,7 @@ class AutoPlayer {
         }
 
         // Release and shoot
-        if (this.fireHolding && confidence > shootThreshold) {
+        if (this.fireHolding && now >= this.fireHoldUtil) {
             VKEY.release(KEY_FIRE);
             this._resetFire();
             this.lastShotTime = now;
@@ -315,7 +330,7 @@ class AutoPlayer {
             //further check on the projectile speed
             const projectileSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 
-            if (distToProjectile < 600 && dotProduct > 0){
+            if (distToProjectile < 600 && dotProduct > 0 && projectileSpeed>50){
                 threatDetected = true;
                 escapeDir = p.vx > 0? -1:1;
 
