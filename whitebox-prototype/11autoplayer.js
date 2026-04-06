@@ -60,8 +60,6 @@ class AutoPlayer {
         this.enabled = false;
 
         this.nextFireTime = 0;
-
-        // deterministic fire timing so justReleased happens reliably
         this.fireHolding = false;
         this.fireHoldUntil = 0;
 
@@ -71,10 +69,6 @@ class AutoPlayer {
         this.aimToleranceDeg = 1.5;
         this.powerTolerance = 2;
 
-        //Distance-based movement -> trying to maintain a certain distance from player
-        this.preferredDistance = 600;
-        this.movementSpeed = 280;
-        this.distanceTolerance =100;
 
         //Hit/Miss mechanic to showcase randomness of the game, making it more realistic
         this.hitChance = 0.5; //will later import different hitChance for different level of difficulty of the game
@@ -84,9 +78,14 @@ class AutoPlayer {
         //creating noise for smooth movements
         this.noiseTime = 0;
         this.noiseScale = 0.5;
-        this.preferredDistance = 600;
-        this.distanceTolerance = 100;
 
+        //Distance-based movement -> trying to maintain a certain distance from player
+        //this.preferredDistance = 600;
+        //this.distanceTolerance = 100;
+
+        this.shootingNoiseTime = 0;
+        this.shootingNoiseScale = 0.3;
+        this.fireCommitThreshold = 0.6;
     }
 
     setEnabled(on) {
@@ -101,7 +100,6 @@ class AutoPlayer {
         this.fireHolding = false;
         this.fireHoldUntil = 0;
         this.shouldHitThisShot = false;
-        this.noiseTime =0;
 
         console.log("[AUTO] setEnabled =", this.enabled, "| VKEY ready =", !!window.VKEY);
     }
@@ -121,6 +119,8 @@ class AutoPlayer {
         if (gameOver) { VKEY.clear(); this._resetFire(); return; }
 
         const now = millis() / 1000;
+
+        this.shootingNoiseTime += dt * this.shootingNoiseScale;
 
         // Difficulty tweaks
         if (selectedDifficulty === "HARD") {
@@ -169,7 +169,11 @@ class AutoPlayer {
 
         console.log("[AUTO] shot=", shot, "shouldHit=", this.shouldHitThisShot,"angleErr later will be=", (shot ? clamp(shot.angleDeg, ciyangAngleObj.minDeg, ciyangAngleObj.maxDeg) - ciyangAngleObj.angleDeg : "N/A"));
 
-        if (!shot) { VKEY.release(KEY_FIRE); this._resetFire(); return; }
+        if (!shot) {
+            VKEY.release(KEY_FIRE);
+            this._resetFire();
+            return;
+        }
 
         const desiredAngle = clamp(shot.angleDeg, ciyangAngleObj.minDeg, ciyangAngleObj.maxDeg);
         const maxAllowed = Math.min(this.maxFirePower, ciyangPowerObj.max);
@@ -180,6 +184,9 @@ class AutoPlayer {
         if (Math.abs(angleErr) > this.aimToleranceDeg) {
             if (angleErr > 0) VKEY.press(KEY_UP);
             else VKEY.press(KEY_DOWN);
+        }else{
+            VKEY.release(KEY_UP);
+            VKEY.release(KEY_DOWN);
         }
 
         // cooldown
@@ -189,16 +196,10 @@ class AutoPlayer {
             return;
         }
 
-        // Don't fire if aim is way off
-        if (Math.abs(angleErr) > 6) {
-            VKEY.release(KEY_FIRE);
-            this._resetFire();
-            return;
-        }
-
         // Fire logic with minimum hold time
         const powerErr = desiredPower - ciyangPowerObj.value;
 
+        /*
         if (powerErr > this.powerTolerance) {
             // start/continue charging
             VKEY.press(KEY_FIRE);
@@ -214,18 +215,152 @@ class AutoPlayer {
             VKEY.press(KEY_FIRE);
             return;
         }
+        */
 
-        // release to shoot
-        VKEY.release(KEY_FIRE);
-        this._resetFire();
-        this.nextFireTime = now + 0.6 + Math.random() * 0.4;
+        //release if aim is way off
+        if (Math.abs(angleErr) > 8) {
+            VKEY.release(KEY_FIRE);
+            this._resetFire();
+            return;
+        }
+
+        const rawNoise = noise(this.shootingNoiseTime);  // 0-1
+        const aimQuality = 1 - Math.abs(angleErr) / 8;  // 0-1 (1 = perfect aim)
+        const powerQuality = Math.max(0, 1 - Math.abs(powerErr) / (this.powerTolerance * 2));  // 0-1
+
+        // Combine noise with aim quality for realistic hesitation
+        const confidence = (rawNoise * 0.6 + aimQuality * 0.4) * powerQuality;
+
+        // Difficulty-based shooting thresholds
+        let shootThreshold;
+        if (selectedDifficulty === "HARD") {
+            shootThreshold = 0.45;  // Trigger-happy: fires when confidence is moderate
+        } else if (selectedDifficulty === "MEDIUM") {
+            shootThreshold = 0.55;  // Balanced: needs decent confidence
+        } else {
+            shootThreshold = 0.70;  // Hesitant: only shoots when very confident
+        }
+
+
+        // If confidence too low, don't even try
+        if (confidence < shootThreshold * 0.5) {
+            VKEY.release(KEY_FIRE);
+            this._resetFire();
+            return;
+        }
+
+        // Charging: gradually build power
+        if (powerErr > this.powerTolerance && confidence > shootThreshold * 0.7) {
+            VKEY.press(KEY_FIRE);
+            if (!this.fireHolding) {
+                this.fireHolding = true;
+
+                // Hold time scales with confidence
+                // High confidence = quick fire, low confidence = longer charge
+                const holdTime = 0.08 + (1 - confidence) * 0.25;  // 80-330ms
+                this.fireHoldUntil = now + holdTime;
+
+                console.log(
+                    "[AUTO-CHARGE] Starting charge | confidence=" + confidence.toFixed(2) +
+                    " | holdTime=" + holdTime.toFixed(3) + "s"
+                );
+            }
+            return;
+        }
+
+        // Check if held long enough
+        if (this.fireHolding && now < this.fireHoldUntil) {
+            VKEY.press(KEY_FIRE);
+            return;
+        }
+
+        //lost confidence
+        if (this.fireHolding && confidence < shootThreshold * 0.6) {
+            console.log("[AUTO-ABORT] Lost confidence mid-charge (confidence=" + confidence.toFixed(2) + ")");
+            VKEY.release(KEY_FIRE);
+            this._resetFire();
+            return;
+        }
+
+        // Release and shoot (only if confident enough)
+        if (this.fireHolding && confidence > shootThreshold) {
+            VKEY.release(KEY_FIRE);
+            this._resetFire();
+            this.lastShotTime = now;
+
+            // ✅ Variable cooldown based on difficulty
+            let minCooldown, maxCooldown;
+            if (selectedDifficulty === "HARD") {
+                minCooldown = 0.7;   // Aggressive: fires every 0.7-1.3s
+                maxCooldown = 1.3;
+            } else if (selectedDifficulty === "MEDIUM") {
+                minCooldown = 1.1;   // Moderate: fires every 1.1-2.1s
+                maxCooldown = 2.1;
+            } else {
+                minCooldown = 1.8;   // Easy: fires every 1.8-3.2s
+                maxCooldown = 3.2;
+            }
+
+            const cooldown = minCooldown + Math.random() * (maxCooldown - minCooldown);
+            this.nextFireTime = now + cooldown;
+
+            console.log(
+                "[AUTO-FIRE] Shot released! | confidence=" + confidence.toFixed(2) +
+                " | cooldown=" + cooldown.toFixed(2) + "s | next fire at " + this.nextFireTime.toFixed(2)
+            );
+        }
+
     }
 
     _updateMovement(keyLeft, keyRight, dt){
         if (!dogBody || !player){return;}
 
-        const dx = player.x - dogBody.x;
+        const KEY_LEFT = dogBody.leftKey;
+        const KEY_RIGHT = dogBody.rightKey;
+
+        //removing fixed distance logic
+        /*
         const currentDistance = Math.abs(dx);
+        */
+
+        //threat detection -> attack from human player
+        let threatDetected = false;
+        let escapeDir = 0;
+
+        for(const p of cd.projectiles){
+            if(!p.alive || p.owner !== "player"){continue;}
+
+            const dx = dogBody.x - p.x;
+            const dy = dogBody.y - p.y;
+            const distToProjectile = Math.sqrt(dx*dx + dy*dy);
+
+            const dotProduct = dx*p.vx + dy*p.vy;
+
+            if (distToProjectile < 600 && dotProduct > 0){
+                threatDetected = true;
+                escapeDir = p.vx > 0? -1:1;
+
+                console.log(
+                    "[AUTO-EVADE] Threat detected! Projectile at (" + p.x.toFixed(0) + ", " + p.y.toFixed(0) + "), dist=" + distToProjectile.toFixed(0) + ", escapeDir=" + escapeDir);
+                    break;
+            }
+        }
+
+        //threat detection logic and escape
+        if (threatDetected) {
+            if (escapeDir < 0) {
+                // Escape LEFT
+                VKEY.press(KEY_LEFT);
+                VKEY.release(KEY_RIGHT);
+                console.log("[AUTO-EVADE] Pressing LEFT to escape");
+            } else {
+                // Escape RIGHT
+                VKEY.press(KEY_RIGHT);
+                VKEY.release(KEY_LEFT);
+                console.log("[AUTO-EVADE] Pressing RIGHT to escape");
+            }
+            return; // prioritize evasion — don't do organic movement while dodging
+        }
 
         //update noise time
         this.noiseTime += dt*this.noiseScale;
@@ -233,6 +368,26 @@ class AutoPlayer {
         //getting smooth noise value (-1 to 1)
         const noiseValue = noise(this.noiseTime)*2 -1;
 
+        const deadzone = 0.4;
+
+        if (noiseValue < -deadzone) {
+            // Idle: move LEFT gently
+            VKEY.press(KEY_LEFT);
+            VKEY.release(KEY_RIGHT);
+            console.log("[AUTO-IDLE] Moving left (noiseValue=" + noiseValue.toFixed(2) + ")");
+        } else if (noiseValue > deadzone) {
+            // Idle: move RIGHT gently
+            VKEY.press(KEY_RIGHT);
+            VKEY.release(KEY_LEFT);
+            console.log("[AUTO-IDLE] Moving right (noiseValue=" + noiseValue.toFixed(2) + ")");
+        } else {
+            // Idle: stand still in deadzone
+            VKEY.release(KEY_LEFT);
+            VKEY.release(KEY_RIGHT);
+            console.log("[AUTO-IDLE] Standing still (noiseValue=" + noiseValue.toFixed(2) + ")");
+        }
+
+        /*
         //will further shorten the code here by eliminating unecessary conditions but will keep below code to make sure
         //program runs smoothly first
         //logic: move closer if too far, move away if too close
@@ -281,6 +436,7 @@ class AutoPlayer {
             }
 
         }
+        */
     }
 
     _resetFire() {

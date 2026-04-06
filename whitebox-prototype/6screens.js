@@ -42,7 +42,7 @@ function drawPlayScreen() {
     // ── Player 2 / AI fires ──────────────────────────────────────
     if (gameMode === "SINGLE") {
       // AI: simple logic — charge then fire when facing player
-      if (!window.GAME_AUTO.enabled){
+      if (!window.GAME_AUTO.enabled) {
         window.GAME_AUTO.setEnabled(true);
         console.log("[GAME] Autoplayer enabled (single mode)");
       }
@@ -305,7 +305,7 @@ function _updateAI(dt) {
     if (_aiTimer > 2.8) _aiTimer = 0;
   }
 }
- */
+*/
 
 // START SCREEN 
 function drawStartScreen() {
