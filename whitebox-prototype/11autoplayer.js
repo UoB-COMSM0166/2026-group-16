@@ -79,13 +79,8 @@ class AutoPlayer {
         this.noiseTime = 0;
         this.noiseScale = 0.5;
 
-        //Distance-based movement -> trying to maintain a certain distance from player
-        //this.preferredDistance = 600;
-        //this.distanceTolerance = 100;
-
         this.shootingNoiseTime = 0;
         this.shootingNoiseScale = 0.3;
-        this.fireCommitThreshold = 0.6;
     }
 
     setEnabled(on) {
@@ -107,7 +102,11 @@ class AutoPlayer {
     update(dt) {
         if (!this.enabled) return;
         if (!window.VKEY) return;
-        if (gameState !== "PLAY") { VKEY.clear(); this._resetFire(); return; }
+        if (gameState !== "PLAY") {
+            VKEY.clear();
+            this._resetFire();
+            return;
+        }
 
         //autoplayer always on left
         dogBody.facing = -1;
@@ -116,7 +115,11 @@ class AutoPlayer {
 
         const timeUp = gameTimer <= 0 && catHP !== dogHP;
         const gameOver = catHP <= 0 || dogHP <= 0 || timeUp;
-        if (gameOver) { VKEY.clear(); this._resetFire(); return; }
+        if (gameOver) {
+            VKEY.clear();
+            this._resetFire();
+            return;
+        }
 
         const now = millis() / 1000;
 
@@ -150,6 +153,13 @@ class AutoPlayer {
         VKEY.release(KEY_UP);
         VKEY.release(KEY_DOWN);
 
+        //not entering the charge mode if it's still in cooldown
+        if (now < this.nextFireTime) {
+            VKEY.release(KEY_FIRE);
+            this._resetFire();
+            return;
+        }
+
         //import random variable to determine whether the shot should hit or miss
         //frequency is based on per shot not per frame!!!
         if(!this.fireHolding && Math.random() < this.hitChance){
@@ -180,6 +190,7 @@ class AutoPlayer {
         const desiredPower = clamp(shot.power, this.minFirePower, maxAllowed);
 
         const angleErr = desiredAngle - ciyangAngleObj.angleDeg;
+        const powerErr = desiredPower - ciyangPowerObj.value;
 
         if (Math.abs(angleErr) > this.aimToleranceDeg) {
             if (angleErr > 0) VKEY.press(KEY_UP);
@@ -189,35 +200,7 @@ class AutoPlayer {
             VKEY.release(KEY_DOWN);
         }
 
-        // cooldown
-        if (now < this.nextFireTime) {
-            VKEY.release(KEY_FIRE);
-            this._resetFire();
-            return;
-        }
-
-        // Fire logic with minimum hold time
-        const powerErr = desiredPower - ciyangPowerObj.value;
-
-        /*
-        if (powerErr > this.powerTolerance) {
-            // start/continue charging
-            VKEY.press(KEY_FIRE);
-            if (!this.fireHolding) {
-                this.fireHolding = true;
-                this.fireHoldUntil = now + 0.20; // hold at least 200ms
-            }
-            return;
-        }
-
-        // close enough to target power, but ensure we held long enough
-        if (this.fireHolding && now < this.fireHoldUntil) {
-            VKEY.press(KEY_FIRE);
-            return;
-        }
-        */
-
-        //release if aim is way off
+        // If aim is terrible, don't fire
         if (Math.abs(angleErr) > 8) {
             VKEY.release(KEY_FIRE);
             this._resetFire();
@@ -249,32 +232,25 @@ class AutoPlayer {
             return;
         }
 
-        // Charging: gradually build power
-        if (powerErr > this.powerTolerance && confidence > shootThreshold * 0.7) {
+        // Release and shoot (only if confident enough)
+        if (!this.fireHolding && powerErr > this.powerTolerance && confidence > shootThreshold * 0.7) {
             VKEY.press(KEY_FIRE);
-            if (!this.fireHolding) {
-                this.fireHolding = true;
+            this.fireHolding = true;
 
-                // Hold time scales with confidence
-                // High confidence = quick fire, low confidence = longer charge
-                const holdTime = 0.08 + (1 - confidence) * 0.25;  // 80-330ms
-                this.fireHoldUntil = now + holdTime;
+            const holdTime = 0.08 + (1 - confidence) * 0.25;
+            this.fireHoldUntil = now + holdTime;
 
-                console.log(
-                    "[AUTO-CHARGE] Starting charge | confidence=" + confidence.toFixed(2) +
-                    " | holdTime=" + holdTime.toFixed(3) + "s"
-                );
-            }
+            console.log("[AUTO-CHARGE] Starting charge | confidence=" + confidence.toFixed(2) + " | holdTime=" + holdTime.toFixed(3) + "s");
             return;
         }
 
-        // Check if held long enough
+        // Continue holding if not ready yet
         if (this.fireHolding && now < this.fireHoldUntil) {
             VKEY.press(KEY_FIRE);
             return;
         }
 
-        //lost confidence
+        // Abort if lost confidence mid-charge
         if (this.fireHolding && confidence < shootThreshold * 0.6) {
             console.log("[AUTO-ABORT] Lost confidence mid-charge (confidence=" + confidence.toFixed(2) + ")");
             VKEY.release(KEY_FIRE);
@@ -282,23 +258,22 @@ class AutoPlayer {
             return;
         }
 
-        // Release and shoot (only if confident enough)
+        // Release and shoot
         if (this.fireHolding && confidence > shootThreshold) {
             VKEY.release(KEY_FIRE);
             this._resetFire();
             this.lastShotTime = now;
 
-            // ✅ Variable cooldown based on difficulty
             let minCooldown, maxCooldown;
             if (selectedDifficulty === "HARD") {
-                minCooldown = 0.7;   // Aggressive: fires every 0.7-1.3s
-                maxCooldown = 1.3;
+                minCooldown = 1.5;   // 1.5-2.5s between shots
+                maxCooldown = 2.5;
             } else if (selectedDifficulty === "MEDIUM") {
-                minCooldown = 1.1;   // Moderate: fires every 1.1-2.1s
-                maxCooldown = 2.1;
+                minCooldown = 2.0;   // 2.0-3.0s between shots
+                maxCooldown = 3.0;
             } else {
-                minCooldown = 1.8;   // Easy: fires every 1.8-3.2s
-                maxCooldown = 3.2;
+                minCooldown = 2.5;   // 2.5-4.0s between shots
+                maxCooldown = 4.0;
             }
 
             const cooldown = minCooldown + Math.random() * (maxCooldown - minCooldown);
@@ -306,7 +281,7 @@ class AutoPlayer {
 
             console.log(
                 "[AUTO-FIRE] Shot released! | confidence=" + confidence.toFixed(2) +
-                " | cooldown=" + cooldown.toFixed(2) + "s | next fire at " + this.nextFireTime.toFixed(2)
+                " | cooldown=" + cooldown.toFixed(2) + "s"
             );
         }
 
@@ -318,17 +293,18 @@ class AutoPlayer {
         const KEY_LEFT = dogBody.leftKey;
         const KEY_RIGHT = dogBody.rightKey;
 
-        //removing fixed distance logic
-        /*
-        const currentDistance = Math.abs(dx);
-        */
-
         //threat detection -> attack from human player
         let threatDetected = false;
         let escapeDir = 0;
 
         for(const p of cd.projectiles){
-            if(!p.alive || p.owner !== "player"){continue;}
+            if(!p.alive || p.owner !== "player"){
+                continue;
+            }
+
+            if(p.bounces>0){
+                continue;
+            }
 
             const dx = dogBody.x - p.x;
             const dy = dogBody.y - p.y;
@@ -336,13 +312,15 @@ class AutoPlayer {
 
             const dotProduct = dx*p.vx + dy*p.vy;
 
+            //further check on the projectile speed
+            const projectileSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+
             if (distToProjectile < 600 && dotProduct > 0){
                 threatDetected = true;
                 escapeDir = p.vx > 0? -1:1;
 
-                console.log(
-                    "[AUTO-EVADE] Threat detected! Projectile at (" + p.x.toFixed(0) + ", " + p.y.toFixed(0) + "), dist=" + distToProjectile.toFixed(0) + ", escapeDir=" + escapeDir);
-                    break;
+                console.log("[AUTO-EVADE] Threat detected! Projectile at (" + p.x.toFixed(0) + ", " + p.y.toFixed(0) + "), dist=" + distToProjectile.toFixed(0) + ", escapeDir=" + escapeDir);
+                break;
             }
         }
 
@@ -386,57 +364,6 @@ class AutoPlayer {
             VKEY.release(KEY_RIGHT);
             console.log("[AUTO-IDLE] Standing still (noiseValue=" + noiseValue.toFixed(2) + ")");
         }
-
-        /*
-        //will further shorten the code here by eliminating unecessary conditions but will keep below code to make sure
-        //program runs smoothly first
-        //logic: move closer if too far, move away if too close
-        if (currentDistance > this.preferredDistance + this.distanceTolerance){
-            //too far
-            if(dx > 0){
-                //Player is to the right
-                VKEY.press(keyRight);
-                VKEY.release(keyLeft);
-            }else{
-                //Player is to the left
-                VKEY.press(keyLeft);
-                VKEY.release(keyRight);
-            }
-            console.log("[AUTO] Moving closer (dist=" + currentDistance.toFixed(0) + ")");
-
-        }else if(currentDistance < this.preferredDistance -this.distanceTolerance){
-            //too close
-            if(dx>0){
-                //Player is to the right
-                VKEY.press(keyLeft);
-                VKEY.release(keyRight);
-            }else{
-                //Player is to the left
-                VKEY.press(keyRight);
-                VKEY.release(keyLeft);
-            }
-            console.log("[AUTO] Moving away (dist=" + currentDistance.toFixed(0) + ")");
-
-        }else{
-            //within comfort zone: use smooth noise for organic movement
-            //noiseValue ranges from -1 to 1
-            //deadzone: not moving ig noise is small (prevents constant jittering)
-
-            const deadzone = 0.3;
-
-            if (noiseValue < -deadzone){
-                VKEY.release(keyLeft);
-                VKEY.release(keyRight);
-            }else if (noiseValue > deadzone){
-                VKEY.release(keyRight);
-                VKEY.release(keyLeft);
-            }else{
-                VKEY.release(keyLeft);
-                VKEY.release(keyRight);
-            }
-
-        }
-        */
     }
 
     _resetFire() {
