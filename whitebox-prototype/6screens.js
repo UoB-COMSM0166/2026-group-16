@@ -33,7 +33,7 @@ function drawPlayScreen() {
 
     //&& powerObj.value > 10
     // ── Player 1 fires ───────────────────────────────────────────
-    if (powerObj.justReleased ) {
+    if (powerObj.justReleased) {
       const fromX = player.x + player.w * (player.facing === 1 ? 0.9 : 0.1);
       const fromY = player.y + player.h * 0.35;
       const wDef  = playerWeapons.current;
