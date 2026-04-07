@@ -1,4 +1,4 @@
-console.log("[AUTO] 9autoplayer.js LOADED");
+//console.log("[AUTO] 9autoplayer.js LOADED");
 
 //Virtual Keyboard + allow user input in single player mode
 (function () {
@@ -58,7 +58,6 @@ console.log("[AUTO] 9autoplayer.js LOADED");
     }, 50);
 })();
 
-
 // ---- AutoPlayer ----
 class AutoPlayer {
     constructor() {
@@ -80,21 +79,20 @@ class AutoPlayer {
         this.maxFirePower = 170;
 
         //How tightly we require angle alignment before we start charging
-        this.aimToleranceDeg = 2.0;
+        this.aimToleranceDeg = 3.0;
         this.aimOkDeg = 16;
-        this.powerTolerance = 6;
 
         //If POWER is super low, avoid micro-shots
         this.minShotPower = 20;
 
         //Hit/Miss mechanic to showcase randomness of the game, making it more realistic
-        this.hitChance = 0.5; //will later import different hitChance for different level of difficulty of the game
+        this.hitChance = 0.5;
         this.shouldHitThisShot = false; //will be determined by the noise imported
 
-        //creating noise for smooth movements
+        //Creating noise for smooth movements
         this.noiseTime = 0;
         this.noiseScale = 0.5;
-        //creating noise for shooting confidence
+        //Creating noise for shooting confidence
         this.shootingNoiseTime = 0;
         this.shootingNoiseScale = 0.3;
 
@@ -113,9 +111,19 @@ class AutoPlayer {
         this.nearWallSeconds = 0;
         this.nearWallKickAfter = 0.9;
 
+        //Movement control -> used to increase shooting frequency
+        this.nextMoveDecisionTime = 0;
+        //left: -1 | idle: 0 | right: +1
+        this.moveDir = 0;
+
+        //Min fire rate guarantee to make sure ai player shoots more frequently
+        this.lastShotTime=0;
+        this.foreceShotAfter =5.0;
+
     }
 
     setEnabled(on) {
+        //always make it a boolean
         this.enabled = !!on;
 
         if (window.VKEY) {
@@ -125,10 +133,11 @@ class AutoPlayer {
 
         this._hardResetFire();
         this.nextFireTime = 0;
+        this.lastShotTime = millis() / 1000;
         this.lockMoveUntil = 0;
         this.nearWallSeconds = 0;
 
-        console.log("[AUTO] setEnabled =", this.enabled, "| VKEY ready =", !!window.VKEY);
+        //console.log("[AUTO] setEnabled =", this.enabled, "| VKEY ready =", !!window.VKEY);
     }
 
     update(dt) {
@@ -138,14 +147,14 @@ class AutoPlayer {
         //Virtual keyboard not ready
         if (!window.VKEY) {return;}
 
-        //Not gaming state
+        //Not gaming state, return
         if (gameState !== "PLAY") {
             VKEY.clear();
             this._hardResetFire();
             return;
         }
 
-        //One of the players died or time out state
+        //One of the players died or time out state, return
         const timeUp = gameTimer <= 0 && catHP !== dogHP;
         const gameOver = catHP <= 0 || dogHP <= 0 || timeUp;
         if (gameOver) {
@@ -156,6 +165,9 @@ class AutoPlayer {
 
         const now = millis() / 1000;
 
+        //If we haven't fired for too long, force a shot attempt
+        const overdue = (now - this.lastShotTime) >= this.forceShotAfter;
+
         this.shootingNoiseTime += dt * this.shootingNoiseScale;
 
         // Difficulty tweaks
@@ -163,21 +175,25 @@ class AutoPlayer {
             this.maxFirePower = 190;
             this.hitChance = 0.65;
             //keep firing in hard mode
-            this.aimOkDeg = 18;
+            this.aimOkDeg = 24;
+            this.forceShotAfter = 3.0;
         } else if (selectedDifficulty === "MEDIUM") {
             this.maxFirePower = 170;
             this.hitChance = 0.5;
             this.aimOkDeg = 16;
+            this.forceShotAfter = 4.0;
         } else {
             this.maxFirePower = 150;
             this.hitChance = 0.35;
             this.aimOkDeg = 16;
+            this.forceShotAfter = 5.0;
         }
 
         //AI always on the right, faces left
         dogBody.facing = -1;
         ciyangAngleObj.setDirection(-1);
 
+        //Read key codes to control
         const KEY_UP   = ciyangAngleObj.upKey;
         const KEY_DOWN = ciyangAngleObj.downKey;
         const KEY_FIRE = ciyangPowerObj.fireKey; // 32
@@ -198,9 +214,11 @@ class AutoPlayer {
         if (this.forceReleaseFrame) {
             VKEY.release(KEY_FIRE);
             this.forceReleaseFrame = false;
+            return;
         }
 
-        // DEADLOCK FAILSAFE: if held too long, force release + reset
+        //DEADLOCK FAILSAFE: if held too long, force release + reset
+        //prevents infinite holding
         if (this.fireHolding && (now - this.chargeStartTime) > this.maxChargeSeconds) {
             VKEY.release(KEY_FIRE);
             this.forceReleaseFrame = true;
@@ -209,14 +227,14 @@ class AutoPlayer {
             return;
         }
 
-        // Cooldown
+        //Cooldown
         if (now < this.nextFireTime) {
             VKEY.release(KEY_FIRE);
             this._softResetFire();
             return;
         }
 
-        // Decide hit/miss per shot (not per frame)
+        //Decide hit/miss per shot (not per frame)
         if (!this.fireHolding) {
             this.shouldHitThisShot = (Math.random() < this.hitChance);
         }
@@ -249,8 +267,8 @@ class AutoPlayer {
             else VKEY.press(KEY_DOWN);
         }
 
-        //Aim is "good enough"
-        const aimOk = Math.abs(angleErr) <= this.aimOkDeg;
+        //Decide if aim is "good enough"
+        const aimOk = Math.abs(angleErr) <= (overdue ? (this.aimOkDeg + 10) : this.aimOkDeg);
 
         //Confidence calculation of the attack
         const rawNoise = noise(this.shootingNoiseTime);
@@ -273,17 +291,17 @@ class AutoPlayer {
         // Start charging aggressively once aim is roughly OK
         const startFactor = (selectedDifficulty === "HARD") ? 0.18 : 0.26;
 
-        if (!this.fireHolding && aimOk && confidence > shootThreshold * startFactor) {
+        if(!this.fireHolding && (aimOk || overdue) && (overdue || confidence > shootThreshold * startFactor)){
             VKEY.press(KEY_FIRE);
             this.fireHolding = true;
             this.chargeStartTime = now;
 
             //Hold time: ensure POWER has time to rise; adjust by power error
-            const minHold = (selectedDifficulty === "HARD") ? 0.28 : 0.26;
+            const minHold = (selectedDifficulty === "HARD") ? 0.18 : (selectedDifficulty === "MEDIUM")? 0.26: 0.18;
 
             //PowerErr is "desiredPower - currentPower"
             //Extra hold scaled to how far we are from target (cap it)
-            const extra = (powerErr > 0) ? clamp(powerErr / 140, 0, 1.15) : 0;
+            const extra = (powerErr > 0) ? clamp(powerErr / 120, 0, 1.0) : 0;
 
             this.fireHoldUntil = now + (minHold + extra);
 
@@ -310,12 +328,13 @@ class AutoPlayer {
             VKEY.release(KEY_FIRE);
             this.forceReleaseFrame = true;
             this._hardResetFire();
+            this.lastShotTime = now;
 
             // More frequent shots (especially EASY)
             let minCooldown, maxCooldown;
-            if (selectedDifficulty === "HARD") { minCooldown = 0.45; maxCooldown = 0.95; }
-            else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.60; maxCooldown = 1.15; }
-            else { minCooldown = 0.65; maxCooldown = 1.25; }
+            if (selectedDifficulty === "HARD") { minCooldown = 0.35; maxCooldown = 0.70; }
+            else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.45; maxCooldown = 0.85; }
+            else { minCooldown = 0.40; maxCooldown = 0.75; }
 
             this.nextFireTime = now + (minCooldown + Math.random() * (maxCooldown - minCooldown));
             return;
@@ -327,6 +346,8 @@ class AutoPlayer {
 
     //Movement Logic
     _updateMovement(keyLeft, keyRight, dt, { lockMovement = false } = {}){
+        const now = millis() / 1000;
+
         if (!dogBody || !player){ return;}
 
         const KEY_LEFT = dogBody.leftKey;
@@ -387,6 +408,13 @@ class AutoPlayer {
         const pad = this.wallPad;
 
         const dogMid = dogBody.x + dogBody.w / 2;
+        const safeX = this.wallR + 260;  // tweak
+        if (dogMid < safeX) {
+            VKEY.press(KEY_RIGHT);
+            VKEY.release(KEY_LEFT);
+            return;
+        }
+
         const playerMid = player.x + player.w / 2;
 
         const dogNearWall = (dogMid > (wallL - pad) && dogMid < (wallR + pad));
@@ -426,27 +454,48 @@ class AutoPlayer {
             return;
         }
 
-        //update noise time
-        this.noiseTime += dt*this.noiseScale;
-        //getting smooth noise value (-1 to 1)
-        const noiseValue = noise(this.noiseTime)*2 -1;
+        //For less walking movement -> trying to resolve jittering behavior
+        if (now >= this.nextMoveDecisionTime) {
+            this.noiseTime += dt * this.noiseScale;
+            const v = noise(this.noiseTime) * 2 - 1;
 
-        const deadzone = 0.45;
-        if (noiseValue < -deadzone) {
-            //Idle: move LEFT gently
-            VKEY.press(KEY_LEFT);
-            VKEY.release(KEY_RIGHT);
-            //console.log("[AUTO-IDLE] Moving left (noiseValue=" + noiseValue.toFixed(2) + ")");
-        } else if (noiseValue > deadzone) {
-            //Idle: move RIGHT gently
-            VKEY.press(KEY_RIGHT);
-            VKEY.release(KEY_LEFT);
-            //console.log("[AUTO-IDLE] Moving right (noiseValue=" + noiseValue.toFixed(2) + ")");
+            //Per difficulty: more idle on EASY, slightly more reposition on HARD
+            let idleChance, decisionIntervalMin, decisionIntervalMax, deadzone;
+            if (selectedDifficulty === "HARD") {
+                idleChance = 0.55;
+                decisionIntervalMin = 0.25; decisionIntervalMax = 0.45;
+                deadzone = 0.55;
+            } else if (selectedDifficulty === "MEDIUM") {
+                idleChance = 0.70;
+                decisionIntervalMin = 0.35; decisionIntervalMax = 0.65;
+                deadzone = 0.60;
+            } else {
+                idleChance = 0.80;
+                decisionIntervalMin = 0.45; decisionIntervalMax = 0.85;
+                deadzone = 0.65;
+            }
+
+            if (Math.random() < idleChance) {
+                this.moveDir = 0;
+            } else if (v < -deadzone) {
+                this.moveDir = -1;
+            } else if (v > deadzone) {
+                this.moveDir = 1;
+            } else {
+                this.moveDir = 0;
+            }
+
+            this.nextMoveDecisionTime =
+                now + (decisionIntervalMin + Math.random() * (decisionIntervalMax - decisionIntervalMin));
+        }
+
+        // Apply chosen direction
+        if (this.moveDir < 0) {
+            VKEY.press(KEY_LEFT); VKEY.release(KEY_RIGHT);
+        } else if (this.moveDir > 0) {
+            VKEY.press(KEY_RIGHT); VKEY.release(KEY_LEFT);
         } else {
-            //Idle: stand still in deadzone
-            VKEY.release(KEY_LEFT);
-            VKEY.release(KEY_RIGHT);
-            //console.log("[AUTO-IDLE] Standing still (noiseValue=" + noiseValue.toFixed(2) + ")");
+            VKEY.release(KEY_LEFT); VKEY.release(KEY_RIGHT);
         }
     }
 
@@ -532,10 +581,11 @@ class AutoPlayer {
             }
 
             // Adjust search range
-            if (landing.x < toX) {
-                minPower = testPower;  // Need more power
+            if (landing.x > toX) {
+                // Need more power
+                minPower = testPower;
             } else {
-                maxPower_search = testPower;  // Too much power
+                maxPower_search = testPower;
             }
         }
         //Clamp to valid range
