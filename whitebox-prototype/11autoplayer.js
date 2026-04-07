@@ -118,7 +118,12 @@ class AutoPlayer {
 
         //Min fire rate guarantee to make sure ai player shoots more frequently
         this.lastShotTime=0;
-        this.foreceShotAfter =5.0;
+        this.forceShotAfter =5.0;
+
+        //px around the wall we never want to land in
+        this.wallKeepOut = 140;
+        //Prefer landing well past the wall
+        this.wallMinLandX = this.wallR + 180;
 
     }
 
@@ -538,6 +543,15 @@ class AutoPlayer {
             //console.log("[AUTO] AIMING TO MISS (offset=" + missOffset.toFixed(0) + ")");
         }
 
+        //Avoid aiming to land near/behind the barrier
+        //Ensure landing well past the wall
+        const wallSafetyLeft = this.wallL - this.wallKeepOut;
+
+        // If target is too close to the wall, shift it left so the arc clears the wall and doesn't bounce back
+        if (toX > wallSafetyLeft) {
+            toX = wallSafetyLeft;
+        }
+
         const dist = Math.abs(toX - fromX);
 
         //Angle Selection: angle bucket based on distance
@@ -570,10 +584,21 @@ class AutoPlayer {
             //Simulate where this power lands
             const landing = cd.simulateProjectileLanding(fromX, fromY, a, testPower, powerScale, windDir);
 
+            //Penalize shots that land near or behind the wall (likely to bounce back)
+            const wallL = this.wallL, wallR = this.wallR;
+            const keepOut = this.wallKeepOut;
+
+            // nearWall means landing ends up in/near the wall region
+            const nearWall = (landing.x > (wallL - keepOut) && landing.x < (wallR + keepOut));
+
             // Distance from target
             const dx_error = landing.x - toX;
             const dy_error = landing.y - toY;
-            const distError = Math.sqrt(dx_error * dx_error + dy_error * dy_error);
+
+            // Apply penalty to distance error so solver prefers safer landings
+            const penalty = nearWall ? 99999 : 0;
+            const distError = Math.sqrt(dx_error * dx_error + dy_error * dy_error) + penalty;
+
 
             if (distError < bestDistance) {
                 bestDistance = distError;
