@@ -58,23 +58,34 @@ console.log("[AUTO] 9autoplayer.js LOADED");
     }, 50);
 })();
 
+
 // ---- AutoPlayer ----
 class AutoPlayer {
     constructor() {
         this.enabled = false;
 
+        //Timing / state
         this.nextFireTime = 0;
         this.fireHolding = false;
         this.fireHoldUntil = 0;
-
-
         this.forceReleaseFrame = false;
+
+        //Failsafe to prevent deadlocks
+        this.chargeStartTime = 0;
+        // if held longer, force release/reset
+        this.maxChargeSeconds = 2.2;
 
         // tuning
         this.minFirePower = 50;
         this.maxFirePower = 170;
-        this.aimToleranceDeg = 1.5;
-        this.powerTolerance = 2;
+
+        //How tightly we require angle alignment before we start charging
+        this.aimToleranceDeg = 2.0;
+        this.aimOkDeg = 16;
+        this.powerTolerance = 6;
+
+        //If POWER is super low, avoid micro-shots
+        this.minShotPower = 20;
 
         //Hit/Miss mechanic to showcase randomness of the game, making it more realistic
         this.hitChance = 0.5; //will later import different hitChance for different level of difficulty of the game
@@ -83,10 +94,25 @@ class AutoPlayer {
         //creating noise for smooth movements
         this.noiseTime = 0;
         this.noiseScale = 0.5;
-
         //creating noise for shooting confidence
         this.shootingNoiseTime = 0;
         this.shootingNoiseScale = 0.3;
+
+        //prevent jittering while aiming/ charging
+        this.lockMoveUntil = 0;
+
+        // anti-camp / wall
+        this.wallL = 750;
+        this.wallR = 850;
+        this.wallPad = 160;
+
+        //Keeping AI on the right
+        this.rightBiasX = 1050;
+
+        //If AI is near wall too long, move it away
+        this.nearWallSeconds = 0;
+        this.nearWallKickAfter = 0.9;
+
     }
 
     setEnabled(on) {
@@ -97,12 +123,10 @@ class AutoPlayer {
             VKEY.clear();
         }
 
-        // reset internal firing state
-        this.fireHolding = false;
-        this.fireHoldUntil = 0;
-        this.forceReleaseFrame = false;
-        this.shouldHitThisShot = false;
+        this._hardResetFire();
         this.nextFireTime = 0;
+        this.lockMoveUntil = 0;
+        this.nearWallSeconds = 0;
 
         console.log("[AUTO] setEnabled =", this.enabled, "| VKEY ready =", !!window.VKEY);
     }
@@ -117,8 +141,7 @@ class AutoPlayer {
         //Not gaming state
         if (gameState !== "PLAY") {
             VKEY.clear();
-            this._resetFire();
-            this.forceReleaseFrame = false;
+            this._hardResetFire();
             return;
         }
 
@@ -127,17 +150,9 @@ class AutoPlayer {
         const gameOver = catHP <= 0 || dogHP <= 0 || timeUp;
         if (gameOver) {
             VKEY.clear();
-            this._resetFire();
-            this.forceReleaseFrame = false;
+            this._hardResetFire();
             return;
         }
-
-        /*
-        //AI player always on the left
-        dogBody.facing = -1;
-        ciyangAngleObj.setDirection(-1);
-        //console.log("[AUTO] AI facing: " + dogBody.facing);
-        */
 
         const now = millis() / 1000;
 
@@ -146,25 +161,22 @@ class AutoPlayer {
         // Difficulty tweaks
         if (selectedDifficulty === "HARD") {
             this.maxFirePower = 190;
-            this.powerTolerance = 5;
-            this.hitChance = 0.65; //Harder level, higher hit chance
-        }else if (selectedDifficulty === "MEDIUM"){
+            this.hitChance = 0.65;
+            //keep firing in hard mode
+            this.aimOkDeg = 18;
+        } else if (selectedDifficulty === "MEDIUM") {
             this.maxFirePower = 170;
-            this.powerTolerance = 2;
-            this.hitChance = 0.5; //Medium difficulty, 50% -> proportional
-        }else {//Easy level
+            this.hitChance = 0.5;
+            this.aimOkDeg = 16;
+        } else {
             this.maxFirePower = 150;
-            this.powerTolerance = 1;
-            this.hitChance = 0.35; //least chance of hitting the player
+            this.hitChance = 0.35;
+            this.aimOkDeg = 16;
         }
 
-        //Face toward the player
-        const dogMid = dogBody.x + dogBody.w * 0.5;
-        const playerMid = player.x + player.w * 0.5;
-        const faceDir = (playerMid < dogMid) ? -1 : 1;
-
-        dogBody.facing = faceDir;
-        ciyangAngleObj.setDirection(faceDir);
+        //AI always on the right, faces left
+        dogBody.facing = -1;
+        ciyangAngleObj.setDirection(-1);
 
         const KEY_UP   = ciyangAngleObj.upKey;
         const KEY_DOWN = ciyangAngleObj.downKey;
@@ -172,23 +184,35 @@ class AutoPlayer {
         const KEY_LEFT = dogBody.leftKey; // LEFT_ARROW
         const KEY_RIGHT = dogBody.rightKey;//RIGHT_ARROW
 
+        //Movement lock while charging / shortly after starting charge
+        const lockMovement = this.fireHolding || (now < this.lockMoveUntil);
+
         //Adjusting left-right movement
-        this._updateMovement(KEY_LEFT, KEY_RIGHT, dt);
+        this._updateMovement(KEY_LEFT, KEY_RIGHT, dt, { lockMovement });
 
         //Aim keys: decide fresh each frame
         VKEY.release(KEY_UP);
         VKEY.release(KEY_DOWN);
 
-        //Force one clean "released" frame so POWER.update() can set justReleased=true
+        //Ensure at least one fire up frame after releasing
         if (this.forceReleaseFrame) {
             VKEY.release(KEY_FIRE);
             this.forceReleaseFrame = false;
         }
 
-        //Not entering the charge mode if it's still in cooldown
+        // DEADLOCK FAILSAFE: if held too long, force release + reset
+        if (this.fireHolding && (now - this.chargeStartTime) > this.maxChargeSeconds) {
+            VKEY.release(KEY_FIRE);
+            this.forceReleaseFrame = true;
+            this._hardResetFire();
+            this.nextFireTime = now + 0.25;
+            return;
+        }
+
+        // Cooldown
         if (now < this.nextFireTime) {
             VKEY.release(KEY_FIRE);
-            this._resetFire();
+            this._softResetFire();
             return;
         }
 
@@ -200,17 +224,15 @@ class AutoPlayer {
         const shot = this._computeShot({
             shooter: dogBody,
             target: player,
-            gravity: cd.gravity,
             powerScale: 8,
             maxPower: ciyangPowerObj.max,
             shouldHit: this.shouldHitThisShot,
         });
 
-        console.log("[AUTO] shot=", shot, "shouldHit=", this.shouldHitThisShot);
-
         if (!shot) {
             VKEY.release(KEY_FIRE);
-            this._resetFire();
+            this._softResetFire();
+            this.nextFireTime = now + 0.2;
             return;
         }
 
@@ -221,118 +243,90 @@ class AutoPlayer {
         const angleErr = desiredAngle - ciyangAngleObj.angleDeg;
         const powerErr = desiredPower - ciyangPowerObj.value;
 
+        //Aim correction
         if (Math.abs(angleErr) > this.aimToleranceDeg) {
-            if (angleErr > 0) {VKEY.press(KEY_UP);}
-            else {VKEY.press(KEY_DOWN);}
-        }else{
-            VKEY.release(KEY_UP);
-            VKEY.release(KEY_DOWN);
+            if (angleErr > 0) VKEY.press(KEY_UP);
+            else VKEY.press(KEY_DOWN);
         }
 
-        // If aim is terrible, don't fire
-        if (Math.abs(angleErr) > 8) {
-            VKEY.release(KEY_FIRE);
-            this._resetFire();
-            return;
-        }
+        //Aim is "good enough"
+        const aimOk = Math.abs(angleErr) <= this.aimOkDeg;
 
         //Confidence calculation of the attack
-        const rawNoise = noise(this.shootingNoiseTime);  // 0-1
-        const aimQuality = 1 - Math.abs(angleErr) / 8;  // 0-1 (1 = perfect aim)
-        const powerQuality = Math.max(0, 1 - Math.abs(powerErr) / (this.powerTolerance * 2));  // 0-1
-
-        // Don't let imperfect power estimation completely kill firing.
-    // Treat powerQuality as a mild factor, not a hard multiplier.
-        const confidenceBase = rawNoise * 0.55 + aimQuality * 0.45;   // 0..1
-        const confidence = clamp(confidenceBase * 0.85 + powerQuality * 0.15, 0, 1);
+        const rawNoise = noise(this.shootingNoiseTime);
+        const aimQuality = clamp(1 - Math.abs(angleErr) / this.aimOkDeg, 0, 1);
+        const confidence = rawNoise * 0.40 + aimQuality * 0.60;
 
         // Difficulty-based shooting thresholds
         let shootThreshold;
         if (selectedDifficulty === "HARD") {
             //Trigger-happy: fires when confidence is moderate
-            shootThreshold = 0.35;
+            shootThreshold = 0.26;
         } else if (selectedDifficulty === "MEDIUM") {
             //Balanced: needs decent confidence
-            shootThreshold = 0.45;
+            shootThreshold = 0.34;
         } else {
             //EASY level -> Hesitant: only shoots when very confident
-            shootThreshold = 0.55;
+            shootThreshold = 0.38;
         }
 
-        //If confidence too low, don't even try
-        if (confidence < 0.1) {
-            VKEY.release(KEY_FIRE);
-            this._resetFire();
-            return;
-        }
+        // Start charging aggressively once aim is roughly OK
+        const startFactor = (selectedDifficulty === "HARD") ? 0.18 : 0.26;
 
-        //Charging logic
-        //Release and shoot (only if confident enough)
-        if (!this.fireHolding && confidence > shootThreshold * 0.25) {
+        if (!this.fireHolding && aimOk && confidence > shootThreshold * startFactor) {
             VKEY.press(KEY_FIRE);
             this.fireHolding = true;
+            this.chargeStartTime = now;
 
-            // Ensure it holds long enough for POWER.value to ramp up
-            const minHold = 0.18;
-            //Start charging if power is below target
-            if (powerErr > this.powerTolerance) {
-                //Low power -> charging
-                const holdTime = 0.1 + (1 - confidence) * 0.22;
-                this.fireHoldUntil = now +  Math.max(minHold, holdTime);
+            //Hold time: ensure POWER has time to rise; adjust by power error
+            const minHold = (selectedDifficulty === "HARD") ? 0.28 : 0.26;
 
-            } else {
-                this.fireHoldUntil = now + minHold;
+            //PowerErr is "desiredPower - currentPower"
+            //Extra hold scaled to how far we are from target (cap it)
+            const extra = (powerErr > 0) ? clamp(powerErr / 140, 0, 1.15) : 0;
 
+            this.fireHoldUntil = now + (minHold + extra);
+
+            //Lock movement so aim doesn't jitter during initial charge
+            this.lockMoveUntil = now + ((selectedDifficulty === "HARD") ? 0.45 : 0.35);
+            return;
+        }
+
+        //Continue holding until it is time to fire
+        if (this.fireHolding) {
+            if (now < this.fireHoldUntil) {
+                VKEY.press(KEY_FIRE);
+                return;
             }
-            return;
-        }
 
-        //Holding firekey logic
-        //Continue holding if not ready
-        if (this.fireHolding && now < this.fireHoldUntil) {
-            VKEY.press(KEY_FIRE);
-            return;
-        }
+            // If power is still tiny, extend a hair rather than firing blanks
+            if (ciyangPowerObj.value < this.minShotPower) {
+                this.fireHoldUntil = now + 0.06;
+                VKEY.press(KEY_FIRE);
+                return;
+            }
 
-        //Abort if lost confidence mid-charge
-        if (this.fireHolding && confidence < shootThreshold * 0.6) {
-            //lost confidence during charge, abort the shot
+            // Release to shoot
             VKEY.release(KEY_FIRE);
-            this._resetFire();
-            return;
-        }
-
-        //Release and shoot
-        if (this.fireHolding && now >= this.fireHoldUntil) {
-            VKEY.release(KEY_FIRE);
-
-            // Create a one-frame gap where FIRE is definitely up
             this.forceReleaseFrame = true;
+            this._hardResetFire();
 
-            this._resetFire();
-            this.lastShotTime = now;
-
-            //Set cooldown based on difficulty
+            // More frequent shots (especially EASY)
             let minCooldown, maxCooldown;
-            if (selectedDifficulty === "HARD") {
-                minCooldown = 0.9;
-                maxCooldown = 1.6;
-            } else if (selectedDifficulty === "MEDIUM") {
-                minCooldown = 1.2;
-                maxCooldown = 2.0;
-            } else {
-                minCooldown = 1.5;
-                maxCooldown = 2.5;
-            }
+            if (selectedDifficulty === "HARD") { minCooldown = 0.45; maxCooldown = 0.95; }
+            else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.60; maxCooldown = 1.15; }
+            else { minCooldown = 0.65; maxCooldown = 1.25; }
 
-            const cooldown = minCooldown + Math.random() * (maxCooldown - minCooldown);
-            this.nextFireTime = now + cooldown + 0.05;
-
+            this.nextFireTime = now + (minCooldown + Math.random() * (maxCooldown - minCooldown));
+            return;
         }
+
+        // If not charging, make sure FIRE isn't stuck down
+        VKEY.release(KEY_FIRE);
     }
 
     //Movement Logic
-    _updateMovement(keyLeft, keyRight, dt){
+    _updateMovement(keyLeft, keyRight, dt, { lockMovement = false } = {}){
         if (!dogBody || !player){ return;}
 
         const KEY_LEFT = dogBody.leftKey;
@@ -381,23 +375,52 @@ class AutoPlayer {
             return;
         }
 
-        //Avoid "blind spot" behind the center wall (x=750..850)
-        const wallL = 750, wallR = 850;
-        const dogMid = dogBody.x + dogBody.w / 2;
-        const playerMid = player.x + player.w / 2;
-
-        const dogRightOfWall = dogMid > wallR;
-        const dogLeftOfWall = dogMid < wallL;
-        const playerRightOfWall = playerMid > wallR;
-        const playerLeftOfWall = playerMid < wallL;
-
-        // If on opposite sides of wall, move toward wall to re-engage
-        if (playerLeftOfWall && dogRightOfWall) {
-            VKEY.press(KEY_LEFT);
+        //Movement lock to reduce jittering while aiming/charging
+        if (lockMovement) {
+            VKEY.release(KEY_LEFT);
             VKEY.release(KEY_RIGHT);
             return;
         }
-        if (playerRightOfWall && dogLeftOfWall) {
+
+        //Avoid "blind spot" behind the center wall
+        const wallL = this.wallL, wallR = this.wallR;
+        const pad = this.wallPad;
+
+        const dogMid = dogBody.x + dogBody.w / 2;
+        const playerMid = player.x + player.w / 2;
+
+        const dogNearWall = (dogMid > (wallL - pad) && dogMid < (wallR + pad));
+        const playerLeftOfWall = playerMid < wallL;
+        const dogRightOfWall = dogMid > wallR;
+
+        //Normal situation (player left, dog right) and dog is near wall,
+        //push dog RIGHT to avoid "hiding behind the wall"
+        if (playerLeftOfWall && dogRightOfWall && dogNearWall) {
+            this.nearWallSeconds += dt;
+            VKEY.press(KEY_RIGHT);
+            VKEY.release(KEY_LEFT);
+
+            // If it keeps sticking near wall, kick it harder to the right for a moment
+            if (this.nearWallSeconds > this.nearWallKickAfter) {
+                VKEY.press(KEY_RIGHT);
+                VKEY.release(KEY_LEFT);
+                return;
+            }
+            return;
+        } else {
+            this.nearWallSeconds = 0;
+        }
+
+        // If dog drifts left of wall, push it back to the right half quickly
+        const dogLeftOfWall = dogMid < wallL;
+        if (dogLeftOfWall) {
+            VKEY.press(KEY_RIGHT);
+            VKEY.release(KEY_LEFT);
+            return;
+        }
+
+        //Keep AI player generally on the right side
+        if (dogMid < this.rightBiasX) {
             VKEY.press(KEY_RIGHT);
             VKEY.release(KEY_LEFT);
             return;
@@ -407,8 +430,8 @@ class AutoPlayer {
         this.noiseTime += dt*this.noiseScale;
         //getting smooth noise value (-1 to 1)
         const noiseValue = noise(this.noiseTime)*2 -1;
-        const deadzone = 0.4;
 
+        const deadzone = 0.45;
         if (noiseValue < -deadzone) {
             //Idle: move LEFT gently
             VKEY.press(KEY_LEFT);
@@ -427,14 +450,23 @@ class AutoPlayer {
         }
     }
 
-    _resetFire() {
+    _softResetFire() {
+        // stop charging, but don't clear cooldown
         this.fireHolding = false;
         this.fireHoldUntil = 0;
+        this.chargeStartTime = 0;
+    }
+
+    _hardResetFire() {
+        this.fireHolding = false;
+        this.fireHoldUntil = 0;
+        this.chargeStartTime = 0;
+        this.shouldHitThisShot = false;
     }
 
     //Shot Calculation
-    _computeShot({ shooter, target, gravity, powerScale, maxPower, shouldHit }) {
-        const fromX = shooter.x + shooter.w * (shooter.facing === 1 ? 0.9 : 0.1);
+    _computeShot({ shooter, target, powerScale, maxPower, shouldHit }) {
+        const fromX = shooter.x + shooter.w * 0.1;
         const fromY = shooter.y + shooter.h * 0.35;
 
         let toX, toY;
@@ -452,14 +484,12 @@ class AutoPlayer {
             const missOffset = 150 + Math.random()*100;
             // miss left or right randomly
             const missDir = Math.random()<0.5? -1:1;
-            toX = target.x + missDir*missOffset;
-            //random vertical offset
+            toX = target.x + missDir * missOffset;
             toY = target.y + (Math.random()*100 - 50);
             //console.log("[AUTO] AIMING TO MISS (offset=" + missOffset.toFixed(0) + ")");
         }
 
-        const dx = toX - fromX;
-        const dist = Math.abs(dx);
+        const dist = Math.abs(toX - fromX);
 
         //Angle Selection: angle bucket based on distance
         let angleDeg;
@@ -472,9 +502,9 @@ class AutoPlayer {
         //Very long distance
         else {angleDeg = 35;}
 
-        //Physics on projectile motion
         const base = (angleDeg * Math.PI) / 180;
-        const a = shooter.facing === -1 ? Math.PI - base : base;
+        //Facing left
+        const a = Math.PI - base;
 
         //Binary search for the right power
         let minPower = this.minFirePower;
@@ -483,10 +513,9 @@ class AutoPlayer {
         let bestDistance = Infinity;
 
         // Use correct wind direction in simulation (fix in CollisionDetection.simulateProjectileLanding)
-        const windDir = shooter.facing;
+        const windDir = -1;
 
-        //Try 5 iterations of binary search
-        for (let iteration = 0; iteration < 5; iteration++) {
+        for (let iteration = 0; iteration < 6; iteration++) {
             const testPower = (minPower + maxPower_search) / 2;
 
             //Simulate where this power lands
