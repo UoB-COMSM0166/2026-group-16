@@ -31,8 +31,9 @@ function drawPlayScreen() {
     cd._updateCharacter(player, dt, angleObj);
     cd._updateCharacter(dogBody, dt, ciyangAngleObj);
 
+    //&& powerObj.value > 10
     // ── Player 1 fires ───────────────────────────────────────────
-    if (powerObj.justReleased && powerObj.value > 10) {
+    if (powerObj.justReleased ) {
       const fromX = player.x + player.w * (player.facing === 1 ? 0.9 : 0.1);
       const fromY = player.y + player.h * 0.35;
       const wDef  = playerWeapons.current;
@@ -52,7 +53,9 @@ function drawPlayScreen() {
         console.log("[GAME] AutoPlayer disabled (DUAL mode)");
       }
     }
-    if (ciyangPowerObj.justReleased && ciyangPowerObj.value > 10) {
+
+    //&& ciyangPowerObj.value > 10
+    if (ciyangPowerObj.justReleased ) {
       const fromX = dogBody.x + dogBody.w * (dogBody.facing === 1 ? 0.9 : 0.1);
       const fromY = dogBody.y + dogBody.h * 0.35;
       const wDef  = dogWeapons.current;

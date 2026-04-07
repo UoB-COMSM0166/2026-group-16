@@ -254,4 +254,33 @@ _updateProjectile(p, dt) {
   updateSpeed(ch, speed) {
     ch.speed = speed;
   }
+
+  //Shared physics simulator
+  //Simulates where a projectile lands given angle and power
+  //Used by AI to calculate where shots will land
+  simulateProjectileLanding(fromX, fromY, angleRad, power, powerScale,  windDir = 1, maxDist = 2000) {
+    let x = fromX, y = fromY;
+    let vx = Math.cos(angleRad) * power * powerScale;
+    let vy = -Math.sin(angleRad) * power * powerScale;
+
+    // Same timestep as actual projectiles
+    const simStep = 0.016;
+    const maxSteps = 500;
+
+    for (let frame = 0; frame < maxSteps; frame++) {
+      // Apply wind and gravity (same as _updateProjectile)
+      vx += this.windAccel * windDir * simStep;
+      vy += this.gravity * simStep;
+
+      x += vx * simStep;
+      y += vy * simStep;
+
+      // Out of bounds
+      if (x < -200 || x > this.worldWidth + 200 || y > this.worldHeight + 200) {
+        break;
+      }
+    }
+
+    return { x, y, vx, vy };
+  }
 }
