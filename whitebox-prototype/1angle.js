@@ -27,10 +27,8 @@ class ANGLE {
   update() {
     if (keyIsDown(this.upKey)) {
       this.angleDeg += this.stepDeg;
-    } else {
-      if (keyIsDown(this.downKey)) {
-        this.angleDeg -= this.stepDeg;
-      }
+    } else if (keyIsDown(this.downKey)) {
+      this.angleDeg -= this.stepDeg;
     }
     this.angleDeg = clamp(this.angleDeg, this.minDeg, this.maxDeg);
   }

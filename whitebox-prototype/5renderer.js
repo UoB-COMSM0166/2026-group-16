@@ -36,11 +36,14 @@ function drawHeadLabel(textStr, centerX, topY) {
 }
 
 // AIM TRAJECTORY (shared)
-function _drawAimBase(ch, aObj, pObj, dotCol) {
-  const fromX = ch.x + ch.w * (ch.facing === 1 ? 0.9 : 0.1);
-  const fromY = ch.y + ch.h * 0.35;
-  const speed = pObj.value * 8;
-  const a     = aObj.angleRad;
+function _drawAimBase(ch, aObj, pObj, dotCol, gScale, pScale) {
+  if (gScale === undefined) gScale = 1;
+  if (pScale === undefined) pScale = 8;
+  const fromX  = ch.x + ch.w * (ch.facing === 1 ? 0.9 : 0.1);
+  const fromY  = ch.y + ch.h * 0.35;
+  const speed  = pObj.value * pScale;
+  const a      = aObj.angleRad;
+  const wDir   = (aObj.direction !== undefined) ? aObj.direction : 1;
   let vx = Math.cos(a) * speed, vy = -Math.sin(a) * speed;
   let px = fromX, py = fromY;
 
@@ -54,9 +57,9 @@ function _drawAimBase(ch, aObj, pObj, dotCol) {
     let tvx = vx, tvy = vy, tpx = px, tpy = py;
     for (let i = 0; i < maxSteps; i++) {
       const ox = tpx, oy = tpy;
-      tvx += 50 * simStep; tvy += 900 * simStep;
+      tvx += 50 * wDir * simStep; tvy += 900 * gScale * simStep;
       tpx += tvx * simStep; tpy += tvy * simStep;
-      if (tpx < -200 || tpx > 1800 || tpy > 960) break;
+      if (tpx < -400 || tpx > 2000 || tpy > 1100) break;
       totalDist += Math.sqrt((tpx-ox)*(tpx-ox) + (tpy-oy)*(tpy-oy));
     }
   }
@@ -75,12 +78,12 @@ function _drawAimBase(ch, aObj, pObj, dotCol) {
 
   for (let i = 0; i < maxSteps; i++) {
     const prevX = px, prevY = py;
-    vx += 50  * simStep;
-    vy += 900 * simStep;
-    px += vx  * simStep;
-    py += vy  * simStep;
+    vx += 50 * wDir * simStep;
+    vy += 900 * gScale * simStep;
+    px += vx * simStep;
+    py += vy * simStep;
 
-    if (px < -200 || px > 1800 || py > 960) break;
+    if (px < -400 || px > 2000 || py > 1100) break;
 
     const dx = px - prevX, dy = py - prevY;
     const stepDist = Math.sqrt(dx * dx + dy * dy);
@@ -97,11 +100,13 @@ function _drawAimBase(ch, aObj, pObj, dotCol) {
     distAcc += stepDist;
     if (distAcc >= DOT_GAP) {
       distAcc = 0;
-      const t = Math.min(arcTravelled / (isMedium ? arcLimit : (totalDist || 1200)), 1);
-      const alpha = lerp(255, 80, t);
-      const r     = lerp(7, 3.5, t) + pulse * 1.5;
-      fill(...dotCol, alpha);
-      ellipse(px, py, r * 2, r * 2);
+      if (px >= 0 && px <= 1600 && py >= 0 && py <= 900) {
+        const t = Math.min(arcTravelled / (isMedium ? arcLimit : (totalDist || 1200)), 1);
+        const alpha = lerp(255, 80, t);
+        const r     = lerp(7, 3.5, t) + pulse * 1.5;
+        fill(...dotCol, alpha);
+        ellipse(px, py, r * 2, r * 2);
+      }
     }
   }
   pop();
@@ -110,13 +115,19 @@ function _drawAimBase(ch, aObj, pObj, dotCol) {
 function drawAimTrajectory(ch, angleObj, powerObj) {
   if (!powerObj.isCharging) return;
   if (selectedDifficulty === "HARD") return;
-  _drawAimBase(ch, angleObj, powerObj, [255, 220, 50]);
+  const wDef   = (typeof playerWeapons !== "undefined") ? playerWeapons.current : null;
+  const gScale = (wDef && wDef.gravityScale !== undefined) ? wDef.gravityScale : 1;
+  const pScale = (wDef && wDef.powerScale)                ? wDef.powerScale    : 8;
+  _drawAimBase(ch, angleObj, powerObj, [255, 220, 50], gScale, pScale);
 }
 
 function drawAimTrajectoryDog(ch, angleObj, powerObj) {
   if (!powerObj.isCharging) return;
   if (selectedDifficulty === "HARD") return;
-  _drawAimBase(ch, angleObj, powerObj, [255, 140, 40]);
+  const wDef   = (typeof dogWeapons !== "undefined") ? dogWeapons.current : null;
+  const gScale = (wDef && wDef.gravityScale !== undefined) ? wDef.gravityScale : 1;
+  const pScale = (wDef && wDef.powerScale)                ? wDef.powerScale    : 8;
+  _drawAimBase(ch, angleObj, powerObj, [255, 140, 40], gScale, pScale);
 }
 
 //  HEALTH BARS 
@@ -155,9 +166,13 @@ function drawHealthBars() {
 
 // SHARED: Back Button 
 function drawBackBtn(y) {
-  fill(0,0,0,120); rect(1600/2+3, y+3, 150, 50, 20);
-  fill(150,150,150); rect(1600/2, y, 150, 50, 20);
-  fill(255); textSize(24); text("← BACK", 1600/2, y);
+  const bkW = 150, bkH = 44, bkX = 1600/2 - bkW/2;
+  push(); rectMode(CORNER);
+  fill(0,0,0,120); noStroke(); rect(bkX+3, y+3, bkW, bkH, 14);
+  fill(80,80,100); rect(bkX, y, bkW, bkH, 14);
+  fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
+  text("← BACK", 1600/2, y + bkH/2);
+  pop();
 }
 
 //  SHARED: Character Card

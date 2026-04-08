@@ -71,7 +71,7 @@ class CollisionDetection {
     return ch;
   }
 
-    spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player", maxBounces = 3 }) {
+  spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player", maxBounces = 3 }) {
     const power = powerObj.consume();
     const speed = power * powerScale;
     const a     = angleObj.angleRad;
@@ -82,8 +82,9 @@ class CollisionDetection {
       vy: -Math.sin(a) * speed,
       alive: true,
       owner,
-      bounces: 0,          // 已反弹次数
-      maxBounces: maxBounces, // 最大反弹次数（可自己设置）
+      windDir: angleObj.direction,  // +1 = firing right, -1 = firing left
+      bounces: 0,
+      maxBounces: maxBounces,
     };
     this.projectiles.push(p);
     return p;
@@ -153,9 +154,11 @@ class CollisionDetection {
   }
 
 _updateProjectile(p, dt) {
-    // 风力 & 重力
-    p.vx += this.windAccel * dt;
-    p.vy += this.gravity   * dt;
+    // Wind pushes in the direction the projectile was fired — fair for both players
+    const windDir = p.windDir !== undefined ? p.windDir : 1;
+    const gravScale = p.gravityScale !== undefined ? p.gravityScale : 1;
+    p.vx += this.windAccel * windDir * dt;
+    p.vy += this.gravity * gravScale * dt;
     p.x  += p.vx * dt;
     p.y  += p.vy * dt;
 

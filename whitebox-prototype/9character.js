@@ -42,6 +42,11 @@ function drawCharacterScreen() {
   resetMatrix();
 
   const isModern = (selectedDifficulty === "HARD");
+  const isDual   = (gameMode === "DUAL");
+  // In DUAL mode _charTurn: 0 = P1 picking, 1 = P2 picking
+  const isP2Turn = isDual && _charTurn === 1;
+  // Use appropriate index for whichever player is currently choosing
+  const activeIndex = isP2Turn ? dogCharSelectIndex : charSelectIndex;
 
   const bgImg = isModern ? modernBgCharSelect : fantasyBgCharSelect;
   const assets = isModern ? csAssets_modern : csAssets_fantasy;
@@ -52,10 +57,30 @@ function drawCharacterScreen() {
   const btnConfirm = isModern ? modernBtnConfirm : fantasyBtnConfirm;
 
   if (!assets || assets.length === 0) return;
-  const cur = assets[charSelectIndex % assets.length];
+  const cur = assets[activeIndex % assets.length];
   if (!cur) return;
 
   drawImageCover(bgImg, 0, 0, 1600, 900);
+
+  // ── Player turn banner ─────────────────────────────────────────
+  {
+    const label = isDual
+      ? (isP2Turn ? "Player 2 — Choose Your Character" : "Player 1 — Choose Your Character")
+      : "Choose Your Character";
+    const bannerCol = isP2Turn ? [255, 160, 60] : [80, 160, 255];
+    push();
+    fill(0, 0, 0, 180); noStroke(); rect(0, 0, 1600, 50);
+    fill(...bannerCol); textSize(26); textAlign(CENTER, CENTER); noStroke();
+    text(label, 1600 / 2, 25);
+    // If DUAL and P1 already chose, show P1's selection in corner
+    if (isDual && isP2Turn) {
+      const p1Assets = isModern ? csAssets_modern : csAssets_fantasy;
+      const p1Name   = p1Assets[charSelectIndex % p1Assets.length]?.name || "";
+      fill(200, 230, 255); textSize(15); textAlign(LEFT, CENTER);
+      text(`P1 selected: ${p1Name}`, 20, 25);
+    }
+    pop();
+  }
 
   const platformY = isModern ? 365 : 395; // 向下移动20像素
   image(platformGlow, 211, platformY, 404, 393);
@@ -64,6 +89,18 @@ function drawCharacterScreen() {
 
   const portraitX = 211, portraitY = 149, portraitW = 479, portraitH = 647;
   drawContain(cur.portrait, portraitX, portraitY, portraitW, portraitH);
+
+  // If P2 is picking and currently viewing P1's character, show TAKEN overlay
+  if (isP2Turn && activeIndex === charSelectIndex) {
+    push();
+    fill(0, 0, 0, 160); noStroke();
+    rect(portraitX, portraitY, portraitW, portraitH);
+    fill(255, 60, 60); textSize(48); textAlign(CENTER, CENTER); textStyle(BOLD);
+    noStroke();
+    text("TAKEN", portraitX + portraitW / 2, portraitY + portraitH / 2);
+    textStyle(NORMAL);
+    pop();
+  }
 
   image(cur.nameUI, 1039, 282, 202, 147);
 
@@ -86,24 +123,29 @@ function drawCharacterScreen() {
   // 绘制文字 — 像素风格
   push();
   textAlign(CENTER, CENTER);
-  textFont('Courier New');     // 使用等宽像素字体，也可换用 'Press Start 2P' 需先加载
+  textFont('Courier New');
   textStyle(BOLD);
   textSize(41);
-  stroke(0);                   // 黑色描边
-  strokeWeight(4);             // 描边粗细
-  fill(255);                   // 白色填充
-  text(LANG.t("btnStart"), btnX + btnW / 2, btnY + btnH / 2);
+  stroke(0);
+  strokeWeight(4);
+  fill(255);
+  
+  // Both P1 and P2 always show SELECT ▶ on the confirm button
+  const confirmLabel = "SELECT";
+  text(confirmLabel, btnX + btnW / 2, btnY + btnH / 2);
   pop();
 
-  // 自定义返回按钮
+  // Back button
   {
-    const btnW = 150, btnH = 50;
+    const btnW = 150, btnH = 44;
     const btnX = 1600 / 2 - btnW / 2;
     const btnY = 820;
-    fill(0, 0, 0, 120); rect(btnX + 3, btnY + 3, btnW, btnH, 20);
-    fill(150, 150, 150); rect(btnX, btnY, btnW, btnH, 20);
-    fill(255); textSize(24); textAlign(CENTER, CENTER);
+    push(); rectMode(CORNER);
+    fill(0, 0, 0, 120); noStroke(); rect(btnX + 3, btnY + 3, btnW, btnH, 14);
+    fill(80, 80, 100); rect(btnX, btnY, btnW, btnH, 14);
+    fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
     text("← BACK", 1600 / 2, btnY + btnH / 2);
+    pop();
   }
 
   // ========== 动态 Bio 面板（跟随鼠标） ==========
