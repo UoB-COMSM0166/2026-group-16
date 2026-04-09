@@ -105,15 +105,9 @@ class AutoPlayer {
         //Get away from middle barrier(imgWall)
         this.wallL = 750;
         this.wallR = 850;
-        //*******Fine-tune marker: further test on which distance will the attack not
-        //test: with angle 80, position x > 880 usually can shoot over to the opposite side
-        // rebounce and hurt itself
-        this.wallPad = 60;
+
         //Keeping AI on the right
         this.rightBiasX = 1000;
-        //If AI is near wall too long, move it away
-        this.nearWallSeconds = 0;
-        this.nearWallKickAfter = 0.9;
 
         //Movement control -> used to increase shooting frequency
         this.nextMoveDecisionTime = 0;
@@ -127,6 +121,21 @@ class AutoPlayer {
         //px around the wall we never want to land in
         this.wallKeepOut = 60;
 
+        //Eliminate jitterings
+        this.moveIntent = 0;
+        this.moveIntentUntil = 0;
+
+    }
+
+    _setMoveIntent(dir, now, dur) {
+        this.moveIntent = dir;
+        this.moveIntentUntil = now + dur;
+    }
+
+    _applyMoveIntent(KEY_LEFT, KEY_RIGHT) {
+        if (this.moveIntent < 0) { VKEY.press(KEY_LEFT);  VKEY.release(KEY_RIGHT); }
+        else if (this.moveIntent > 0) { VKEY.press(KEY_RIGHT); VKEY.release(KEY_LEFT); }
+        else { VKEY.release(KEY_LEFT); VKEY.release(KEY_RIGHT); }
     }
 
     setEnabled(on) {
@@ -142,7 +151,6 @@ class AutoPlayer {
         this.nextFireTime = 0;
         this.lastShotTime = millis() / 1000;
         this.lockMoveUntil = 0;
-        this.nearWallSeconds = 0;
 
         //console.log("[AUTO] setEnabled =", this.enabled, "| VKEY ready =", !!window.VKEY);
     }
@@ -480,7 +488,7 @@ class AutoPlayer {
 
             //Relaxing threatdetection around barrier to reduce jittering
             const nearBarrier = dogBody.x < 980;
-            const triggerDist = nearBarrier ? 450 : 550;
+            const triggerDist = nearBarrier ? 320 : 500;
 
             if (distToProjectile < triggerDist && dotProduct > 0 && projectileSpeed>50){
                 threatDetected = true;
@@ -491,7 +499,12 @@ class AutoPlayer {
 
         if (!threatDetected) { return false;}
 
-        if (escapeDir < 0) {
+        const now = millis() / 1000;
+        // Commit a short escape so it won't flip-flop next frame
+        this._setMoveIntent(escapeDir, now, 0.22);
+        this._applyMoveIntent(KEY_LEFT, KEY_RIGHT);
+
+        /*if (escapeDir < 0) {
             //Escape LEFT
             VKEY.press(KEY_LEFT);
             VKEY.release(KEY_RIGHT);
@@ -499,7 +512,7 @@ class AutoPlayer {
             //Escape RIGHT
             VKEY.press(KEY_RIGHT);
             VKEY.release(KEY_LEFT);
-        }
+        }*/
         return true;
     }
 
@@ -572,10 +585,8 @@ class AutoPlayer {
     //Left-right Movement Logic
     _updateMovement(KEY_LEFT, KEY_RIGHT, dt, { lockMovement = false } = {}){
         const now = millis() / 1000;
-        if (!dogBody || !player){ return;}
 
-        //Escape Control
-        if (this._escapeProjectiles(KEY_LEFT, KEY_RIGHT)) {return;}
+        if (!dogBody || !player){ return;}
 
         //Movement lock to reduce jittering while aiming/charging
         if (lockMovement) {
@@ -583,6 +594,15 @@ class AutoPlayer {
             VKEY.release(KEY_RIGHT);
             return;
         }
+
+        //Further block jittering
+        if (now < this.moveIntentUntil) {
+            this._applyMoveIntent(KEY_LEFT, KEY_RIGHT);
+            return;
+        }
+
+        //Escape Control
+        if (this._escapeProjectiles(KEY_LEFT, KEY_RIGHT)) {return;}
 
         //Avoid stuck at the "blind spot" behind the center barrier
         if (this._enforceSafeWallDistance(KEY_LEFT, KEY_RIGHT)) {return;}
@@ -637,9 +657,6 @@ class AutoPlayer {
             toY = target.y + (Math.random()*100 - 50);
         }
 
-
-        //*******Fine-tune marker: might be redundant, will test to see delete or not
-        //Avoid aiming to land near/behind the barrier
         //Ensure landing well past the wall
         const wallSafetyLeft = this.wallL - this.wallKeepOut;
 
