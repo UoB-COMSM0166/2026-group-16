@@ -42,10 +42,10 @@ function drawPlayScreen() {
 
     // ── Player 2 / AI fires ──────────────────────────────────────
     if (gameMode === "SINGLE") {
-      // AI: simple logic — charge then fire when facing player
+      //AI: simple logic — charge then fire when facing player, turn on virtual keyboard
       if (!window.GAME_AUTO.enabled) {
         window.GAME_AUTO.setEnabled(true);
-        console.log("[GAME] Autoplayer enabled (single mode)");
+        console.log("[GAME] Autoplayer enabled (SINGLE mode)");
       }
     }else{
       if (window.GAME_AUTO.enabled){
@@ -60,6 +60,7 @@ function drawPlayScreen() {
       const fromY = dogBody.y + dogBody.h * 0.35;
       const wDef  = dogWeapons.current;
       _spawnWeaponShot(fromX, fromY, ciyangAngleObj, ciyangPowerObj, "dog", wDef);
+      console.log("position to shoot threshold", dogBody.x)
     }
 
     for (const p of cd.projectiles) if (p.alive) cd._updateProjectile(p, dt);

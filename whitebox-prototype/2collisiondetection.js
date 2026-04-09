@@ -263,7 +263,7 @@ _updateProjectile(p, dt) {
     let vx = Math.cos(angleRad) * power * powerScale;
     let vy = -Math.sin(angleRad) * power * powerScale;
 
-    // Same timestep as actual projectiles
+    //Same timestep as actual projectiles
     const simStep = 0.016;
     const maxSteps = 500;
 
