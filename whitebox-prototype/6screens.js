@@ -43,6 +43,7 @@ function drawPlayScreen() {
     // ── Player 2 / AI fires ──────────────────────────────────────
     if (gameMode === "SINGLE") {
       //AI: simple logic — charge then fire when facing player, turn on virtual keyboard
+      dogWeapons.index = 0;
       if (!window.GAME_AUTO.enabled) {
         window.GAME_AUTO.setEnabled(true);
         console.log("[GAME] Autoplayer enabled (SINGLE mode)");
