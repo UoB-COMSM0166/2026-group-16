@@ -178,17 +178,20 @@ class AutoPlayer {
             this.hitChance = 0.65;
             //keep firing in hard mode
             this.aimOkDeg = 24;
-            this.forceShotAfter = 3.0;
+            this.forceShotAfter = 1.5;
+            this.minShotPower = 25;
         } else if (selectedDifficulty === "MEDIUM") {
             this.maxFirePower = 170;
             this.hitChance = 0.5;
             this.aimOkDeg = 16;
-            this.forceShotAfter = 4.0;
+            this.forceShotAfter = 2.0;
+            this.minShotPower = 30;
         } else {
             this.maxFirePower = 150;
             this.hitChance = 0.35;
             this.aimOkDeg = 16;
-            this.forceShotAfter = 5.0;
+            this.forceShotAfter = 3.0;
+            this.minShotPower = 32;
         }
     }
 
@@ -271,8 +274,12 @@ class AutoPlayer {
 
     _shouldStartCharge({aimOk, overdue, confidence, shootThreshold, startFactor}){
         if (this.fireHolding) {return false;}
-        if (!(aimOk || overdue)) { return false;}
         if (overdue) { return true;}
+        if (aimOk) { return false;}
+
+        //EASY: no extra hesitation once aimOk
+        if (selectedDifficulty === "EASY") return true;
+
         return confidence > (shootThreshold * startFactor);
     }
 
@@ -281,10 +288,15 @@ class AutoPlayer {
         this.fireHolding = true;
         this.chargeStartTime = now;
 
+        const rate = (selectedDifficulty==="HARD")? 170:90;
+
         //Hold time: ensure POWER has time to rise; adjust by power error
-        const minHold = (selectedDifficulty === "HARD") ? 0.18 : ((selectedDifficulty === "MEDIUM")? 0.26: 0.18);
+        const minHold = (selectedDifficulty === "HARD") ? 0.10 : ((selectedDifficulty === "MEDIUM")? 0.12: 0.14);
+
+        const extraCap = (selectedDifficulty === "HARD") ? 0.85 : ((selectedDifficulty === "MEDIUM")? 1.05: 1.35);
+
         //Extra hold scaled to how far we are from target (cap it)
-        const extra = (powerErr > 0) ? clamp(powerErr / 120, 0, 1.0) : 0;
+        const extra = (powerErr > 0) ? clamp((powerErr / rate)*1.15, 0, extraCap) : 0;
 
         this.fireHoldUntil = now + (minHold + extra);
 
@@ -313,9 +325,9 @@ class AutoPlayer {
 
         // More frequent shots (especially EASY)
         let minCooldown, maxCooldown;
-        if (selectedDifficulty === "HARD") { minCooldown = 0.35; maxCooldown = 0.70; }
-        else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.45; maxCooldown = 0.85; }
-        else { minCooldown = 0.40; maxCooldown = 0.75; }
+        if (selectedDifficulty === "HARD") { minCooldown = 0.10; maxCooldown = 0.22; }
+        else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.18; maxCooldown = 0.32; }
+        else { minCooldown = 0.25; maxCooldown = 0.45; }
 
         this.nextFireTime = now + (minCooldown + Math.random() * (maxCooldown - minCooldown));
     }
@@ -328,13 +340,13 @@ class AutoPlayer {
 
         const now = millis() / 1000;
 
-        //If we haven't fired for too long, force a shot attempt
-        const overdue = (now - this.lastShotTime) >= this.forceShotAfter;
-
         this.shootingNoiseTime += dt * this.shootingNoiseScale;
 
         //Difficulty tweaks
         this._applyDifficultyTweaks();
+
+        //If we haven't fired for too long, force a shot attempt
+        const overdue = (now - this.lastShotTime) >= this.forceShotAfter;
 
         const keys = this._getKeys();
 
@@ -392,6 +404,12 @@ class AutoPlayer {
         const shotPlan = this._makeShotPlan(shot);
         const angleErr = shotPlan.desiredAngle - ciyangAngleObj.angleDeg;
         const powerErr = shotPlan.desiredPower - ciyangPowerObj.value;
+
+        //Resolving jittering issue in EASY level
+        if (selectedDifficulty === "EASY" && !this.fireHolding && Math.abs(angleErr) <= (this.aimOkDeg + 2)) {
+            VKEY.release(keys.KEY_LEFT);
+            VKEY.release(keys.KEY_RIGHT);
+        }
 
         //Aim correction
         this._updateAimKeys (keys.KEY_UP, keys.KEY_DOWN, angleErr);
@@ -463,7 +481,7 @@ class AutoPlayer {
 
     _enforceSafeWallDistance(KEY_LEFT, KEY_RIGHT){
         const dogMid = dogBody.x + dogBody.w / 2;
-        const safeX = this.wallR + 400;  // tweak
+        const safeX = this.wallR + 240;  // tweak
 
         if (dogMid >= safeX) { return false;}
         //Too close to the middle barrier, moving right
@@ -472,32 +490,7 @@ class AutoPlayer {
         return true;
     }
 
-    _antiNearWall(KEY_LEFT, KEY_RIGHT, dt){
-        const wallR = this.wallR;
-        const padArea = this.wallPad;
 
-        const dogMid = dogBody.x + dogBody.w/2;
-        const dogNearWall = dogMid < (wallR + padArea);
-
-        //When ai player fall in the near wall area
-        if (dogNearWall) {
-            this.nearWallSeconds += dt;
-            VKEY.press(KEY_RIGHT);
-            VKEY.release(KEY_LEFT);
-
-            // If it keeps sticking near wall, kick it harder to the right for a moment
-            if (this.nearWallSeconds > this.nearWallKickAfter) {
-                VKEY.press(KEY_RIGHT);
-                VKEY.release(KEY_LEFT);
-                return true;
-            }
-            return true;
-        }
-
-        this.nearWallSeconds = 0;
-
-        return false;
-    }
 
     _enforceRightBias(KEY_LEFT, KEY_RIGHT){
         const dogMid = dogBody.x + dogBody.w/2;
@@ -510,7 +503,6 @@ class AutoPlayer {
     }
 
     _noiseWalk(KEY_LEFT, KEY_RIGHT, dt, now){
-
         if (now >= this.nextMoveDecisionTime) {
             this.noiseTime += dt * this.noiseScale;
             const v = noise(this.noiseTime) * 2 - 1;
@@ -570,9 +562,6 @@ class AutoPlayer {
 
         //Avoid stuck at the "blind spot" behind the center barrier
         if (this._enforceSafeWallDistance(KEY_LEFT, KEY_RIGHT)) {return;}
-
-        //Stayed at the middle spot for too long, move away again
-        if (this._antiNearWall(KEY_LEFT, KEY_RIGHT, dt)) {return;}
 
         //Keep AI player generally on the right side to avoid attack from middle barrier rebounce
         if (this._enforceRightBias(KEY_LEFT, KEY_RIGHT)) { return;}
@@ -703,3 +692,32 @@ class AutoPlayer {
 //For AutoPlayer
 window.GAME_AUTO = new AutoPlayer();
 console.log("[AUTO] GAME_AUTO ready", window.GAME_AUTO);
+
+/*
+    _antiNearWall(KEY_LEFT, KEY_RIGHT, dt){
+        const wallR = this.wallR;
+        const padArea = this.wallPad;
+
+        const dogMid = dogBody.x + dogBody.w/2;
+        const dogNearWall = dogMid < (wallR + padArea);
+
+        //When ai player fall in the near wall area
+        if (dogNearWall) {
+            this.nearWallSeconds += dt;
+            VKEY.press(KEY_RIGHT);
+            VKEY.release(KEY_LEFT);
+
+            // If it keeps sticking near wall, kick it harder to the right for a moment
+            if (this.nearWallSeconds > this.nearWallKickAfter) {
+                VKEY.press(KEY_RIGHT);
+                VKEY.release(KEY_LEFT);
+                return true;
+            }
+            return true;
+        }
+
+        this.nearWallSeconds = 0;
+
+        return false;
+    }
+ */
