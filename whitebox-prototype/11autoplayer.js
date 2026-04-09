@@ -175,16 +175,16 @@ class AutoPlayer {
     _applyDifficultyTweaks(){
         if (selectedDifficulty === "HARD") {
             this.maxFirePower = 190;
-            this.hitChance = 0.65;
+            this.hitChance = 0.6;
             //keep firing in hard mode
             this.aimOkDeg = 24;
-            this.forceShotAfter = 1.5;
+            this.forceShotAfter = 1.0;
             this.minShotPower = 25;
         } else if (selectedDifficulty === "MEDIUM") {
             this.maxFirePower = 170;
             this.hitChance = 0.5;
             this.aimOkDeg = 16;
-            this.forceShotAfter = 2.0;
+            this.forceShotAfter = 2.5;
             this.minShotPower = 30;
         } else {
             this.maxFirePower = 150;
@@ -332,6 +332,22 @@ class AutoPlayer {
         this.nextFireTime = now + (minCooldown + Math.random() * (maxCooldown - minCooldown));
     }
 
+    _noShootArea(KEY_FIRE, KEY_RIGHT, KEY_LEFT, now){
+        const dogMid = dogBody.x + dogBody.w/2;
+        const noShootX = this.wallR+ 60;
+
+        if (dogMid >= noShootX){ return false;}
+
+        VKEY.release(KEY_FIRE);
+        this._softResetFire();
+
+        VKEY.press(KEY_RIGHT);
+        VKEY.release(KEY_LEFT);
+
+        this.nextFireTime = now+0.2;
+        return true;
+    }
+
     update(dt) {
         //---------------------------------------
         //----------Each update set-up-----------
@@ -402,6 +418,10 @@ class AutoPlayer {
         }
 
         const shotPlan = this._makeShotPlan(shot);
+
+        //If fall into area too close to middle barrier, stop shooting
+        if (this._noShootArea(keys.KEY_FIRE, keys.KEY_RIGHT, keys.KEY_LEFT, now)) {return;}
+
         const angleErr = shotPlan.desiredAngle - ciyangAngleObj.angleDeg;
         const powerErr = shotPlan.desiredPower - ciyangPowerObj.value;
 
@@ -458,7 +478,11 @@ class AutoPlayer {
             //Further check on the projectile speed
             const projectileSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
 
-            if (distToProjectile < 600 && dotProduct > 0 && projectileSpeed>50){
+            //Relaxing threatdetection around barrier to reduce jittering
+            const nearBarrier = dogBody.x < 980;
+            const triggerDist = nearBarrier ? 450 : 550;
+
+            if (distToProjectile < triggerDist && dotProduct > 0 && projectileSpeed>50){
                 threatDetected = true;
                 escapeDir = p.vx > 0? -1:1;
                 break;
