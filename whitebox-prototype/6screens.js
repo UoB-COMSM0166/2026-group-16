@@ -3,6 +3,9 @@ function drawPlayScreen() {
   resetMatrix();
   const dt = Math.min(deltaTime / 1000, 0.033);
 
+  // Run autoplayer so keys are set BEFORE POWER/ANGLE.update() reads them
+  if (window.GAME_AUTO && GAME_AUTO.enabled) GAME_AUTO.update(dt);
+
   // --- TIMER ---
   if (!timerRunning) timerRunning = true;
   if (timerRunning && catHP > 0 && dogHP > 0) {
@@ -24,9 +27,44 @@ function drawPlayScreen() {
   if (!gameOver) {
     player.controllable = true; dogBody.controllable = true;
     angleObj.update(); powerObj.update(dt);
-    ciyangAngleObj.update(); ciyangPowerObj.update(dt);
+    ciyangAngleObj.update();
+    ciyangPowerObj.update(dt);
+    // In SINGLE mode: if VKEY didn't press fire, the charge came from real Space — cancel it
+    if (gameMode === "SINGLE" && window.VKEY && VKEY.enabled && !VKEY.isDown(ciyangPowerObj.fireKey)) {
+      if (ciyangPowerObj.isCharging) {
+        ciyangPowerObj.value = ciyangPowerObj.min;
+        ciyangPowerObj.isCharging = false;
+        ciyangPowerObj.justReleased = false;
+        ciyangPowerObj._wasCharging = false;
+      }
+    }
     cd._updateCharacter(player, dt, angleObj);
     cd._updateCharacter(dogBody, dt, ciyangAngleObj);
+
+    // ── Blackout elapsed counter ──────────────────────────────────
+    blackoutElapsed += dt;
+
+    // Trigger blackout at 20s (MEDIUM + HARD)
+    if (!blackout1Done && blackoutElapsed >= 20 &&
+        (selectedDifficulty === "MEDIUM" || selectedDifficulty === "HARD")) {
+      blackout1Done = true;
+      blackoutActive = true;
+      blackoutTimer = 5;
+    }
+    // Trigger second blackout at 40s (HARD only)
+    if (!blackout2Done && blackoutElapsed >= 40 && selectedDifficulty === "HARD") {
+      blackout2Done = true;
+      blackoutActive = true;
+      blackoutTimer = 5;
+    }
+    // Count down active blackout
+    if (blackoutActive) {
+      blackoutTimer -= dt;
+      if (blackoutTimer <= 0) {
+        blackoutActive = false;
+        blackoutTimer = 0;
+      }
+    }
 
     // ── Player 1 fires ───────────────────────────────────────────
     if (powerObj.justReleased && powerObj.value > 10) {
@@ -38,8 +76,7 @@ function drawPlayScreen() {
 
     // ── Player 2 / AI fires ──────────────────────────────────────
     if (gameMode === "SINGLE") {
-      // AI: simple logic — charge then fire when facing player
-      _updateAI(dt);
+      // weapon switching handled by AutoPlayer
     }
     if (ciyangPowerObj.justReleased && ciyangPowerObj.value > 10) {
       const fromX = dogBody.x + dogBody.w * (dogBody.facing === 1 ? 0.9 : 0.1);
@@ -66,7 +103,21 @@ function drawPlayScreen() {
   }
 
   // Mattew sprite (faces RIGHT naturally, flip when facing=-1)
-  drawCharSprite(dogBody, imgTarget, -1);
+  // In SINGLE mode draw robot stretched to fill the character box (same height as player)
+  if (gameMode === "SINGLE" && imgTarget) {
+    push();
+    imageMode(CORNER);
+    if (dogBody.facing === 1) {
+      image(imgTarget, dogBody.x, dogBody.y, dogBody.w, dogBody.h);
+    } else {
+      translate(dogBody.x + dogBody.w, dogBody.y);
+      scale(-1, 1);
+      image(imgTarget, 0, 0, dogBody.w, dogBody.h);
+    }
+    pop();
+  } else {
+    drawCharSprite(dogBody, imgTarget, -1);
+  }
   drawHeadLabel(LABELS.target, dogBody.x + dogBody.w / 2, dogBody.y);
 
   drawAimTrajectory(player, angleObj, powerObj);
@@ -129,10 +180,40 @@ function drawPlayScreen() {
     text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces}`, t2, HUD_Y + 23);
   }
   fill(170, 170, 170); textSize(11);
-  text("←/→ move   ↑/↓ aim   Space fire", t2, HUD_Y + 38);
-  text("Hold Space to charge, release", t2, HUD_Y + 52);
+  if (gameMode === "DUAL") {
+    text("←/→ move   ↑/↓ aim   Space fire", t2, HUD_Y + 38);
+    text("Hold Space to charge, release", t2, HUD_Y + 52);
+  }
 
   pop();
+
+  // ── BLACKOUT OVERLAY ──────────────────────────────────────────
+  // Covers everything except the HUD elements drawn after this block
+  if (blackoutActive) {
+    push();
+    fill(0, 0, 0, 255);
+    noStroke();
+    rect(0, 0, 1600, 900);
+
+    // Power arc for Player 1
+    if (powerObj.isCharging) {
+      _drawAimBase(player, angleObj, powerObj, [255, 220, 50],
+        (playerWeapons.current.gravityScale !== undefined ? playerWeapons.current.gravityScale : 1),
+        (playerWeapons.current.powerScale   ? playerWeapons.current.powerScale   : 8));
+    }
+    // Power arc for Player 2 / AI
+    if (ciyangPowerObj.isCharging) {
+      _drawAimBase(dogBody, ciyangAngleObj, ciyangPowerObj, [255, 140, 40],
+        (dogWeapons.current.gravityScale !== undefined ? dogWeapons.current.gravityScale : 1),
+        (dogWeapons.current.powerScale   ? dogWeapons.current.powerScale   : 8));
+    }
+
+    // "BLACKOUT" label
+    fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(BOLD); noStroke();
+    text("⚫ BLACKOUT", 1600 / 2, 900 / 2);
+    textStyle(NORMAL);
+    pop();
+  }
 
   drawHealthBars();
 
@@ -263,44 +344,6 @@ function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
   }
 }
 
-// ── Minimal AI for Single Player mode ───────────────────────────
-// The AI (dogBody / ciyangPowerObj) auto-charges and fires when facing the player.
-let _aiTimer = 0;
-function _updateAI(dt) {
-  _aiTimer += dt;
-
-  // Simple: always face the player
-  const dir = (player.x < dogBody.x) ? -1 : 1;
-  ciyangAngleObj.setDirection(dir);
-  dogBody.facing = dir;
-
-  // Aim at roughly the right angle
-  const dx = player.x - dogBody.x;
-  const dy = player.y - dogBody.y;
-  const targetAngle = Math.abs(Math.atan2(-dy, Math.abs(dx)) * 180 / Math.PI);
-  // Gradually nudge angle
-  const diff = targetAngle - ciyangAngleObj.angleDeg;
-  ciyangAngleObj.angleDeg += clamp(diff * dt * 2, -2, 2);
-  ciyangAngleObj.angleDeg = clamp(ciyangAngleObj.angleDeg, 0, 80);
-
-  // Charge and fire every 2.8 seconds
-  if (_aiTimer < 2.0) {
-    // Charge phase — simulate key held
-    ciyangPowerObj.value = clamp(ciyangPowerObj.value + ciyangPowerObj.chargeRatePerSec * dt, 0, ciyangPowerObj.max);
-    ciyangPowerObj.isCharging = true;
-    ciyangPowerObj._wasCharging = true;
-    ciyangPowerObj.justReleased = false;
-  } else if (_aiTimer < 2.05) {
-    // Release pulse
-    ciyangPowerObj.isCharging = false;
-    ciyangPowerObj.justReleased = true;
-    ciyangPowerObj._wasCharging = false;
-  } else {
-    ciyangPowerObj.justReleased = false;
-    if (_aiTimer > 2.8) _aiTimer = 0;
-  }
-}
-
 // START SCREEN 
 function drawStartScreen() {
   resetMatrix();
@@ -354,3 +397,43 @@ function drawLevelScreen() {
   drawBackBtn(900 - 100);
   pop(); rectMode(CORNER); textStyle(NORMAL);
 }
+
+/*
+// ── Minimal AI for Single Player mode ───────────────────────────
+// The AI (dogBody / ciyangPowerObj) auto-charges and fires when facing the player.
+let _aiTimer = 0;
+function _updateAI(dt) {
+  _aiTimer += dt;
+
+  // Simple: always face the player
+  const dir = (player.x < dogBody.x) ? -1 : 1;
+  ciyangAngleObj.setDirection(dir);
+  dogBody.facing = dir;
+
+  // Aim at roughly the right angle
+  const dx = player.x - dogBody.x;
+  const dy = player.y - dogBody.y;
+  const targetAngle = Math.abs(Math.atan2(-dy, Math.abs(dx)) * 180 / Math.PI);
+  // Gradually nudge angle
+  const diff = targetAngle - ciyangAngleObj.angleDeg;
+  ciyangAngleObj.angleDeg += clamp(diff * dt * 2, -2, 2);
+  ciyangAngleObj.angleDeg = clamp(ciyangAngleObj.angleDeg, 0, 80);
+
+  // Charge and fire every 2.8 seconds
+  if (_aiTimer < 2.0) {
+    // Charge phase — simulate key held
+    ciyangPowerObj.value = clamp(ciyangPowerObj.value + ciyangPowerObj.chargeRatePerSec * dt, 0, ciyangPowerObj.max);
+    ciyangPowerObj.isCharging = true;
+    ciyangPowerObj._wasCharging = true;
+    ciyangPowerObj.justReleased = false;
+  } else if (_aiTimer < 2.05) {
+    // Release pulse
+    ciyangPowerObj.isCharging = false;
+    ciyangPowerObj.justReleased = true;
+    ciyangPowerObj._wasCharging = false;
+  } else {
+    ciyangPowerObj.justReleased = false;
+    if (_aiTimer > 2.8) _aiTimer = 0;
+  }
+}
+*/

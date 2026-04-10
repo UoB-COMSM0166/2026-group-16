@@ -184,12 +184,12 @@ class LanguagePatcher {
           if (ch.tag === "dog") {
             dogHP = Math.max(0, dogHP - 15);
             this.floatTexts.push({ x:ch.x+ch.w/2, y:ch.y-20, vy:-50, life:1.2,
-              text: dogHP <= 0 ? LANG.t("defeatDog") : LANG.t("hitDamage") });
+              text: dogHP <= 0 ? `${LABELS.target} defeated! 💀` : LANG.t("hitDamage") });
             tryPlaySound(sndHit);
           } else if (ch.tag === "player") {
             catHP = Math.max(0, catHP - 15);
             this.floatTexts.push({ x:ch.x+ch.w/2, y:ch.y-20, vy:-50, life:1.2,
-              text: catHP <= 0 ? LANG.t("defeatPlayer") : LANG.t("hitDamage") });
+              text: catHP <= 0 ? `${LABELS.player} defeated! 💀` : LANG.t("hitDamage") });
             tryPlaySound(sndHit);
           }
           p.alive = false; return;

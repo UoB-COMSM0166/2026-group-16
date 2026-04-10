@@ -27,7 +27,7 @@ let imgPlayerModern, imgTargetModern;
 let imgBg, imgPlayScreen, imgPlayer, imgTarget;
 
 // IMAGES — shared
-let imgPan, imgWall;
+let imgPan, imgWall, imgRobotAI;
 let keyA, keyD, keyUp, keyDown, keyLeft, keyRight, keySpace;
 let difficultyUI;
 
@@ -52,6 +52,14 @@ let nav; // Navigator instance
 let gameTimer = 60;
 let timerRunning = false;
 let overtimeActive = false;
+
+// BLACKOUT
+// Tracks elapsed play time (counts up) and active blackout state
+let blackoutElapsed = 0;      // seconds since match start
+let blackoutActive = false;   // whether blackout is currently on
+let blackoutTimer = 0;        // countdown for current blackout (seconds)
+let blackout1Done = false;    // first blackout trigger used
+let blackout2Done = false;    // second blackout trigger used (HARD only)
 
 // Character Select Screen
 let fantasyArrowLeft, fantasyArrowRight, fantasyPlatformGlow, fantasyFrameDiamond, fantasyBtnConfirm, fantasyBgCharSelect;
@@ -104,11 +112,17 @@ function applyCharacterLabels() {
   const isModern = (selectedDifficulty === "HARD");
   const assets   = isModern ? csAssets_modern : csAssets_fantasy;
   if (assets && assets.length) {
-    LABELS.player = assets[charSelectIndex    % assets.length].name;
-    LABELS.target = assets[dogCharSelectIndex % assets.length].name;
-    // Fix Bug 3: update the in-game sprites to match the selected characters
-    imgPlayer = assets[charSelectIndex    % assets.length].portrait;
-    imgTarget = assets[dogCharSelectIndex % assets.length].portrait;
+    LABELS.player = assets[charSelectIndex % assets.length].name;
+    imgPlayer = assets[charSelectIndex % assets.length].portrait;
+
+    if (gameMode === "SINGLE") {
+      // AI opponent: fixed name and robot image
+      LABELS.target = "AI";
+      imgTarget = imgRobotAI;
+    } else {
+      LABELS.target = assets[dogCharSelectIndex % assets.length].name;
+      imgTarget = assets[dogCharSelectIndex % assets.length].portrait;
+    }
   }
 }
 
@@ -118,14 +132,41 @@ function resetGame() {
   timerRunning = false;
   overtimeActive = false;
 
+  blackoutElapsed = 0;
+  blackoutActive = false;
+  blackoutTimer = 0;
+  blackout1Done = false;
+  blackout2Done = false;
+
   applyDifficultyAssets();
   applyCharacterLabels();
 
   player.x = 380; player.y = GROUND_Y - 160; player.facing = 1;
   dogBody.x = 1100; dogBody.y = GROUND_Y - 160; dogBody.facing = -1;
 
+  // In SINGLE mode use dummy keys so real arrow keys never move the AI;
+  // VKEY will press these dummy codes. In DUAL mode use real arrow keys.
+  if (gameMode === "SINGLE") {
+    dogBody.leftKey  = 201;
+    dogBody.rightKey = 202;
+    dogBody.controllable = true;
+  } else {
+    dogBody.leftKey  = LEFT_ARROW;
+    dogBody.rightKey = RIGHT_ARROW;
+    dogBody.controllable = true;
+  }
+
   cd.projectiles = [];
   cd.floatTexts = [];
+
+  // Enable AI once here — not every frame — so VKEY.clear() doesn't wipe keys each frame
+  if (window.GAME_AUTO) {
+    if (gameMode === "SINGLE") {
+      window.GAME_AUTO.setEnabled(true);
+    } else {
+      window.GAME_AUTO.setEnabled(false);
+    }
+  }
 
   powerObj.value = 0; powerObj._wasCharging = false;
   ciyangPowerObj.value = 0; ciyangPowerObj._wasCharging = false;
@@ -152,6 +193,9 @@ function preload() {
   imgPlayScreen = imgCharSelectFantasy;
   imgPlayer = imgPlayerFantasy;
   imgTarget = imgTargetFantasy;
+
+  // AI robot image (used in SINGLE player mode for the opponent)
+  imgRobotAI = loadImage("assets/AI/ai_robot.png");
 
   // Shared
   imgPan = loadImage("pan.png");
@@ -235,7 +279,10 @@ function setup() {
   // Fix Bug 1: add the wall/pedestal as a real collision body so projectiles can't pass through it
   cd.addStaticRect({ x: 750, y: GROUND_Y - 200, w: 100, h: 200, tag: "wall" });
 
-  dogBody = cd.addCharacter({ x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog", leftKey: LEFT_ARROW, rightKey: RIGHT_ARROW });
+  dogBody = cd.addCharacter({ x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog",
+    // Use dummy key codes (201/202) — real arrow keys won't match these.
+    // In SINGLE mode the AI presses these via VKEY; in DUAL mode we reassign them in resetGame.
+    leftKey: 201, rightKey: 202 });
   dogBody.facing = -1;
   player = cd.addCharacter({ x: 380, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "player", leftKey: 65, rightKey: 68 });
 

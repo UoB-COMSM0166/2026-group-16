@@ -209,12 +209,12 @@ _updateProjectile(p, dt) {
         if (ch.tag === "dog") {
           dogHP = Math.max(0, dogHP - 15);
           this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: dogHP <= 0 ? "Ciyang defeated! 💀" : "-15 HP!" });
+            text: dogHP <= 0 ? `${LABELS.target} defeated! 💀` : "-15 HP!" });
           tryPlaySound(sndHit);
         } else if (ch.tag === "player") {
           catHP = Math.max(0, catHP - 15);
           this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: catHP <= 0 ? "Rish defeated! 💀" : "-15 HP!" });
+            text: catHP <= 0 ? `${LABELS.player} defeated! 💀` : "-15 HP!" });
           tryPlaySound(sndHit);
         }
         p.alive = false;
@@ -254,5 +254,34 @@ _updateProjectile(p, dt) {
 
   updateSpeed(ch, speed) {
     ch.speed = speed;
+  }
+
+  //Shared physics simulator
+  //Simulates where a projectile lands given angle and power
+  //Used by AI to calculate where shots will land
+  simulateProjectileLanding(fromX, fromY, angleRad, power, powerScale,  windDir = 1, maxDist = 2000) {
+    let x = fromX, y = fromY;
+    let vx = Math.cos(angleRad) * power * powerScale;
+    let vy = -Math.sin(angleRad) * power * powerScale;
+
+    //Same timestep as actual projectiles
+    const simStep = 0.016;
+    const maxSteps = 500;
+
+    for (let frame = 0; frame < maxSteps; frame++) {
+      // Apply wind and gravity (same as _updateProjectile)
+      vx += this.windAccel * windDir * simStep;
+      vy += this.gravity * simStep;
+
+      x += vx * simStep;
+      y += vy * simStep;
+
+      // Out of bounds
+      if (x < -200 || x > this.worldWidth + 200 || y > this.worldHeight + 200) {
+        break;
+      }
+    }
+
+    return { x, y, vx, vy };
   }
 }

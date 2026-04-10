@@ -25,12 +25,10 @@ class ANGLE {
     }
   }
   update() {
-    // Flip step direction when facing left so "up key" always visually raises the aim arc
-    const step = this.direction === 1 ? this.stepDeg : -this.stepDeg;
     if (keyIsDown(this.upKey)) {
-      this.angleDeg += step;
+      this.angleDeg += this.stepDeg;
     } else if (keyIsDown(this.downKey)) {
-      this.angleDeg -= step;
+      this.angleDeg -= this.stepDeg;
     }
     this.angleDeg = clamp(this.angleDeg, this.minDeg, this.maxDeg);
   }
