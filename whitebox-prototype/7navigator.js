@@ -79,6 +79,8 @@ class Navigator {
       } else {
         charSelectIndex = (charSelectIndex + 3) % 4;
       }
+      isSquashing = true;
+      squashTime = 0;
       return;
     }
     // right arrow (1422, 402, 135, 134)
@@ -89,6 +91,8 @@ class Navigator {
       } else {
         charSelectIndex = (charSelectIndex + 1) % 4;
       }
+      isSquashing = true;
+      squashTime = 0;
       return;
     }
     // Confirm (1015, 506, 262, 97)
