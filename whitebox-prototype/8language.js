@@ -2,37 +2,37 @@ class Language {
   constructor() {
     this._current = "EN";
     this._strings = {
-      gameTitle:        { EN: "MERCHANT FIGHTER",                          ZH: "商人格斗家" },
-      gameSubtitle:     { EN: "Rish vs Ciyang",                            ZH: "Rish 对 Ciyang" },
-      btnStart:         { EN: "START",                                     ZH: "开始游戏" },
-      ctrlMove:         { EN: "MOVE",                                      ZH: "移动" },
-      ctrlAngle:        { EN: "ADJUST ANGLE",                              ZH: "调整角度" },
-      ctrlCharge:       { EN: "HOLD SPACE TO CHARGE • RELEASE TO FIRE",    ZH: "长按空格蓄力 • 松开发射" },
-      hudMoveAim:       { EN: "A/D move  W/S aim  F fire",                 ZH: "A/D 移动  W/S 瞄准  F 发射" },
-      hudCharge:        { EN: "Hold F to charge, release to fire",         ZH: "长按 F 蓄力，松开发射" },
-      hudMoveAimR:      { EN: "←/→ move  ↑/↓ aim  Space fire",            ZH: "←/→ 移动  ↑/↓ 瞄准  空格 发射" },
-      hudChargeR:       { EN: "Hold Space to charge, release",             ZH: "长按空格蓄力，松开发射" },
-      hudAngle:         { EN: "Angle",                                     ZH: "角度" },
-      hudPower:         { EN: "Power",                                     ZH: "威力" },
-      selectDifficulty: { EN: "Select Difficulty",                         ZH: "选择难度" },
-      diffEasy:         { EN: "EASY",                                      ZH: "简单" },
-      diffMedium:       { EN: "MEDIUM",                                    ZH: "普通" },
-      diffHard:         { EN: "HARD",                                      ZH: "困难" },
-      selectChar:       { EN: "Choose Your Character",                     ZH: "选择你的角色" },
-      charDesc1Cat:     { EN: "The agile cat warrior",                     ZH: "敏捷的猫战士" },
-      charDesc2Cat:     { EN: "Balanced fighter",                          ZH: "均衡型战士" },
-      charDesc1Dog:     { EN: "The powerful dog warrior",                  ZH: "强悍的狗战士" },
-      charDesc2Dog:     { EN: "Heavy hitter",                              ZH: "重击型战士" },
-      btnBack:          { EN: "← BACK",                                    ZH: "← 返回" },
-      overtime:         { EN: "OVERTIME",                                  ZH: "加时赛" },
-      vs:               { EN: "VS",                                        ZH: "对战" },
-      hitDamage:        { EN: "-15 HP!",                                   ZH: "-15 HP！" },
-      defeatDog:        { EN: "Ciyang defeated! 💀",                       ZH: "Ciyang 被击败！💀" },
-      defeatPlayer:     { EN: "Rish defeated! 💀",                         ZH: "Rish 被击败！💀" },
-      wins:             { EN: "🏆 {name} Wins!",                           ZH: "🏆 {name} 胜利！" },
-      remainHP:         { EN: "Remaining HP: {hp}",                        ZH: "剩余 HP：{hp}" },
-      btnPlayAgain:     { EN: "🔄 Play Again",                             ZH: "🔄 再来一局" },
-      btnMenu:          { EN: "← Back to Menu",                            ZH: "← 返回主菜单" },
+      gameTitle: { EN: "MERCHANT FIGHTER", ZH: "商人格斗家" },
+      gameSubtitle: { EN: "Rish vs Ciyang", ZH: "Rish 对 Ciyang" },
+      btnStart: { EN: "START", ZH: "开始游戏" },
+      ctrlMove: { EN: "MOVE", ZH: "移动" },
+      ctrlAngle: { EN: "ADJUST ANGLE", ZH: "调整角度" },
+      ctrlCharge: { EN: "HOLD SPACE TO CHARGE • RELEASE TO FIRE", ZH: "长按空格蓄力 • 松开发射" },
+      hudMoveAim: { EN: "A/D move  W/S aim  F fire", ZH: "A/D 移动  W/S 瞄准  F 发射" },
+      hudCharge: { EN: "Hold F to charge, release to fire", ZH: "长按 F 蓄力，松开发射" },
+      hudMoveAimR: { EN: "←/→ move  ↑/↓ aim  Space fire", ZH: "←/→ 移动  ↑/↓ 瞄准  空格 发射" },
+      hudChargeR: { EN: "Hold Space to charge, release", ZH: "长按空格蓄力，松开发射" },
+      hudAngle: { EN: "Angle", ZH: "角度" },
+      hudPower: { EN: "Power", ZH: "威力" },
+      selectDifficulty: { EN: "Select Difficulty", ZH: "选择难度" },
+      diffEasy: { EN: "EASY", ZH: "简单" },
+      diffMedium: { EN: "MEDIUM", ZH: "普通" },
+      diffHard: { EN: "HARD", ZH: "困难" },
+      selectChar: { EN: "Choose Your Character", ZH: "选择你的角色" },
+      charDesc1Cat: { EN: "The agile cat warrior", ZH: "敏捷的猫战士" },
+      charDesc2Cat: { EN: "Balanced fighter", ZH: "均衡型战士" },
+      charDesc1Dog: { EN: "The powerful dog warrior", ZH: "强悍的狗战士" },
+      charDesc2Dog: { EN: "Heavy hitter", ZH: "重击型战士" },
+      btnBack: { EN: "← BACK", ZH: "← 返回" },
+      overtime: { EN: "OVERTIME", ZH: "加时赛" },
+      vs: { EN: "VS", ZH: "对战" },
+      hitDamage: { EN: "-15 HP!", ZH: "-15 HP！" },
+      defeatDog: { EN: "Ciyang defeated! 💀", ZH: "Ciyang 被击败！💀" },
+      defeatPlayer: { EN: "Rish defeated! 💀", ZH: "Rish 被击败！💀" },
+      wins: { EN: "🏆 {name} Wins!", ZH: "🏆 {name} 胜利！" },
+      remainHP: { EN: "Remaining HP: {hp}", ZH: "剩余 HP：{hp}" },
+      btnPlayAgain: { EN: "🔄 Play Again", ZH: "🔄 再来一局" },
+      btnMenu: { EN: "← Back to Menu", ZH: "← 返回主菜单" },
     };
   }
 
@@ -73,9 +73,9 @@ class LanguagePatcher {
 
   // Wraps a draw function so text() auto-translates known strings
   _wrap(fn, map) {
-    return function(...args) {
+    return function (...args) {
       const origText = window.text;
-      window.text = function(str, ...a) {
+      window.text = function (str, ...a) {
         if (typeof str === "string") {
           // exact match
           if (map[str]) str = map[str]();
@@ -83,8 +83,8 @@ class LanguagePatcher {
           else str = str
             .replace(/\bAngle\b/, LANG.t("hudAngle"))
             .replace(/\bPower\b/, LANG.t("hudPower"))
-            .replace(/🏆 (.+) Wins!/,      (_, n) => LANG.t("wins",     { name: n }))
-            .replace(/Remaining HP: (\d+)/, (_, h) => LANG.t("remainHP", { hp: h   }));
+            .replace(/🏆 (.+) Wins!/, (_, n) => LANG.t("wins", { name: n }))
+            .replace(/Remaining HP: (\d+)/, (_, h) => LANG.t("remainHP", { hp: h }));
         }
         return origText.call(this, str, ...a);
       };
@@ -94,42 +94,42 @@ class LanguagePatcher {
   }
 
   apply() {
-    window.drawStartScreen     = this._wrap(drawStartScreen, {
-      "MERCHANT FIGHTER":                       () => LANG.t("gameTitle"),
-      "Rish vs Ciyang":                         () => LANG.t("gameSubtitle"),
-      "START":                                  () => LANG.t("btnStart"),
-      "MOVE":                                   () => LANG.t("ctrlMove"),
-      "ADJUST ANGLE":                           () => LANG.t("ctrlAngle"),
+    window.drawStartScreen = this._wrap(drawStartScreen, {
+      "MERCHANT FIGHTER": () => LANG.t("gameTitle"),
+      "Rish vs Ciyang": () => LANG.t("gameSubtitle"),
+      "START": () => LANG.t("btnStart"),
+      "MOVE": () => LANG.t("ctrlMove"),
+      "ADJUST ANGLE": () => LANG.t("ctrlAngle"),
       "HOLD SPACE TO CHARGE • RELEASE TO FIRE": () => LANG.t("ctrlCharge"),
     });
 
-    window.drawLevelScreen     = this._wrap(drawLevelScreen, {
+    window.drawLevelScreen = this._wrap(drawLevelScreen, {
       "Select Difficulty": () => LANG.t("selectDifficulty"),
-      "EASY":              () => LANG.t("diffEasy"),
-      "MEDIUM":            () => LANG.t("diffMedium"),
-      "HARD":              () => LANG.t("diffHard"),
-      "← BACK":            () => LANG.t("btnBack"),
+      "EASY": () => LANG.t("diffEasy"),
+      "MEDIUM": () => LANG.t("diffMedium"),
+      "HARD": () => LANG.t("diffHard"),
+      "← BACK": () => LANG.t("btnBack"),
     });
 
     window.drawCharacterScreen = this._wrap(drawCharacterScreen, {
-      "Choose Your Character":    () => LANG.t("selectChar"),
-      "The agile cat warrior":    () => LANG.t("charDesc1Cat"),
-      "Balanced fighter":         () => LANG.t("charDesc2Cat"),
+      "Choose Your Character": () => LANG.t("selectChar"),
+      "The agile cat warrior": () => LANG.t("charDesc1Cat"),
+      "Balanced fighter": () => LANG.t("charDesc2Cat"),
       "The powerful dog warrior": () => LANG.t("charDesc1Dog"),
-      "Heavy hitter":             () => LANG.t("charDesc2Dog"),
-      "← BACK":                   () => LANG.t("btnBack"),
+      "Heavy hitter": () => LANG.t("charDesc2Dog"),
+      "← BACK": () => LANG.t("btnBack"),
     });
 
-    window.drawPlayScreen      = this._wrap(drawPlayScreen, {
-      "A/D move  W/S aim  F fire":        () => LANG.t("hudMoveAim"),
-      "Hold F to charge, release to fire":() => LANG.t("hudCharge"),
-      "←/→ move  ↑/↓ aim  Space fire":   () => LANG.t("hudMoveAimR"),
-      "Hold Space to charge, release":    () => LANG.t("hudChargeR"),
-      "OVERTIME":                         () => LANG.t("overtime"),
-      "VS":                               () => LANG.t("vs"),
-      "← BACK":                           () => LANG.t("btnBack"),
-      "🔄 Play Again":                    () => LANG.t("btnPlayAgain"),
-      "← Back to Menu":                   () => LANG.t("btnMenu"),
+    window.drawPlayScreen = this._wrap(drawPlayScreen, {
+      "A/D move  W/S aim  F fire": () => LANG.t("hudMoveAim"),
+      "Hold F to charge, release to fire": () => LANG.t("hudCharge"),
+      "←/→ move  ↑/↓ aim  Space fire": () => LANG.t("hudMoveAimR"),
+      "Hold Space to charge, release": () => LANG.t("hudChargeR"),
+      "OVERTIME": () => LANG.t("overtime"),
+      "VS": () => LANG.t("vs"),
+      "← BACK": () => LANG.t("btnBack"),
+      "🔄 Play Again": () => LANG.t("btnPlayAgain"),
+      "← Back to Menu": () => LANG.t("btnMenu"),
     });
 
     window.drawBackBtn = this._wrap(drawBackBtn, {
@@ -142,11 +142,13 @@ class LanguagePatcher {
 
     // Translate float damage texts in collision detection
     // Translate float damage texts in collision detection (with bounce)
-    CollisionDetection.prototype._updateProjectile = function(p, dt) {
-      p.vx += this.windAccel * dt;
-      p.vy += this.gravity   * dt;
-      p.x  += p.vx * dt;
-      p.y  += p.vy * dt;
+    CollisionDetection.prototype._updateProjectile = function (p, dt) {
+      const windDir = p.windDir !== undefined ? p.windDir : 1;
+      const gravScale = p.gravityScale !== undefined ? p.gravityScale : 1;
+      p.vx += this.windAccel * windDir * dt;
+      p.vy += this.gravity * gravScale * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
 
       // ── 边界反弹 ──
       let bounced = false;
@@ -177,17 +179,21 @@ class LanguagePatcher {
       // ── 角色碰撞（反弹后可伤害所有人）──
       for (const ch of this.characters) {
         if (p.bounces === 0 && ch.tag === p.owner) continue;
-        const hit = CollisionDetection.circleAABBHit(p, { x:ch.x, y:ch.y, w:ch.w, h:ch.h });
+        const hit = CollisionDetection.circleAABBHit(p, { x: ch.x, y: ch.y, w: ch.w, h: ch.h });
         if (hit) {
           if (ch.tag === "dog") {
             dogHP = Math.max(0, dogHP - 15);
-            this.floatTexts.push({ x:ch.x+ch.w/2, y:ch.y-20, vy:-50, life:1.2,
-              text: dogHP <= 0 ? LANG.t("defeatDog") : LANG.t("hitDamage") });
+            this.floatTexts.push({
+              x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
+              text: dogHP <= 0 ? `${LABELS.target} defeated! 💀` : LANG.t("hitDamage")
+            });
             tryPlaySound(sndHit);
           } else if (ch.tag === "player") {
             catHP = Math.max(0, catHP - 15);
-            this.floatTexts.push({ x:ch.x+ch.w/2, y:ch.y-20, vy:-50, life:1.2,
-              text: catHP <= 0 ? LANG.t("defeatPlayer") : LANG.t("hitDamage") });
+            this.floatTexts.push({
+              x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
+              text: catHP <= 0 ? `${LABELS.player} defeated! 💀` : LANG.t("hitDamage")
+            });
             tryPlaySound(sndHit);
           }
           p.alive = false; return;
@@ -195,7 +201,7 @@ class LanguagePatcher {
       }
 
       // ── 障碍物反弹 ──
-      const box = { x:p.x-p.r, y:p.y-p.r, w:p.r*2, h:p.r*2 };
+      const box = { x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 };
       for (const id of this._queryNearbyAABB(box)) {
         const stat = this.staticBodies.find(b => b.id === id);
         if (!stat) continue;

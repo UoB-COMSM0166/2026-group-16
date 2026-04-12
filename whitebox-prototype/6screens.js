@@ -3,6 +3,9 @@ function drawPlayScreen() {
   resetMatrix();
   const dt = Math.min(deltaTime / 1000, 0.033);
 
+  // Run autoplayer so keys are set BEFORE POWER/ANGLE.update() reads them
+  if (window.GAME_AUTO && GAME_AUTO.enabled) GAME_AUTO.update(dt);
+
   // --- TIMER ---
   if (!timerRunning) timerRunning = true;
   if (timerRunning && catHP > 0 && dogHP > 0) {
@@ -24,21 +27,62 @@ function drawPlayScreen() {
   if (!gameOver) {
     player.controllable = true; dogBody.controllable = true;
     angleObj.update(); powerObj.update(dt);
-    ciyangAngleObj.update(); ciyangPowerObj.update(dt);
+    ciyangAngleObj.update();
+    ciyangPowerObj.update(dt);
+    // In SINGLE mode: if VKEY didn't press fire, the charge came from real Space — cancel it
+    if (gameMode === "SINGLE" && window.VKEY && VKEY.enabled && !VKEY.isDown(ciyangPowerObj.fireKey)) {
+      if (ciyangPowerObj.isCharging) {
+        ciyangPowerObj.value = ciyangPowerObj.min;
+        ciyangPowerObj.isCharging = false;
+        ciyangPowerObj.justReleased = false;
+        ciyangPowerObj._wasCharging = false;
+      }
+    }
     cd._updateCharacter(player, dt, angleObj);
     cd._updateCharacter(dogBody, dt, ciyangAngleObj);
 
-    // 玩家发射
+    // ── Blackout elapsed counter ──────────────────────────────────
+    blackoutElapsed += dt;
+
+    // Trigger blackout at 20s (MEDIUM + HARD)
+    if (!blackout1Done && blackoutElapsed >= 20 &&
+      (selectedDifficulty === "MEDIUM" || selectedDifficulty === "HARD")) {
+      blackout1Done = true;
+      blackoutActive = true;
+      blackoutTimer = 5;
+    }
+    // Trigger second blackout at 40s (HARD only)
+    if (!blackout2Done && blackoutElapsed >= 40 && selectedDifficulty === "HARD") {
+      blackout2Done = true;
+      blackoutActive = true;
+      blackoutTimer = 5;
+    }
+    // Count down active blackout
+    if (blackoutActive) {
+      blackoutTimer -= dt;
+      if (blackoutTimer <= 0) {
+        blackoutActive = false;
+        blackoutTimer = 0;
+      }
+    }
+
+    // ── Player 1 fires ───────────────────────────────────────────
     if (powerObj.justReleased && powerObj.value > 10) {
       const fromX = player.x + player.w * (player.facing === 1 ? 0.9 : 0.1);
       const fromY = player.y + player.h * 0.35;
-      cd.spawnProjectile({ fromX, fromY, radius: 12, angleObj, powerObj, powerScale: 8, owner: "player", maxBounces: MAX_BOUNCES });
+      const wDef = playerWeapons.current;
+      _spawnWeaponShot(fromX, fromY, angleObj, powerObj, "player", wDef);
     }
-    // Ciyang 发射
+
+    // ── Player 2 / AI fires ──────────────────────────────────────
+    if (gameMode === "SINGLE") {
+      // weapon switching handled by AutoPlayer
+    }
     if (ciyangPowerObj.justReleased && ciyangPowerObj.value > 10) {
       const fromX = dogBody.x + dogBody.w * (dogBody.facing === 1 ? 0.9 : 0.1);
       const fromY = dogBody.y + dogBody.h * 0.35;
-      cd.spawnProjectile({ fromX, fromY, radius: 12, angleObj: ciyangAngleObj, powerObj: ciyangPowerObj, powerScale: 8, owner: "dog", maxBounces: MAX_BOUNCES });
+      const wDef = dogWeapons.current;
+      _spawnWeaponShot(fromX, fromY, ciyangAngleObj, ciyangPowerObj, "dog", wDef);
     }
 
     for (const p of cd.projectiles) if (p.alive) cd._updateProjectile(p, dt);
@@ -59,7 +103,21 @@ function drawPlayScreen() {
   }
 
   // Mattew sprite (faces RIGHT naturally, flip when facing=-1)
-  drawCharSprite(dogBody, imgTarget, -1);
+  // In SINGLE mode draw robot stretched to fill the character box (same height as player)
+  if (gameMode === "SINGLE" && imgTarget) {
+    push();
+    imageMode(CORNER);
+    if (dogBody.facing === 1) {
+      image(imgTarget, dogBody.x, dogBody.y, dogBody.w, dogBody.h);
+    } else {
+      translate(dogBody.x + dogBody.w, dogBody.y);
+      scale(-1, 1);
+      image(imgTarget, 0, 0, dogBody.w, dogBody.h);
+    }
+    pop();
+  } else {
+    drawCharSprite(dogBody, imgTarget, -1);
+  }
   drawHeadLabel(LABELS.target, dogBody.x + dogBody.w / 2, dogBody.y);
 
   drawAimTrajectory(player, angleObj, powerObj);
@@ -69,11 +127,13 @@ function drawPlayScreen() {
   drawCharSprite(player, imgPlayer, -1);
   drawHeadLabel(LABELS.player, player.x + player.w / 2, player.y);
 
-  // Projectiles
+  // Projectiles — use the weapon image stored on each projectile
   for (const p of cd.projectiles) {
     if (!p.alive) continue;
     push(); translate(p.x, p.y); rotate(Math.atan2(p.vy, p.vx));
-    drawContain(imgPan, -p.r * 4, -p.r * 3.1, p.r * 8, p.r * 6.2); pop();
+    const pImg = (p.weaponImg) ? p.weaponImg : imgPan;
+    drawContain(pImg, -p.r * 4, -p.r * 3.1, p.r * 8, p.r * 6.2);
+    pop();
   }
 
   // Float texts
@@ -84,23 +144,76 @@ function drawPlayScreen() {
   push();
   noStroke();
 
-  // Rish (top-left)
-  fill(0, 0, 0, 140); rect(8, 74, 220, 54, 6);
-  fill(200, 230, 255); textAlign(LEFT, TOP); textSize(13);
-  text(`${LABELS.player} | Angle: ${angleObj.angleDeg.toFixed(0)}°  Power: ${powerObj.value.toFixed(0)}`, 15, 79);
-  fill(170, 170, 170); textSize(11);
-  text("A/D move  W/S aim  F fire", 15, 96);
-  text("Hold F to charge, release to fire", 15, 110);
+  // ── HUD boxes: both 320px wide, 72px tall, 8px from edge, y=74 ──
+  const HUD_W = 320, HUD_H = 72, HUD_Y = 74;
+  const ICO = 44;
+  const p1X = 8;
+  const p2X = 1600 - HUD_W - 8;
 
-  // Ciyang (top-right)
-  fill(0, 0, 0, 140); rect(1600 - 228, 74, 220, 54, 6);
-  fill(255, 220, 180); textAlign(RIGHT, TOP); textSize(13);
-  text(`Angle: ${ciyangAngleObj.angleDeg.toFixed(0)}°  Power: ${ciyangPowerObj.value.toFixed(0)} | ${LABELS.target}`, 1600 - 15, 79);
+  const pw1 = playerWeapons.current;
+  const pw2 = dogWeapons.current;
+  const pw1Img = (weaponImages[pw1.imgKey] && weaponImages[pw1.imgKey].width > 4) ? weaponImages[pw1.imgKey] : imgPan;
+  const pw2Img = (weaponImages[pw2.imgKey] && weaponImages[pw2.imgKey].width > 4) ? weaponImages[pw2.imgKey] : imgPan;
+  const icoY = HUD_Y + (HUD_H - ICO) / 2;
+
+  fill(0, 0, 0, 140); rect(p1X, HUD_Y, HUD_W, HUD_H, 6);
+  imageMode(CORNER); image(pw1Img, p1X + 4, icoY, ICO, ICO);
+  const t1 = p1X + 4 + ICO + 4;
+  fill(200, 230, 255); textAlign(LEFT, TOP); textSize(13);
+  text(`${LABELS.player} | Angle: ${angleObj.angleDeg.toFixed(0)}° | Power: ${powerObj.value.toFixed(0)}`, t1, HUD_Y + 5);
+  fill(255, 210, 80); textSize(11);
+  text(`⚔️ ${pw1.label} | Bounces: ${pw1.maxBounces} | Q/E - To change weapons`, t1, HUD_Y + 23);
   fill(170, 170, 170); textSize(11);
-  text("←/→ move  ↑/↓ aim  Space fire", 1600 - 15, 96);
-  text("Hold Space to charge, release", 1600 - 15, 110);
+  text("A/D move   W/S aim   F fire", t1, HUD_Y + 38);
+  text("Hold F to charge, release to fire", t1, HUD_Y + 52);
+
+  // ── P2 box (top-right) — all text LEFT-aligned after icon ──
+  fill(0, 0, 0, 140); rect(p2X, HUD_Y, HUD_W, HUD_H, 6);
+  image(pw2Img, p2X + 4, icoY, ICO, ICO);
+  const t2 = p2X + 4 + ICO + 4;
+  fill(255, 220, 180); textAlign(LEFT, TOP); textSize(13);
+  text(`${LABELS.target} | Angle: ${ciyangAngleObj.angleDeg.toFixed(0)}° | Power: ${ciyangPowerObj.value.toFixed(0)}`, t2, HUD_Y + 5);
+  fill(255, 210, 80); textSize(11);
+  if (gameMode === "DUAL") {
+    text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces} | I/P - To change weapons`, t2, HUD_Y + 23);
+  } else {
+    text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces}`, t2, HUD_Y + 23);
+  }
+  fill(170, 170, 170); textSize(11);
+  if (gameMode === "DUAL") {
+    text("←/→ move   ↑/↓ aim   Space fire", t2, HUD_Y + 38);
+    text("Hold Space to charge, release", t2, HUD_Y + 52);
+  }
 
   pop();
+
+  // ── BLACKOUT OVERLAY ──────────────────────────────────────────
+  // Covers everything except the HUD elements drawn after this block
+  if (blackoutActive) {
+    push();
+    fill(0, 0, 0, 255);
+    noStroke();
+    rect(0, 0, 1600, 900);
+
+    // Power arc for Player 1
+    if (powerObj.isCharging) {
+      _drawAimBase(player, angleObj, powerObj, [255, 220, 50],
+        (playerWeapons.current.gravityScale !== undefined ? playerWeapons.current.gravityScale : 1),
+        (playerWeapons.current.powerScale ? playerWeapons.current.powerScale : 8));
+    }
+    // Power arc for Player 2 / AI
+    if (ciyangPowerObj.isCharging) {
+      _drawAimBase(dogBody, ciyangAngleObj, ciyangPowerObj, [255, 140, 40],
+        (dogWeapons.current.gravityScale !== undefined ? dogWeapons.current.gravityScale : 1),
+        (dogWeapons.current.powerScale ? dogWeapons.current.powerScale : 8));
+    }
+
+    // "BLACKOUT" label
+    fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(BOLD); noStroke();
+    text("⚫ BLACKOUT", 1600 / 2, 900 / 2);
+    textStyle(NORMAL);
+    pop();
+  }
 
   drawHealthBars();
 
@@ -184,6 +297,53 @@ function drawPlayScreen() {
   }
 }
 
+// ── Weapon-aware shot spawner ────────────────────────────────────
+// Fires 1–3 projectiles based on the weapon definition.
+// Each projectile carries a reference to its weapon image for rendering.
+function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
+  const count = wDef.count || 1;
+  const spread = wDef.spreadDeg || 0;
+  const power = pObj.consume();   // consume once, share value across shots
+  const wImg = weaponImages[wDef.imgKey] || imgPan;
+
+  for (let i = 0; i < count; i++) {
+    // Angle offset for multi-shot spread — centre the burst around base angle
+    const offsetDeg = (count === 1) ? 0 : (i - (count - 1) / 2) * spread;
+    const offsetRad = (offsetDeg * Math.PI) / 180;
+
+    // Build a temporary angle object shifted by offsetRad
+    const shiftedAngle = {
+      angleRad: aObj.angleRad + offsetRad,
+      angleDeg: aObj.angleDeg + offsetDeg,
+    };
+
+    // Fake a powerObj that returns the already-consumed value
+    const fakePower = { consume() { return power; }, value: power };
+
+    const p = cd.spawnProjectile({
+      fromX, fromY,
+      radius: wDef.radius,
+      angleObj: shiftedAngle,
+      powerObj: fakePower,
+      powerScale: wDef.powerScale,
+      owner,
+      maxBounces: wDef.maxBounces,
+    });
+
+    // Attach metadata for rendering and special effects
+    p.weaponImg = wImg;
+    p.weaponId = wDef.id;
+    p.weaponDamage = wDef.damage;
+    p.special = wDef.special;
+
+    // Ghost weapon: mark so collision skips static bodies
+    if (wDef.special === "ghost") p.ghost = true;
+
+    // Boomerang: negative wind drag (handled in _updateProjectile override in 8language.js)
+    if (wDef.special === "boomerang") p.boomerang = true;
+  }
+}
+
 // START SCREEN 
 function drawStartScreen() {
   resetMatrix();
@@ -195,7 +355,7 @@ function drawStartScreen() {
   fill(255, 220, 50);
   text("MERCHANT FIGHTER", 1600 / 2, 900 / 3);
   fill(255); textSize(28);
-  text("Rish vs Ciyang", 1600 / 2, 900 / 3 + 70);
+  //text("Rish vs Ciyang", 1600 / 2, 900 / 3 + 70);
 
   fill(80, 200, 80); rect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 25);
   fill(255); textSize(36); text("START", btnX, btnY);
@@ -238,22 +398,42 @@ function drawLevelScreen() {
   pop(); rectMode(CORNER); textStyle(NORMAL);
 }
 
-//  CHARACTER SCREEN 
-function drawCharacterScreen() {
-  resetMatrix();
-  push(); rectMode(CENTER);
-  fill(0, 0, 0, 200); rect(1600 / 2, 900 / 2, 1600, 900);
-  textAlign(CENTER, CENTER); fill(255, 220, 50); textSize(70);
-  text("Choose Your Character", 1600 / 2, 900 / 5);
+/*
+// ── Minimal AI for Single Player mode ───────────────────────────
+// The AI (dogBody / ciyangPowerObj) auto-charges and fires when facing the player.
+let _aiTimer = 0;
+function _updateAI(dt) {
+  _aiTimer += dt;
 
-  let cardW = 300, cardH = 400, gap = 80;
-  let lx = 1600 / 2 - cardW - gap / 2, rx = 1600 / 2 + gap / 2;
+  // Simple: always face the player
+  const dir = (player.x < dogBody.x) ? -1 : 1;
+  ciyangAngleObj.setDirection(dir);
+  dogBody.facing = dir;
 
-  drawCharCard(lx, cardW, cardH, imgPlayer, false, LABELS.player,
-    "The agile cat warrior", "Balanced fighter", [100, 150, 255, 200], [50, 50, 80, 200]);
-  drawCharCard(rx, cardW, cardH, imgTarget, false, LABELS.target,
-    "The powerful dog warrior", "Heavy hitter", [255, 150, 100, 200], [80, 50, 50, 200]);
+  // Aim at roughly the right angle
+  const dx = player.x - dogBody.x;
+  const dy = player.y - dogBody.y;
+  const targetAngle = Math.abs(Math.atan2(-dy, Math.abs(dx)) * 180 / Math.PI);
+  // Gradually nudge angle
+  const diff = targetAngle - ciyangAngleObj.angleDeg;
+  ciyangAngleObj.angleDeg += clamp(diff * dt * 2, -2, 2);
+  ciyangAngleObj.angleDeg = clamp(ciyangAngleObj.angleDeg, 0, 80);
 
-  drawBackBtn(900 - 60);
-  pop(); rectMode(CORNER);
+  // Charge and fire every 2.8 seconds
+  if (_aiTimer < 2.0) {
+    // Charge phase — simulate key held
+    ciyangPowerObj.value = clamp(ciyangPowerObj.value + ciyangPowerObj.chargeRatePerSec * dt, 0, ciyangPowerObj.max);
+    ciyangPowerObj.isCharging = true;
+    ciyangPowerObj._wasCharging = true;
+    ciyangPowerObj.justReleased = false;
+  } else if (_aiTimer < 2.05) {
+    // Release pulse
+    ciyangPowerObj.isCharging = false;
+    ciyangPowerObj.justReleased = true;
+    ciyangPowerObj._wasCharging = false;
+  } else {
+    ciyangPowerObj.justReleased = false;
+    if (_aiTimer > 2.8) _aiTimer = 0;
+  }
 }
+*/
