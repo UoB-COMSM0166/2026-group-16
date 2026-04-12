@@ -11,6 +11,44 @@ const LABEL_STYLE = {
   boxStrokeWeight: 2,
 };
 
+const CHARACTERS_FANTASY = [
+  {
+    name: "John", portrait: "portrait_John_fantasy.png", nameUI: "name_John.png", bioUI: "bio_John.png",
+    bioText: { EN: "An elven knight wielding a greatsword, a mysterious tome never leaves his hand.", ZH: "精灵骑士，手持巨剑，一本神秘的古书从不离身。" }
+  },
+  {
+    name: "Kira", portrait: "portrait_Kira_fantasy.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
+    bioText: { EN: "A winged angel, successor to Cupid. Armed with bow and arrow.", ZH: "拥有白色羽翼的天使，丘比特的后继者。手持弓箭与命运之书。" }
+  },
+  {
+    name: "Mat", portrait: "portrait_Mat_fantasy.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
+    bioText: { EN: "A high-ranking priest draped in crimson and black.", ZH: "身披红披风与黑袍的高阶传教士。" }
+  },
+  {
+    name: "Jo", portrait: "portrait_Jo_fantasy.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
+    bioText: { EN: "A wandering bard with a lamb in his arms, shrouded in mystery.", ZH: "流浪吟游诗人，一手抱羊，一手执琴。受神祝福，却身世成谜。" }
+  }
+];
+
+const CHARACTERS_MODERN = [
+  {
+    name: "John", portrait: "portrait_John_modern.png", nameUI: "name_John.png", bioUI: "bio_John.png",
+    bioText: { EN: "A master of quizzes, known for exams.", ZH: "测验达人，考试难度令人望而生畏。" }
+  },
+  {
+    name: "Kira", portrait: "portrait_Kira_modern.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
+    bioText: { EN: "Every detail matters under her watch, she won't let you slip.", ZH: "耐心而严谨，对细节一丝不苟。" }
+  },
+  {
+    name: "Mat", portrait: "portrait_Mat_modern.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
+    bioText: { EN: "No one can guess what he's thinking, especially during exams.", ZH: "平静的面孔让人猜不透当下的心情——尤其是考试时。" }
+  },
+  {
+    name: "Jo", portrait: "portrait_Jo_modern.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
+    bioText: { EN: "You'll love his class and fear his final.", ZH: "课堂生动有趣，但考试依旧极具挑战。" }
+  }
+];
+
 // IMAGES — fantasy
 let imgBgFantasy, imgCharSelectFantasy;
 let imgPlayerFantasy, imgTargetFantasy;
@@ -51,6 +89,9 @@ let modernArrowLeft, modernArrowRight, modernPlatformGlow, modernFrameDiamond, m
 let fantasyBioPanel, modernBioPanel;
 let csAssets_fantasy = [];
 let csAssets_modern = [];
+
+let bioF_John, bioF_Kira, bioF_Mat, bioF_Jo;
+let bioM_John, bioM_Kira, bioM_Mat, bioM_Jo;
 
 // ── sound helper ───────────────────────────────────────────
 function tryPlaySound(snd) {
@@ -127,6 +168,21 @@ function preload() {
   keyRight = loadImage("assets/ui/key_right.png");
   keySpace = loadImage("assets/ui/key_space.png");
   difficultyUI = loadImage("assets/ui/difficult-select-01.png");
+
+  pixelFont = loadFont('assets/font/Press_Start_2P/PressStart2P-Regular.ttf');
+  // 在 preload() 中添加，位于加载 fantasy/modern UI 之后
+
+  const BIO_F_BASE = "assets/images/CharacterSelect/fantasy/";
+  bioF_John = loadImage(BIO_F_BASE + "bioo_John_fantasy.png");
+  bioF_Kira = loadImage(BIO_F_BASE + "bioo_Kira_fantasy.png");
+  bioF_Mat = loadImage(BIO_F_BASE + "bioo_Mat_fantasy.png");
+  bioF_Jo = loadImage(BIO_F_BASE + "bioo_Jo_fantasy.png");
+
+  const BIO_M_BASE = "assets/images/CharacterSelect/modern/";
+  bioM_John = loadImage(BIO_M_BASE + "bioo_John_modern.png");
+  bioM_Kira = loadImage(BIO_M_BASE + "bioo_Kira_modern.png");
+  bioM_Mat = loadImage(BIO_M_BASE + "bioo_Mat_modern.png");
+  bioM_Jo = loadImage(BIO_M_BASE + "bioo_Jo_modern.png");
   // NOTE: sound is loaded in setup() so a bad path never blocks preload
 
   // Grace3.31__Character Select Screen Assets — fantasy

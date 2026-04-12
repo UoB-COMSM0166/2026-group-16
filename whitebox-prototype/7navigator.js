@@ -40,11 +40,15 @@ class Navigator {
     // left arrow (716, 402, 135, 134)
     if (mx > 716 && mx < 716 + 135 && my > 402 && my < 402 + 134) {
       charSelectIndex = (charSelectIndex + 3) % 4;
+      isSquashing = true;
+      squashTime = 0;
       return;
     }
     // right arrow (1422, 402, 135, 134)
     if (mx > 1422 && mx < 1422 + 135 && my > 402 && my < 402 + 134) {
       charSelectIndex = (charSelectIndex + 1) % 4;
+      isSquashing = true;
+      squashTime = 0;
       return;
     }
     // Confirm (1015, 506, 262, 97)

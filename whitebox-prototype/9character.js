@@ -1,45 +1,58 @@
-const CHARACTERS_FANTASY = [
-  {
-    name: "John", portrait: "portrait_John_fantasy.png", nameUI: "name_John.png", bioUI: "bio_John.png",
-    bioText: { EN: "A fierce warrior from the northern lands. Master of the broadsword.", ZH: "来自北方的凶猛战士，阔剑大师。" }
-  },
-  {
-    name: "Kira", portrait: "portrait_Kira_fantasy.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
-    bioText: { EN: "Swift as the wind, she strikes before you blink.", ZH: "疾如风，瞬杀之刃。" }
-  },
-  {
-    name: "Mat", portrait: "portrait_Mat_fantasy.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
-    bioText: { EN: "Archer with a keen eye. Never misses.", ZH: "眼神锐利的弓箭手，百发百中。" }
-  },
-  {
-    name: "Jo", portrait: "portrait_Jo_fantasy.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
-    bioText: { EN: "A wandering monk who fights with bare hands.", ZH: "以空手战斗的流浪武僧。" }
-  }
-];
-
-const CHARACTERS_MODERN = [
-  {
-    name: "John", portrait: "portrait_John_modern.png", nameUI: "name_John.png", bioUI: "bio_John.png",
-    bioText: { EN: "A modern warrior with high-tech armor.", ZH: "身着高科技盔甲的现代战士。" }
-  },
-  {
-    name: "Kira", portrait: "portrait_Kira_modern.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
-    bioText: { EN: "Cyber-enhanced assassin with lightning speed.", ZH: "拥有闪电速度的机械刺客。" }
-  },
-  {
-    name: "Mat", portrait: "portrait_Mat_modern.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
-    bioText: { EN: "Sniper with perfect aim and tactical gear.", ZH: "精准瞄准、装备齐全的狙击手。" }
-  },
-  {
-    name: "Jo", portrait: "portrait_Jo_modern.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
-    bioText: { EN: "Street fighter with improvised weapons.", ZH: "使用临时武器的街头格斗家。" }
-  }
-];
+let squashTime = 0;          // 当前动画时间
+let squashDuration = 0.07;   // 动画总时长（秒）
+let isSquashing = false;
+let lastGameState = null;    // 用于检测状态变化，触发入场弹跳
+// ===== 箭头弹跳动画变量 =====
+let leftArrowSquashTime = 0;      // 左箭头动画剩余时间（秒）
+let rightArrowSquashTime = 0;     // 右箭头动画剩余时间（秒）
+const ARROW_SQUASH_DURATION = 0.1; // 动画持续时间（秒）
 
 let charSelectIndex = 0;
 
 function drawCharacterScreen() {
   resetMatrix();
+
+  // ── 检测是否刚进入 CHARACTER 界面 ─────────────────
+  if (lastGameState !== "CHARACTER" && gameState === "CHARACTER") {
+    charSelectIndex = 0;           // 重置为第一个角色
+    isSquashing = true;
+    squashTime = 0;
+  }
+  lastGameState = gameState;
+
+  // ── 更新弹跳动画时间 ─────────────────────────────
+  if (isSquashing) {
+    squashTime += deltaTime / 1000;
+    if (squashTime >= squashDuration) {
+      squashTime = squashDuration;
+      isSquashing = false;
+    }
+  }
+
+  // ===== 箭头点击检测与动画更新 =====
+  let mx = mouseX, my = mouseY;  // 获取鼠标位置
+  // 检测左箭头点击（仅在未播放动画时触发）
+  if (mouseIsPressed && leftArrowSquashTime <= 0) {
+    if (mx > 716 && mx < 716 + 135 && my > 402 && my < 402 + 134) {
+      leftArrowSquashTime = 0.001;  // 开始动画
+    }
+  }
+  // 检测右箭头点击
+  if (mouseIsPressed && rightArrowSquashTime <= 0) {
+    if (mx > 1422 && mx < 1422 + 135 && my > 402 && my < 402 + 134) {
+      rightArrowSquashTime = 0.001;
+    }
+  }
+  // 更新左箭头动画时间
+  if (leftArrowSquashTime > 0) {
+    leftArrowSquashTime += deltaTime / 1000;
+    if (leftArrowSquashTime >= ARROW_SQUASH_DURATION) leftArrowSquashTime = 0;
+  }
+  // 更新右箭头动画时间
+  if (rightArrowSquashTime > 0) {
+    rightArrowSquashTime += deltaTime / 1000;
+    if (rightArrowSquashTime >= ARROW_SQUASH_DURATION) rightArrowSquashTime = 0;
+  }
 
   const isModern = (selectedDifficulty === "HARD");
 
@@ -57,45 +70,87 @@ function drawCharacterScreen() {
 
   drawImageCover(bgImg, 0, 0, 1600, 900);
 
-  const platformY = isModern ? 365 : 395; // 向下移动20像素
+  const platformY = isModern ? 365 : 395;
   image(platformGlow, 211, platformY, 404, 393);
-
   image(frameDiamond, 867, 152, 546, 643);
 
   const portraitX = 211, portraitY = 149, portraitW = 479, portraitH = 647;
-  drawContain(cur.portrait, portraitX, portraitY, portraitW, portraitH);
 
-  image(cur.nameUI, 1039, 282, 202, 147);
+  // ── character弹跳动画：先压扁再拉长（基于正弦曲线）────────────────
+  push();
+  let scaleX = 1;
+  let scaleY = 1;
+  if (isSquashing) {
+    let t = squashTime / squashDuration;   // 0 → 1
+    // 正弦曲线：0 → 1 → 0，在 t=0.5 时达到最大变形
+    let s = Math.sin(t * Math.PI);
+    // 增强幅度：横向拉伸 0.15，纵向压缩 0.15
+    scaleX = 1 + s * 0.15;
+    scaleY = 1 - s * 0.15;
+  }
+  translate(portraitX + portraitW / 2, portraitY + portraitH / 2);
+  scale(scaleX, scaleY);
+  drawContain(cur.portrait, -portraitW / 2, -portraitH / 2, portraitW, portraitH);
+  pop();
 
+  // 名字浮动效果：上下幅度 4 像素，周期约 1 秒（2*PI/1000 ≈ 0.00628）
+  let floatOffset = sin(millis() * 0.006) * 4;
+  image(cur.nameUI, 1039, 282 + floatOffset, 202, 147);
   image(cur.bioUI, 1016, 429, 251, 58);
 
-  image(arrowLeft, 716, 402, 135, 134);
-  image(arrowRight, 1422, 402, 135, 134);
+  // ===== 绘制左箭头（带点击弹跳 + Y轴下沉） =====
+  push();
+  let sx = 1, sy = 1;
+  let yOffset = 0;   // 声明并初始化为 0
+  if (leftArrowSquashTime > 0) {
+    let t = leftArrowSquashTime / ARROW_SQUASH_DURATION;
+    let s = Math.sin(t * Math.PI);
+    sx = 1 + s * 0.1;
+    sy = 1 - s * 0.1;
+    yOffset = -Math.sin(t * Math.PI) * -20;   // 下沉 20 像素再回来
+  }
+  translate(716 + 135 / 2, 402 + 134 / 2 + yOffset);
+  scale(sx, sy);
+  image(arrowLeft, -135 / 2, -134 / 2, 135, 134);
+  pop();
 
-  // 确认按钮区域
+  // ===== 绘制右箭头（带点击弹跳 + Y轴下沉） =====
+  push();
+  let rx = 1, ry = 1;
+  let yOffsetR = 0;   // 声明并初始化为 0
+  if (rightArrowSquashTime > 0) {
+    let t = rightArrowSquashTime / ARROW_SQUASH_DURATION;
+    let s = Math.sin(t * Math.PI);
+    rx = 1 + s * 0.1;
+    ry = 1 - s * 0.1;
+    yOffsetR = -Math.sin(t * Math.PI) * -20;
+  }
+  translate(1422 + 135 / 2, 402 + 134 / 2 + yOffsetR);
+  scale(rx, ry);
+  image(arrowRight, -135 / 2, -134 / 2, 135, 134);
+  pop();
+
+  // 确认按钮
   const btnX = 1015, btnY = 506, btnW = 262, btnH = 97;
   const isHover = (mouseX > btnX && mouseX < btnX + btnW && mouseY > btnY && mouseY < btnY + btnH);
-  if (isHover) {
-    tint(180, 180, 180);
-  } else {
-    noTint();
-  }
+  if (isHover) tint(180, 180, 180);
+  else noTint();
   image(btnConfirm, btnX, btnY, btnW, btnH);
   noTint();
 
-  // 绘制文字 — 像素风格
+  // 按钮文字
   push();
   textAlign(CENTER, CENTER);
-  textFont('Courier New');     // 使用等宽像素字体，也可换用 'Press Start 2P' 需先加载
+  textFont('Courier New');
   textStyle(BOLD);
   textSize(41);
-  stroke(0);                   // 黑色描边
-  strokeWeight(4);             // 描边粗细
-  fill(255);                   // 白色填充
+  stroke(0);
+  strokeWeight(4);
+  fill(255);
   text(LANG.t("btnStart"), btnX + btnW / 2, btnY + btnH / 2);
   pop();
 
-  // 自定义返回按钮
+  // 返回按钮
   {
     const btnW = 150, btnH = 50;
     const btnX = 1600 / 2 - btnW / 2;
@@ -106,7 +161,7 @@ function drawCharacterScreen() {
     text("← BACK", 1600 / 2, btnY + btnH / 2);
   }
 
-  // ========== 动态 Bio 面板（跟随鼠标） ==========
+  // 鼠标悬浮显示 Bio 面板（保持不变）
   const portraitRect = { x: 211, y: 149, w: 479, h: 647 };
   const isHovering = (mouseX > portraitRect.x && mouseX < portraitRect.x + portraitRect.w &&
     mouseY > portraitRect.y && mouseY < portraitRect.y + portraitRect.h);
@@ -115,8 +170,6 @@ function drawCharacterScreen() {
     const panelImg = isModern ? modernBioPanel : fantasyBioPanel;
     const panelW = isModern ? 283 : 346;
     const panelH = isModern ? 404 : 442;
-
-    // 跟随鼠标位置
     let panelX = mouseX + 20;
     let panelY = mouseY + 20;
     if (panelX + panelW > width) panelX = mouseX - panelW - 20;
@@ -125,27 +178,71 @@ function drawCharacterScreen() {
     panelY = constrain(panelY, 0, height - panelH);
 
     if (panelImg) {
+      // 先绘制原始 bio_panel 底图
       image(panelImg, panelX, panelY, panelW, panelH);
+
+      // ===== 叠加角色专属花纹底图 =====
+      let charBioOverlay = null;
+      const charName = cur.name;
+
+      if (isModern) {
+        if (charName === "John") charBioOverlay = bioM_John;
+        else if (charName === "Kira") charBioOverlay = bioM_Kira;
+        else if (charName === "Mat") charBioOverlay = bioM_Mat;
+        else if (charName === "Jo") charBioOverlay = bioM_Jo;
+      } else {
+        if (charName === "John") charBioOverlay = bioF_John;
+        else if (charName === "Kira") charBioOverlay = bioF_Kira;
+        else if (charName === "Mat") charBioOverlay = bioF_Mat;
+        else if (charName === "Jo") charBioOverlay = bioF_Jo;
+      }
+
+      if (charBioOverlay) {
+        image(charBioOverlay, panelX, panelY, panelW, panelH);
+      }
 
       const bioTextObj = cur.bioText || { EN: "No description available.", ZH: "暂无描述。" };
       const lang = LANG.current;
       const bioStr = bioTextObj[lang] || bioTextObj.EN;
 
-      // 居中像素风格文字
       push();
       textAlign(CENTER, CENTER);
-      textFont('Courier New');
-      textStyle(BOLD);
-      textSize(18);
-      fill(0);
+
+      // ===== 根据模式选择不同文字参数 =====
+      let leftMargin, topMargin, textAreaW, lineHeight, fontSize;
+
+      if (isModern) {
+        // Modern 面板 283x404
+        fontSize = 14;              // 像素字体稍小
+        leftMargin = 30;            // 左右留白
+        topMargin = 250;            // 上边距（现代风格文字偏上）
+        textAreaW = panelW - leftMargin * 2;  // 283 - 60 = 223px
+        lineHeight = 22;
+      } else {
+        // Fantasy 面板 346x442
+        fontSize = 16;
+        leftMargin = 40;
+        topMargin = 280;
+        textAreaW = panelW - leftMargin * 2;  // 346 - 80 = 266px
+        lineHeight = 20;
+      }
+
+      // 使用像素字体（如果已加载）
+      if (pixelFont) {
+        textFont(pixelFont);
+      } else {
+        textFont(isModern ? 'Courier New' : 'Georgia');
+      }
+      textStyle(NORMAL);
+      textSize(fontSize);
+      fill(40, 25, 10);
       noStroke();
 
-      const textMargin = 15;
-      const textAreaW = panelW - textMargin * 2;
-      const textAreaX = panelX + panelW / 2;
-      const textAreaY = panelY + panelH / 2;
+      // 文本区域的实际左上角坐标
+      const textAreaX = panelX + leftMargin;
+      const textAreaY = panelY + topMargin;
 
-      // 自动换行
+      // 手动换行
       let words = bioStr.split(' ');
       let lines = [];
       let currentLine = "";
@@ -160,12 +257,9 @@ function drawCharacterScreen() {
       }
       if (currentLine) lines.push(currentLine);
 
-      const lineHeight = 26;
-      const totalHeight = lines.length * lineHeight;
-      let startY = textAreaY - totalHeight / 2;
-
+      let startY = textAreaY;
       for (let i = 0; i < lines.length; i++) {
-        text(lines[i], textAreaX, startY + i * lineHeight);
+        text(lines[i], textAreaX + textAreaW / 2, startY + i * lineHeight);
       }
       pop();
     }
