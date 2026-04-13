@@ -9,31 +9,48 @@ class Navigator {
   }
 
   _onStart(mx, my) {
-    if (mx > btnX - btnW / 2 && mx < btnX + btnW / 2 &&
-      my > btnY - btnH / 2 && my < btnY + btnH / 2) {
+    const btn = startAnim.BTN_START;
+    const left = btn.x;
+    const right = btn.x + btn.w;
+    const top = btn.y;
+    const bottom = btn.y + btn.h;
+
+    // can only click when animation is done
+    if (!startAnim.isDone()) return;
+
+    if (mx > left && mx < right && my > top && my < bottom) {
       gameState = "CHOOSE";
     }
   }
 
   _onChoose(mx, my) {
     const backY = 900 - 100, bkW = 150, bkH = 50;
-    const bW = 320, bH = bW * 32 / 96, gap = 30;
-    const startY = 900 / 2 + 20 - (bH * 3 + gap * 2) / 2 + bH / 2;
-    const diffs = ["EASY", "MEDIUM", "HARD"];
 
-    for (let i = 0; i < 3; i++) {
-      const cx = 1600 / 2, cy = startY + i * (bH + gap);
-      if (mx > cx - bW / 2 && mx < cx + bW / 2 &&
-        my > cy - bH / 2 && my < cy + bH / 2) {
-        selectedDifficulty = diffs[i];
+    const easyBtn = { x: 471, y: 294, w: 584, h: 105 };
+    const medBtn = { x: 470, y: 424, w: 584, h: 105 };
+    const hardBtn = { x: 474, y: 550, w: 581, h: 106 };
+
+    const buttons = [
+      { rect: easyBtn, diff: "EASY" },
+      { rect: medBtn, diff: "MEDIUM" },
+      { rect: hardBtn, diff: "HARD" }
+    ];
+
+    for (let btn of buttons) {
+      const r = btn.rect;
+      if (mx > r.x && mx < r.x + r.w && my > r.y && my < r.y + r.h) {
+        selectedDifficulty = btn.diff;
         applyDifficultyAssets();
-        gameState = "MODE";   // ← go to mode select first
+        gameState = "MODE";
         return;
       }
     }
+
     if (mx > 1600 / 2 - bkW / 2 && mx < 1600 / 2 + bkW / 2 &&
       my > backY - bkH / 2 && my < backY + bkH / 2) {
       gameState = "START";
+      if (typeof startAnim !== 'undefined') startAnim.reset();
+      if (typeof levelAnim !== 'undefined') levelAnim.reset();
     }
   }
 

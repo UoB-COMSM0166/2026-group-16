@@ -141,7 +141,7 @@ function drawCharacterScreen() {
   // 按钮文字
   push();
   textAlign(CENTER, CENTER);
-  textFont('Courier New');
+  textFont('pixelFont');
   textStyle(BOLD);
   textSize(41);
   stroke(0);
@@ -158,6 +158,7 @@ function drawCharacterScreen() {
     fill(0, 0, 0, 120); rect(btnX + 3, btnY + 3, btnW, btnH, 20);
     fill(150, 150, 150); rect(btnX, btnY, btnW, btnH, 20);
     fill(255); textSize(24); textAlign(CENTER, CENTER);
+    textFont(pixelFont);
     text("← BACK", 1600 / 2, btnY + btnH / 2);
   }
 

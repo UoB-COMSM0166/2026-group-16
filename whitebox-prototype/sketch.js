@@ -81,7 +81,6 @@ let soundUnlocked = false; // browsers block audio until first user click
 let catHP = 100, dogHP = 100;
 let ciyangAngleObj, ciyangPowerObj;
 let gameState = "START", selectedDifficulty = "";
-const btnX = 800, btnY = 450, btnW = 260, btnH = 80;
 const GROUND_Y = 850;
 
 let nav; // Navigator instance
@@ -108,6 +107,14 @@ let csAssets_modern = [];
 
 let bioF_John, bioF_Kira, bioF_Mat, bioF_Jo;
 let bioM_John, bioM_Kira, bioM_Mat, bioM_Jo;
+
+//start screen animation
+let imgStartBg, imgTitle, imgBtnStart, imgBtnIntro;
+let startAnim;
+let levelAnim;
+let imgDifficultyBg;
+let imgDiffEasy, imgDiffMedium, imgDiffHard;
+
 // ── GAME MODE ─────────────────────────────────────────────────────
 // "SINGLE" = human vs AI  |  "DUAL" = human vs human
 let gameMode = "DUAL";
@@ -240,17 +247,13 @@ function preload() {
   // Shared
   imgPan = loadImage("pan.png");
   imgWall = loadImage("assets/images/bg/wall_fantasy.png");
-  keyA = loadImage("assets/ui/key_a.png");
-  keyD = loadImage("assets/ui/key_d.png");
-  keyUp = loadImage("assets/ui/key_up.png");
-  keyDown = loadImage("assets/ui/key_down.png");
-  keyLeft = loadImage("assets/ui/key_left.png");
-  keyRight = loadImage("assets/ui/key_right.png");
-  keySpace = loadImage("assets/ui/key_space.png");
   difficultyUI = loadImage("assets/ui/difficult-select-01.png");
+  imgDifficultyBg = loadImage("assets/images/DifficultySelect/difficult_bg.png");
+  imgDiffEasy = loadImage("assets/images/DifficultySelect/easy_button.png");
+  imgDiffMedium = loadImage("assets/images/DifficultySelect/medium_button.png");
+  imgDiffHard = loadImage("assets/images/DifficultySelect/hard_button.png");
 
   pixelFont = loadFont('assets/font/Press_Start_2P/PressStart2P-Regular.ttf');
-  // 在 preload() 中添加，位于加载 fantasy/modern UI 之后
 
   const BIO_F_BASE = "assets/images/CharacterSelect/fantasy/";
   bioF_John = loadImage(BIO_F_BASE + "bioo_John_fantasy.png");
@@ -274,6 +277,12 @@ function preload() {
   ];
   for (const n of wNames) {
     weaponImages[n] = loadImage(WPATH + n + ".png");
+
+    // Start screen animation assets
+    imgStartBg = loadImage("assets/images/StartScreen/start_bg.png");
+    imgTitle = loadImage("assets/images/StartScreen/title.png");
+    imgBtnStart = loadImage("assets/images/StartScreen/start_button.png");
+    imgBtnIntro = loadImage("assets/images/StartScreen/intro_text.png");
   }
 
   // Grace3.31__Character Select Screen Assets — fantasy
@@ -357,6 +366,12 @@ function setup() {
   );
 
   LANG_PATCHER.apply(); // apply language patches after p5 is ready
+
+  startAnim = new StartScreenAnimator();
+  startAnim.setImages(imgStartBg, imgTitle, imgBtnStart, imgBtnIntro);
+
+  // levelselect screen animation
+  levelAnim = new LevelScreenAnimator();
 }
 
 function draw() {
@@ -373,7 +388,10 @@ function draw() {
   }
 
   if (gameState === "START") drawStartScreen();
-  else if (gameState === "CHOOSE") drawLevelScreen();
+  else if (gameState === "CHOOSE") {
+    levelAnim.update();
+    drawLevelScreen();
+  }
   else if (gameState === "MODE") drawModeScreen();
   else if (gameState === "CHARACTER") drawCharacterScreen();
   else if (gameState === "WEAPON_SELECT") drawWeaponSelectScreen();
@@ -389,6 +407,7 @@ function draw() {
 }
 
 function mousePressed() {
+  if (!nav) return;
   // Unlock audio context on first click (browser requirement)
   if (!soundUnlocked) {
     userStartAudio();

@@ -142,6 +142,7 @@ function drawPlayScreen() {
 
   // HUD - top corners, under health bar (~72px tall)
   push();
+  textFont(pixelFont);
   noStroke();
 
   // ── HUD boxes: both 320px wide, 72px tall, 8px from edge, y=74 ──
@@ -209,9 +210,9 @@ function drawPlayScreen() {
     }
 
     // "BLACKOUT" label
-    fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(BOLD); noStroke();
+    fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(pixelFont); noStroke();
     text("⚫ BLACKOUT", 1600 / 2, 900 / 2);
-    textStyle(NORMAL);
+    textStyle(pixelFont);
     pop();
   }
 
@@ -227,7 +228,7 @@ function drawPlayScreen() {
     const boxW = overtimeActive ? 210 : 130;
     const boxH = overtimeActive ? 46 : 38;
 
-    push(); rectMode(CENTER); textAlign(CENTER, CENTER);
+    push(); textFont(pixelFont); rectMode(CENTER); textAlign(CENTER, CENTER);
     fill(0, 0, 0, 120); rect(timerX + 3, timerY + 3, boxW, boxH, 10);
     if (overtimeActive) fill(160, 80, 0, 230);
     else if (isLow) fill(lerp(60, 180, pulse), 0, 0, 230);
@@ -267,7 +268,7 @@ function drawPlayScreen() {
     const winnerHP = winnerIsRish ? catHP : dogHP;
     const winnerImg = winnerIsRish ? imgPlayer : imgTarget;
 
-    push(); fill(0, 0, 0, 180); rect(0, 0, 1600, 900);
+    push(); textFont(pixelFont); fill(0, 0, 0, 180); rect(0, 0, 1600, 900);
     const px = 1600 / 2, py = 900 / 2 - 60, ps = 200;
     drawContain(winnerImg, px - ps / 2, py - ps / 2, ps, ps);
     textAlign(CENTER, CENTER);
@@ -344,58 +345,159 @@ function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
   }
 }
 
-// START SCREEN 
+// START SCREEN - polished
 function drawStartScreen() {
   resetMatrix();
-  drawImageCover(imgBg, 0, 0, 1600, 900);
-  textSize(60); fill(0, 0, 0, 200); rect(0, 0, 1600, 900);
+  startAnim.update();
 
-  fill(0, 0, 0, 150); textSize(70);
-  text("MERCHANT FIGHTER", 1600 / 2 + 4, 900 / 3 + 4);
-  fill(255, 220, 50);
-  text("MERCHANT FIGHTER", 1600 / 2, 900 / 3);
-  fill(255); textSize(28);
-  //text("Rish vs Ciyang", 1600 / 2, 900 / 3 + 70);
+  push();
 
-  fill(80, 200, 80); rect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 25);
-  fill(255); textSize(36); text("START", btnX, btnY);
+  // ---- 背景（直接显示 + 上移） ----
+  push();
+  tint(255, startAnim.getBgAlpha() * 255);
+  translate(0, startAnim.getBgOffsetY());
+  image(startAnim.imgBg, 0, 0, 1600, 2848);
+  pop();
 
-  // Controls guide
-  const s = 20, ico = 48, rY = 900 / 2 + 160, gap = 70;
-  const lx = 1600 / 2 - 220, cx = 1600 / 2, rx = 1600 / 2 + 220;
+  // ---- 标题（淡入 + 下落） ----
+  push();
+  tint(255, startAnim.getTitleAlpha() * 255);
+  translate(0, startAnim.getTitleYOffset());
+  image(startAnim.imgTitle,
+    startAnim.TITLE.x, startAnim.TITLE.y,
+    startAnim.TITLE.w, startAnim.TITLE.h);
+  pop();
 
-  image(keyLeft, lx - s, rY, ico, ico); image(keyRight, lx + s, rY, ico, ico);
-  fill(255); textSize(26); text("MOVE", cx, rY);
-  image(keyA, rx - s, rY, ico, ico); image(keyD, rx + s, rY, ico, ico);
+  // ---- 按钮（渐显） ----
+  const btnStart = startAnim.BTN_START;
+  const btnIntro = startAnim.BTN_INTRO;
 
-  image(keyUp, lx - s, rY + gap, ico, ico); image(keyDown, lx + s, rY + gap, ico, ico);
-  fill(255); textSize(26); text("ADJUST ANGLE", cx, rY + gap);
+  // 检测鼠标是否悬停在任一按钮上
+  const hoverStart = (mouseX > btnStart.x && mouseX < btnStart.x + btnStart.w &&
+    mouseY > btnStart.y && mouseY < btnStart.y + btnStart.h);
+  const hoverIntro = (mouseX > btnIntro.x && mouseX < btnIntro.x + btnIntro.w &&
+    mouseY > btnIntro.y && mouseY < btnIntro.y + btnIntro.h);
+  const anyHover = hoverStart || hoverIntro;
 
-  fill(255); textSize(22); text("HOLD SPACE TO CHARGE • RELEASE TO FIRE", cx, rY + gap * 2);
-  push(); imageMode(CENTER); image(keySpace, cx, rY + gap * 2 + 50, 160, 40); pop();
+  // 将悬停状态告知动画器（用于暂停浮动）
+  if (startAnim.setButtonHovered) {
+    startAnim.setButtonHovered(anyHover);
+  }
+
+  const btnAlpha = startAnim.getButtonAlpha() * 255;
+  const floatY = startAnim.getButtonFloatOffset ? startAnim.getButtonFloatOffset() : 0;
+
+  // 开始按钮
+  push();
+  if (hoverStart) {
+    tint(150, btnAlpha);   // 变灰（降低 RGB 通道）
+  } else {
+    tint(255, btnAlpha);
+  }
+  image(startAnim.imgBtnStart,
+    btnStart.x, btnStart.y + floatY,   // 应用浮动偏移
+    btnStart.w, btnStart.h);
+  pop();
+
+  // 介绍文字
+  push();
+  tint(255, btnAlpha);
+  image(startAnim.imgBtnIntro,
+    startAnim.BTN_INTRO.x, startAnim.BTN_INTRO.y,
+    startAnim.BTN_INTRO.w, startAnim.BTN_INTRO.h);
+  pop();
+
+  pop();
 }
+
+
 
 // LEVEL SCREEN 
 function drawLevelScreen() {
   resetMatrix();
-  drawImageCover(imgPlayScreen, 0, 0, 1600, 900);
-  fill(0, 0, 0, 200); rect(0, 0, 1600, 900);
-  fill(255, 220, 50); textSize(70); text("Select Difficulty", 1600 / 2, 900 / 5);
 
-  push(); rectMode(CENTER); textAlign(CENTER, CENTER); textStyle(BOLD);
-  let bW = 320, bH = bW * 32 / 96, gap = 30;
-  let startY = 900 / 2 + 20 - (bH * 3 + gap * 2) / 2 + bH / 2;
-  let diffs = ["EASY", "MEDIUM", "HARD"];
-
-  for (let i = 0; i < 3; i++) {
-    let cx = 1600 / 2, cy = startY + i * (bH + gap);
-    if (hitRect(cx, cy, bW, bH)) tint(200, 200, 255); else noTint();
-    image(difficultyUI, cx - bW / 2, cy - bH / 2, bW, bH);
-    noTint(); fill(255); stroke(0); strokeWeight(4); textSize(35);
-    text(diffs[i], cx, cy); noStroke();
+  // 背景浮动
+  push();
+  translate(0, levelAnim.getBgOffsetY());
+  if (typeof imgDifficultyBg !== 'undefined' && imgDifficultyBg) {
+    image(imgDifficultyBg, 0, 0, 1600, 1202);
+  } else {
+    image(imgPlayScreen, 0, 0, 1600, 2848);
   }
+  pop();
+
+  // 标题（黄色黑描边像素字体）
+  push();
+  textFont(pixelFont);
+  textSize(70);
+  textAlign(CENTER, CENTER);
+  fill(255, 220, 50);
+  stroke(0);
+  strokeWeight(5);
+  text(LANG.t("selectDifficulty"), 1600 / 2, 900 / 5);
+  pop();
+
+  // 按钮渐显透明度
+  const btnAlpha = levelAnim.getButtonAlpha() * 255;
+
+  const easyBtn = { x: 471, y: 294, w: 584, h: 105, text: "EASY" };
+  const medBtn = { x: 470, y: 424, w: 584, h: 105, text: "MEDIUM" };
+  const hardBtn = { x: 474, y: 550, w: 581, h: 106, text: "HARD" };
+
+  const buttons = [
+    { img: imgDiffEasy, rect: easyBtn },
+    { img: imgDiffMedium, rect: medBtn },
+    { img: imgDiffHard, rect: hardBtn }
+  ];
+
+  const descTexts = {
+    EASY: "Slower speed",
+    MEDIUM: "Stronger enemy",
+    HARD: "No aim guide"
+  };
+
+  for (let btn of buttons) {
+    const r = btn.rect;
+    const isHover = (mouseX > r.x && mouseX < r.x + r.w &&
+      mouseY > r.y && mouseY < r.y + r.h);
+
+    // 绘制按钮图片
+    push();
+    if (isHover) {
+      tint(200, 200, 255, btnAlpha);   // 悬停时提亮
+    } else {
+      tint(255, btnAlpha);              // 正常显示
+    }
+    image(btn.img, r.x, r.y, r.w, r.h);
+    pop();
+
+    // 绘制按钮文字（黑色，居中）
+    push();
+    textFont(pixelFont);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    noStroke();
+    text(r.text, r.x + r.w / 2, r.y + r.h * 0.45);
+    pop();
+
+    // 绘制说明文字（灰色，居中，小字）
+    push();
+    textFont(pixelFont);
+    textSize(14);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    noStroke();
+    const descY = r.y + r.h * 0.70;
+    text(descTexts[r.text], r.x + r.w / 2, descY);
+    pop();
+  }
+
+  // 返回按钮
   drawBackBtn(900 - 100);
-  pop(); rectMode(CORNER); textStyle(NORMAL);
+
+  rectMode(CORNER);
+  textStyle(NORMAL);
 }
 
 /*
