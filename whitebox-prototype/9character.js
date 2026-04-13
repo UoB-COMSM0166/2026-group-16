@@ -8,6 +8,19 @@ let rightArrowSquashTime = 0;     // 右箭头动画剩余时间（秒）
 const ARROW_SQUASH_DURATION = 0.1; // 动画持续时间（秒）
 
 let charSelectIndex = 0;
+// P1/P2 图标下坠入场动画变量
+let pIconAnimActive = false;
+let pIconAnimTime = 0;
+const pIconAnimDuration = 0.35;       // 动画持续时间（秒）
+let lastCharTurn = 0;                 // 记录上一次的 _charTurn，用于检测回合切换
+
+function _elasticOut(t) {
+  if (t === 0) return 0;
+  if (t === 1) return 1;
+  const p = 0.3;
+  const s = p / 4;
+  return Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + 1;
+}
 
 function drawCharacterScreen() {
   resetMatrix();
@@ -19,6 +32,13 @@ function drawCharacterScreen() {
     squashTime = 0;
   }
   lastGameState = gameState;
+
+  // ── 检测回合切换（双人模式）─────────────────────────────
+  if (gameMode === "DUAL" && lastCharTurn !== _charTurn) {
+    pIconAnimActive = true;
+    pIconAnimTime = 0;
+    lastCharTurn = _charTurn;
+  }
 
   // ── 更新弹跳动画时间 ─────────────────────────────
   if (isSquashing) {
@@ -70,6 +90,41 @@ function drawCharacterScreen() {
 
   drawImageCover(bgImg, 0, 0, 1600, 900);
 
+  // ── 双人模式显示 P1/P2 标识（右上角）────────────────────────────
+  if (gameMode === "DUAL") {
+    let pImg;
+    let pX, pY, pW, pH;
+
+    // 根据当前回合决定显示 P1 还是 P2
+    const isP1Turn = (_charTurn === 0);
+
+    if (isModern) {
+      // Hard 模式 (modern) 使用 h_p1.jpg / h_p2.png
+      pImg = isP1Turn ? modernP1Img : modernP2Img;
+      pX = 1332; pY = 60; pW = 221; pH = 129;
+    } else {
+      // Easy/Medium 模式 (fantasy) 使用 p1.png / p2.png
+      pImg = isP1Turn ? fantasyP1Img : fantasyP2Img;
+      pX = 1327; pY = 58; pW = 236; pH = 146;
+    }
+
+    if (pImg) {
+      push();
+      imageMode(CORNER);
+      // 应用下坠动画偏移
+      let drawY = pY;
+      if (pIconAnimActive) {
+        const t = pIconAnimTime / pIconAnimDuration;
+        // 弹性缓动下落效果：从上方 -200px 弹到目标位置
+        const offset = -200 * (1 - _elasticOut(t));
+        drawY = pY + offset;
+      }
+
+      image(pImg, pX, drawY, pW, pH);
+      pop();
+    }
+  }
+
   const platformY = isModern ? 365 : 395;
   image(platformGlow, 211, platformY, 404, 393);
   image(frameDiamond, 867, 152, 546, 643);
@@ -92,6 +147,15 @@ function drawCharacterScreen() {
   scale(scaleX, scaleY);
   drawContain(cur.portrait, -portraitW / 2, -portraitH / 2, portraitW, portraitH);
   pop();
+
+  // ── 更新 P1/P2 图标下坠动画时间 ─────────────────────────
+  if (pIconAnimActive) {
+    pIconAnimTime += deltaTime / 1000;
+    if (pIconAnimTime >= pIconAnimDuration) {
+      pIconAnimTime = pIconAnimDuration;
+      pIconAnimActive = false;
+    }
+  }
 
   // 名字浮动效果：上下幅度 4 像素，周期约 1 秒（2*PI/1000 ≈ 0.00628）
   let floatOffset = sin(millis() * 0.006) * 4;
@@ -141,13 +205,13 @@ function drawCharacterScreen() {
   // 按钮文字
   push();
   textAlign(CENTER, CENTER);
-  textFont('pixelFont');
+  textFont(pixelFont);
   textStyle(BOLD);
-  textSize(41);
+  textSize(27);
+  fill(255);
   stroke(0);
   strokeWeight(4);
-  fill(255);
-  text(LANG.t("btnStart"), btnX + btnW / 2, btnY + btnH / 2);
+  text(LANG.t("btnSelect"), btnX + btnW / 2, btnY + btnH / 2 + 5);
   pop();
 
   // 返回按钮

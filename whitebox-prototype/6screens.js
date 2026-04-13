@@ -142,7 +142,7 @@ function drawPlayScreen() {
 
   // HUD - top corners, under health bar (~72px tall)
   push();
-  textFont(pixelFont);
+  textFont(pixelFont_intro);
   noStroke();
 
   // ── HUD boxes: both 320px wide, 72px tall, 8px from edge, y=74 ──
@@ -160,11 +160,11 @@ function drawPlayScreen() {
   fill(0, 0, 0, 140); rect(p1X, HUD_Y, HUD_W, HUD_H, 6);
   imageMode(CORNER); image(pw1Img, p1X + 4, icoY, ICO, ICO);
   const t1 = p1X + 4 + ICO + 4;
-  fill(200, 230, 255); textAlign(LEFT, TOP); textSize(13);
+  fill(200, 230, 255); textAlign(LEFT, TOP); textSize(17);
   text(`${LABELS.player} | Angle: ${angleObj.angleDeg.toFixed(0)}° | Power: ${powerObj.value.toFixed(0)}`, t1, HUD_Y + 5);
-  fill(255, 210, 80); textSize(11);
+  fill(255, 210, 80); textSize(15);
   text(`⚔️ ${pw1.label} | Bounces: ${pw1.maxBounces} | Q/E - To change weapons`, t1, HUD_Y + 23);
-  fill(170, 170, 170); textSize(11);
+  fill(170, 170, 170); textSize(15);
   text("A/D move   W/S aim   F fire", t1, HUD_Y + 38);
   text("Hold F to charge, release to fire", t1, HUD_Y + 52);
 
@@ -172,15 +172,15 @@ function drawPlayScreen() {
   fill(0, 0, 0, 140); rect(p2X, HUD_Y, HUD_W, HUD_H, 6);
   image(pw2Img, p2X + 4, icoY, ICO, ICO);
   const t2 = p2X + 4 + ICO + 4;
-  fill(255, 220, 180); textAlign(LEFT, TOP); textSize(13);
+  fill(255, 220, 180); textAlign(LEFT, TOP); textSize(17);
   text(`${LABELS.target} | Angle: ${ciyangAngleObj.angleDeg.toFixed(0)}° | Power: ${ciyangPowerObj.value.toFixed(0)}`, t2, HUD_Y + 5);
-  fill(255, 210, 80); textSize(11);
+  fill(255, 210, 80); textSize(15);
   if (gameMode === "DUAL") {
     text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces} | I/P - To change weapons`, t2, HUD_Y + 23);
   } else {
     text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces}`, t2, HUD_Y + 23);
   }
-  fill(170, 170, 170); textSize(11);
+  fill(170, 170, 170); textSize(15);
   if (gameMode === "DUAL") {
     text("←/→ move   ↑/↓ aim   Space fire", t2, HUD_Y + 38);
     text("Hold Space to charge, release", t2, HUD_Y + 52);

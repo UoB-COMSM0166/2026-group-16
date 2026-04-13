@@ -118,6 +118,7 @@ let imgDiffEasy, imgDiffMedium, imgDiffHard;
 // ── GAME MODE ─────────────────────────────────────────────────────
 // "SINGLE" = human vs AI  |  "DUAL" = human vs human
 let gameMode = "DUAL";
+let modeAnim;
 
 // ── WEAPON OBJECTS ────────────────────────────────────────────────
 // Created in setup(), one per fighter
@@ -127,6 +128,7 @@ let dogWeapons;      // WEAPONS instance for player2 / AI
 // ── CHARACTER SELECT — P2 (dog) index ─────────────────────────────
 // P1 uses the existing charSelectIndex; P2 in DUAL uses dogCharSelectIndex
 let dogCharSelectIndex = 0;
+let imgModeBg, imgSingleCard, imgDoubleCard, imgSButton, imgDButton;
 
 // ── sound helper ───────────────────────────────────────────
 function tryPlaySound(snd) {
@@ -254,6 +256,7 @@ function preload() {
   imgDiffHard = loadImage("assets/images/DifficultySelect/hard_button.png");
 
   pixelFont = loadFont('assets/font/Press_Start_2P/PressStart2P-Regular.ttf');
+  pixelFont_intro = loadFont('assets/font/ZLabsBitmap_12px_CN.ttf');
 
   const BIO_F_BASE = "assets/images/CharacterSelect/fantasy/";
   bioF_John = loadImage(BIO_F_BASE + "bioo_John_fantasy.png");
@@ -326,6 +329,17 @@ function preload() {
   modernBtnConfirm = loadImage(BASE_M + "btn_confirm.png");
   modernBgCharSelect = loadImage(BASE_M + "bg_charselect_modern.png");
   modernBioPanel = loadImage(BASE_M + "bio_panel_modern.png");
+
+  fantasyP1Img = loadImage("assets/images/CharacterSelect/fantasy/p1.png");
+  fantasyP2Img = loadImage("assets/images/CharacterSelect/fantasy/p2.png");
+  modernP1Img = loadImage("assets/images/CharacterSelect/modern/h_p1.png");
+  modernP2Img = loadImage("assets/images/CharacterSelect/modern/h_p2.png");
+
+  imgModeBg = loadImage("assets/images/SingleDouble/sd_bg.png");
+  imgSingleCard = loadImage("assets/images/SingleDouble/single.png");
+  imgDoubleCard = loadImage("assets/images/SingleDouble/double.png");
+  imgSButton = loadImage("assets/images/SingleDouble/s_button.png");
+  imgDButton = loadImage("assets/images/SingleDouble/d_button.png");
 }
 
 function setup() {
@@ -372,6 +386,7 @@ function setup() {
 
   // levelselect screen animation
   levelAnim = new LevelScreenAnimator();
+  modeAnim = new ModeScreenAnimator();
 }
 
 function draw() {
@@ -392,7 +407,10 @@ function draw() {
     levelAnim.update();
     drawLevelScreen();
   }
-  else if (gameState === "MODE") drawModeScreen();
+  else if (gameState === "MODE") {
+    modeAnim.update();
+    drawModeScreen();
+  }
   else if (gameState === "CHARACTER") drawCharacterScreen();
   else if (gameState === "WEAPON_SELECT") drawWeaponSelectScreen();
   else {

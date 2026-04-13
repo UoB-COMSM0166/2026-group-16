@@ -5,6 +5,7 @@ class Language {
       gameTitle: { EN: "MERCHANT FIGHTER", ZH: "商人格斗家" },
       gameSubtitle: { EN: "Rish vs Ciyang", ZH: "Rish 对 Ciyang" },
       btnStart: { EN: "START", ZH: "开始游戏" },
+      btnSelect: { EN: "SELECT", ZH: "选择" },
       ctrlMove: { EN: "MOVE", ZH: "移动" },
       ctrlAngle: { EN: "ADJUST ANGLE", ZH: "调整角度" },
       ctrlCharge: { EN: "HOLD SPACE TO CHARGE • RELEASE TO FIRE", ZH: "长按空格蓄力 • 松开发射" },

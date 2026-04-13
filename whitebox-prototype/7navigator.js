@@ -41,6 +41,7 @@ class Navigator {
       if (mx > r.x && mx < r.x + r.w && my > r.y && my < r.y + r.h) {
         selectedDifficulty = btn.diff;
         applyDifficultyAssets();
+        modeAnim.reset();
         gameState = "MODE";
         return;
       }
@@ -54,27 +55,34 @@ class Navigator {
     }
   }
 
-  // ── MODE SCREEN ─────────────────────────────────────────────────
+  // ── MODE SCREEN -4.13 add UI ──────────────────────────────────────────────────
   _onMode(mx, my) {
-    const modes = ["SINGLE", "DUAL"];
-    const bW = 380, bH = 90, gap = 30;
-    const startY = 900 / 2 - (bH * 2 + gap) / 2 + bH / 2;
+    const sBtn = { x: 253, y: 639, w: 470, h: 125 };
+    const dBtn = { x: 876, y: 637, w: 476, h: 127 };
 
-    for (let i = 0; i < modes.length; i++) {
-      const cx = 1600 / 2, cy = startY + i * (bH + gap);
-      if (mx > cx - bW / 2 && mx < cx + bW / 2 &&
-        my > cy - bH / 2 && my < cy + bH / 2) {
-        gameMode = modes[i];
-        charSelectIndex = 0;
-        dogCharSelectIndex = 0;
-        gameState = "CHARACTER";
-        return;
-      }
+    const clickSingle = (mx > sBtn.x && mx < sBtn.x + sBtn.w &&
+      my > sBtn.y && my < sBtn.y + sBtn.h);
+    const clickDouble = (mx > dBtn.x && mx < dBtn.x + dBtn.w &&
+      my > dBtn.y && my < dBtn.y + dBtn.h);
+
+    if (clickSingle) {
+      gameMode = "SINGLE";
+      charSelectIndex = 0;
+      dogCharSelectIndex = 0;
+      gameState = "CHARACTER";
+      return;
     }
 
-    // Back button
-    const bkW = 150, bkH = 40;
-    const bkX = 1600 / 2 - bkW / 2, bkYY = 820;
+    if (clickDouble) {
+      gameMode = "DUAL";
+      charSelectIndex = 0;
+      dogCharSelectIndex = 0;
+      gameState = "CHARACTER";
+      return;
+    }
+
+    // 返回按钮
+    const bkW = 150, bkH = 44, bkX = 1600 / 2 - bkW / 2, bkYY = 840;
     if (mx > bkX && mx < bkX + bkW && my > bkYY && my < bkYY + bkH) {
       gameState = "CHOOSE";
     }
