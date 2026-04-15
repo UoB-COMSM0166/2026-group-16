@@ -48,8 +48,10 @@
 
 - 5% ~250 words 
 - Describe your game, what is based on, what makes it novel? (what's the "twist"?)
-- **Merchant Fighters!** is a casual browser game that can be played by one or two players, where a mischievous cat interacts with a dog in a playful duel. Players throw items at each other, testing their timing, reflexes, and strategy, until one's HP bar is empty and is defeated. Inspired by the classic Flash game Fleabag vs Mutt, Merchant Fighters modernises the formula for the browser with two distinct visual themes, a live timer, and full bilingual support.
-The game's defining twist is hot surface bouncing: rather than landing and stopping, every projectile a flying frying pan bounces off the ground, walls, and obstacles before disappearing. Each pan can bounce up to three times, which completely changes how players aim. A shot fired too low might loop back and strike the shooter. A clever angle can send the pan curving around a wall that would otherwise block a direct hit. What begins as a simple aiming game becomes a spatial puzzle, where reading the bounce is just as important as lining up the shot.
+- *Merchant Fighters!* is a casual browser game that can be played in multiplayer or against an AI opponent, where players face off in a playful duel. Participants throw items at each other, testing their timing, reflexes, and strategy until one player's HP bar is depleted. Inspired by the classic Flash game *Fleabag vs Mutt*, *Merchant Fighters!* modernises the formula for the browser with two distinct visual themes, a live timer, and full bilingual support. The game’s defining twist is hot surface bouncing: rather than landing and stopping, every projectile—a flying frying pan—bounces off the ground, walls, and obstacles before disappearing. Each pan can bounce up to three times, completely changing how players aim. A shot fired too low might loop back and strike the shooter, while a clever angle can send the pan curving around a wall that would otherwise block a direct hit. What begins as a simple aiming game becomes a spatial puzzle, where reading the bounce is just as important as lining up the shot.
+
+A newly added feature, Blackout mode, introduces an extra layer of challenge: the screen goes completely dark for five seconds, forcing players to rely on memory, instinct, and prediction to aim and shoot accurately.
+
 
 
 <img width="1594" height="898" alt="Latest_Game_Image1" src="https://github.com/user-attachments/assets/eb2ac26e-8c40-4ef3-9119-e52bc3e2ce31" />
