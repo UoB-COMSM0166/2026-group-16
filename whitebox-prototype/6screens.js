@@ -3,7 +3,7 @@ function drawPlayScreen() {
   resetMatrix();
   const dt = Math.min(deltaTime / 1000, 0.033);
 
-  // Run autoplayer so keys are set BEFORE POWER/ANGLE.update() reads them
+  //Run autoplayer so keys are set BEFORE POWER/ANGLE.update() reads them
   if (window.GAME_AUTO && GAME_AUTO.enabled) GAME_AUTO.update(dt);
 
   // --- TIMER ---
@@ -31,6 +31,7 @@ function drawPlayScreen() {
     ciyangPowerObj.update(dt);
     // In SINGLE mode: if VKEY didn't press fire, the charge came from real Space — cancel it
     if (gameMode === "SINGLE" && window.VKEY && VKEY.enabled && !VKEY.isDown(ciyangPowerObj.fireKey)) {
+      dogWeapons.index = 0;
       if (ciyangPowerObj.isCharging) {
         ciyangPowerObj.value = ciyangPowerObj.min;
         ciyangPowerObj.isCharging = false;
@@ -46,7 +47,7 @@ function drawPlayScreen() {
 
     // Trigger blackout at 20s (MEDIUM + HARD)
     if (!blackout1Done && blackoutElapsed >= 20 &&
-        (selectedDifficulty === "MEDIUM" || selectedDifficulty === "HARD")) {
+      (selectedDifficulty === "MEDIUM" || selectedDifficulty === "HARD")) {
       blackout1Done = true;
       blackoutActive = true;
       blackoutTimer = 5;
@@ -70,18 +71,18 @@ function drawPlayScreen() {
     if (powerObj.justReleased && powerObj.value > 10) {
       const fromX = player.x + player.w * (player.facing === 1 ? 0.9 : 0.1);
       const fromY = player.y + player.h * 0.35;
-      const wDef  = playerWeapons.current;
+      const wDef = playerWeapons.current;
       _spawnWeaponShot(fromX, fromY, angleObj, powerObj, "player", wDef);
     }
 
-    // ── Player 2 / AI fires ──────────────────────────────────────
+    //Player 2 / AI fires
     if (gameMode === "SINGLE") {
       // weapon switching handled by AutoPlayer
     }
     if (ciyangPowerObj.justReleased && ciyangPowerObj.value > 10) {
       const fromX = dogBody.x + dogBody.w * (dogBody.facing === 1 ? 0.9 : 0.1);
       const fromY = dogBody.y + dogBody.h * 0.35;
-      const wDef  = dogWeapons.current;
+      const wDef = dogWeapons.current;
       _spawnWeaponShot(fromX, fromY, ciyangAngleObj, ciyangPowerObj, "dog", wDef);
     }
 
@@ -142,6 +143,7 @@ function drawPlayScreen() {
 
   // HUD - top corners, under health bar (~72px tall)
   push();
+  textFont(pixelFont_intro);
   noStroke();
 
   // ── HUD boxes: both 320px wide, 72px tall, 8px from edge, y=74 ──
@@ -159,11 +161,11 @@ function drawPlayScreen() {
   fill(0, 0, 0, 140); rect(p1X, HUD_Y, HUD_W, HUD_H, 6);
   imageMode(CORNER); image(pw1Img, p1X + 4, icoY, ICO, ICO);
   const t1 = p1X + 4 + ICO + 4;
-  fill(200, 230, 255); textAlign(LEFT, TOP); textSize(13);
+  fill(200, 230, 255); textAlign(LEFT, TOP); textSize(17);
   text(`${LABELS.player} | Angle: ${angleObj.angleDeg.toFixed(0)}° | Power: ${powerObj.value.toFixed(0)}`, t1, HUD_Y + 5);
-  fill(255, 210, 80); textSize(11);
+  fill(255, 210, 80); textSize(15);
   text(`⚔️ ${pw1.label} | Bounces: ${pw1.maxBounces} | Q/E - To change weapons`, t1, HUD_Y + 23);
-  fill(170, 170, 170); textSize(11);
+  fill(170, 170, 170); textSize(15);
   text("A/D move   W/S aim   F fire", t1, HUD_Y + 38);
   text("Hold F to charge, release to fire", t1, HUD_Y + 52);
 
@@ -171,15 +173,15 @@ function drawPlayScreen() {
   fill(0, 0, 0, 140); rect(p2X, HUD_Y, HUD_W, HUD_H, 6);
   image(pw2Img, p2X + 4, icoY, ICO, ICO);
   const t2 = p2X + 4 + ICO + 4;
-  fill(255, 220, 180); textAlign(LEFT, TOP); textSize(13);
+  fill(255, 220, 180); textAlign(LEFT, TOP); textSize(17);
   text(`${LABELS.target} | Angle: ${ciyangAngleObj.angleDeg.toFixed(0)}° | Power: ${ciyangPowerObj.value.toFixed(0)}`, t2, HUD_Y + 5);
-  fill(255, 210, 80); textSize(11);
+  fill(255, 210, 80); textSize(15);
   if (gameMode === "DUAL") {
     text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces} | I/P - To change weapons`, t2, HUD_Y + 23);
   } else {
     text(`⚔️ ${pw2.label} | Bounces: ${pw2.maxBounces}`, t2, HUD_Y + 23);
   }
-  fill(170, 170, 170); textSize(11);
+  fill(170, 170, 170); textSize(15);
   if (gameMode === "DUAL") {
     text("←/→ move   ↑/↓ aim   Space fire", t2, HUD_Y + 38);
     text("Hold Space to charge, release", t2, HUD_Y + 52);
@@ -199,19 +201,19 @@ function drawPlayScreen() {
     if (powerObj.isCharging) {
       _drawAimBase(player, angleObj, powerObj, [255, 220, 50],
         (playerWeapons.current.gravityScale !== undefined ? playerWeapons.current.gravityScale : 1),
-        (playerWeapons.current.powerScale   ? playerWeapons.current.powerScale   : 8));
+        (playerWeapons.current.powerScale ? playerWeapons.current.powerScale : 8));
     }
     // Power arc for Player 2 / AI
     if (ciyangPowerObj.isCharging) {
       _drawAimBase(dogBody, ciyangAngleObj, ciyangPowerObj, [255, 140, 40],
         (dogWeapons.current.gravityScale !== undefined ? dogWeapons.current.gravityScale : 1),
-        (dogWeapons.current.powerScale   ? dogWeapons.current.powerScale   : 8));
+        (dogWeapons.current.powerScale ? dogWeapons.current.powerScale : 8));
     }
 
     // "BLACKOUT" label
-    fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(BOLD); noStroke();
+    fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(pixelFont); noStroke();
     text("⚫ BLACKOUT", 1600 / 2, 900 / 2);
-    textStyle(NORMAL);
+    textStyle(pixelFont);
     pop();
   }
 
@@ -227,7 +229,7 @@ function drawPlayScreen() {
     const boxW = overtimeActive ? 210 : 130;
     const boxH = overtimeActive ? 46 : 38;
 
-    push(); rectMode(CENTER); textAlign(CENTER, CENTER);
+    push(); textFont(pixelFont); rectMode(CENTER); textAlign(CENTER, CENTER);
     fill(0, 0, 0, 120); rect(timerX + 3, timerY + 3, boxW, boxH, 10);
     if (overtimeActive) fill(160, 80, 0, 230);
     else if (isLow) fill(lerp(60, 180, pulse), 0, 0, 230);
@@ -267,7 +269,7 @@ function drawPlayScreen() {
     const winnerHP = winnerIsRish ? catHP : dogHP;
     const winnerImg = winnerIsRish ? imgPlayer : imgTarget;
 
-    push(); fill(0, 0, 0, 180); rect(0, 0, 1600, 900);
+    push(); textFont(pixelFont); fill(0, 0, 0, 180); rect(0, 0, 1600, 900);
     const px = 1600 / 2, py = 900 / 2 - 60, ps = 200;
     drawContain(winnerImg, px - ps / 2, py - ps / 2, ps, ps);
     textAlign(CENTER, CENTER);
@@ -301,10 +303,10 @@ function drawPlayScreen() {
 // Fires 1–3 projectiles based on the weapon definition.
 // Each projectile carries a reference to its weapon image for rendering.
 function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
-  const count  = wDef.count || 1;
+  const count = wDef.count || 1;
   const spread = wDef.spreadDeg || 0;
-  const power  = pObj.consume();   // consume once, share value across shots
-  const wImg   = weaponImages[wDef.imgKey] || imgPan;
+  const power = pObj.consume();   // consume once, share value across shots
+  const wImg = weaponImages[wDef.imgKey] || imgPan;
 
   for (let i = 0; i < count; i++) {
     // Angle offset for multi-shot spread — centre the burst around base angle
@@ -322,19 +324,19 @@ function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
 
     const p = cd.spawnProjectile({
       fromX, fromY,
-      radius:     wDef.radius,
-      angleObj:   shiftedAngle,
-      powerObj:   fakePower,
+      radius: wDef.radius,
+      angleObj: shiftedAngle,
+      powerObj: fakePower,
       powerScale: wDef.powerScale,
       owner,
       maxBounces: wDef.maxBounces,
     });
 
     // Attach metadata for rendering and special effects
-    p.weaponImg    = wImg;
-    p.weaponId     = wDef.id;
+    p.weaponImg = wImg;
+    p.weaponId = wDef.id;
     p.weaponDamage = wDef.damage;
-    p.special      = wDef.special;
+    p.special = wDef.special;
 
     // Ghost weapon: mark so collision skips static bodies
     if (wDef.special === "ghost") p.ghost = true;
@@ -344,96 +346,157 @@ function _spawnWeaponShot(fromX, fromY, aObj, pObj, owner, wDef) {
   }
 }
 
-// START SCREEN 
+// START SCREEN - polished
 function drawStartScreen() {
   resetMatrix();
-  drawImageCover(imgBg, 0, 0, 1600, 900);
-  textSize(60); fill(0, 0, 0, 200); rect(0, 0, 1600, 900);
+  startAnim.update();
 
-  fill(0, 0, 0, 150); textSize(70);
-  text("MERCHANT FIGHTER", 1600 / 2 + 4, 900 / 3 + 4);
-  fill(255, 220, 50);
-  text("MERCHANT FIGHTER", 1600 / 2, 900 / 3);
-  fill(255); textSize(28);
-  //text("Rish vs Ciyang", 1600 / 2, 900 / 3 + 70);
+  push();
 
-  fill(80, 200, 80); rect(btnX - btnW / 2, btnY - btnH / 2, btnW, btnH, 25);
-  fill(255); textSize(36); text("START", btnX, btnY);
+  // ---- 背景（直接显示 + 上移） ----
+  push();
+  tint(255, startAnim.getBgAlpha() * 255);
+  translate(0, startAnim.getBgOffsetY());
+  image(startAnim.imgBg, 0, 0, 1600, 2848);
+  pop();
 
-  // Controls guide
-  const s = 20, ico = 48, rY = 900 / 2 + 160, gap = 70;
-  const lx = 1600 / 2 - 220, cx = 1600 / 2, rx = 1600 / 2 + 220;
+  // ---- 标题（淡入 + 下落） ----
+  push();
+  tint(255, startAnim.getTitleAlpha() * 255);
+  translate(0, startAnim.getTitleYOffset());
+  image(startAnim.imgTitle,
+    startAnim.TITLE.x, startAnim.TITLE.y,
+    startAnim.TITLE.w, startAnim.TITLE.h);
+  pop();
 
-  image(keyLeft, lx - s, rY, ico, ico); image(keyRight, lx + s, rY, ico, ico);
-  fill(255); textSize(26); text("MOVE", cx, rY);
-  image(keyA, rx - s, rY, ico, ico); image(keyD, rx + s, rY, ico, ico);
+  // ---- 按钮（渐显） ----
+  const btnStart = startAnim.BTN_START;
+  const btnIntro = startAnim.BTN_INTRO;
 
-  image(keyUp, lx - s, rY + gap, ico, ico); image(keyDown, lx + s, rY + gap, ico, ico);
-  fill(255); textSize(26); text("ADJUST ANGLE", cx, rY + gap);
+  // 检测鼠标是否悬停在任一按钮上
+  const hoverStart = (mouseX > btnStart.x && mouseX < btnStart.x + btnStart.w &&
+    mouseY > btnStart.y && mouseY < btnStart.y + btnStart.h);
+  const hoverIntro = (mouseX > btnIntro.x && mouseX < btnIntro.x + btnIntro.w &&
+    mouseY > btnIntro.y && mouseY < btnIntro.y + btnIntro.h);
+  const anyHover = hoverStart || hoverIntro;
 
-  fill(255); textSize(22); text("HOLD SPACE TO CHARGE • RELEASE TO FIRE", cx, rY + gap * 2);
-  push(); imageMode(CENTER); image(keySpace, cx, rY + gap * 2 + 50, 160, 40); pop();
+  // 将悬停状态告知动画器（用于暂停浮动）
+  if (startAnim.setButtonHovered) {
+    startAnim.setButtonHovered(anyHover);
+  }
+
+  const btnAlpha = startAnim.getButtonAlpha() * 255;
+  const floatY = startAnim.getButtonFloatOffset ? startAnim.getButtonFloatOffset() : 0;
+
+  // 开始按钮
+  push();
+  if (hoverStart) {
+    tint(150, btnAlpha);   // 变灰（降低 RGB 通道）
+  } else {
+    tint(255, btnAlpha);
+  }
+  image(startAnim.imgBtnStart,
+    btnStart.x, btnStart.y + floatY,   // 应用浮动偏移
+    btnStart.w, btnStart.h);
+  pop();
+
+  // 介绍文字
+  push();
+  tint(255, btnAlpha);
+  image(startAnim.imgBtnIntro,
+    startAnim.BTN_INTRO.x, startAnim.BTN_INTRO.y,
+    startAnim.BTN_INTRO.w, startAnim.BTN_INTRO.h);
+  pop();
+
+  pop();
 }
+
+
 
 // LEVEL SCREEN 
 function drawLevelScreen() {
   resetMatrix();
-  drawImageCover(imgPlayScreen, 0, 0, 1600, 900);
-  fill(0, 0, 0, 200); rect(0, 0, 1600, 900);
-  fill(255, 220, 50); textSize(70); text("Select Difficulty", 1600 / 2, 900 / 5);
 
-  push(); rectMode(CENTER); textAlign(CENTER, CENTER); textStyle(BOLD);
-  let bW = 320, bH = bW * 32 / 96, gap = 30;
-  let startY = 900 / 2 + 20 - (bH * 3 + gap * 2) / 2 + bH / 2;
-  let diffs = ["EASY", "MEDIUM", "HARD"];
-
-  for (let i = 0; i < 3; i++) {
-    let cx = 1600 / 2, cy = startY + i * (bH + gap);
-    if (hitRect(cx, cy, bW, bH)) tint(200, 200, 255); else noTint();
-    image(difficultyUI, cx - bW / 2, cy - bH / 2, bW, bH);
-    noTint(); fill(255); stroke(0); strokeWeight(4); textSize(35);
-    text(diffs[i], cx, cy); noStroke();
-  }
-  drawBackBtn(900 - 100);
-  pop(); rectMode(CORNER); textStyle(NORMAL);
-}
-
-/*
-// ── Minimal AI for Single Player mode ───────────────────────────
-// The AI (dogBody / ciyangPowerObj) auto-charges and fires when facing the player.
-let _aiTimer = 0;
-function _updateAI(dt) {
-  _aiTimer += dt;
-
-  // Simple: always face the player
-  const dir = (player.x < dogBody.x) ? -1 : 1;
-  ciyangAngleObj.setDirection(dir);
-  dogBody.facing = dir;
-
-  // Aim at roughly the right angle
-  const dx = player.x - dogBody.x;
-  const dy = player.y - dogBody.y;
-  const targetAngle = Math.abs(Math.atan2(-dy, Math.abs(dx)) * 180 / Math.PI);
-  // Gradually nudge angle
-  const diff = targetAngle - ciyangAngleObj.angleDeg;
-  ciyangAngleObj.angleDeg += clamp(diff * dt * 2, -2, 2);
-  ciyangAngleObj.angleDeg = clamp(ciyangAngleObj.angleDeg, 0, 80);
-
-  // Charge and fire every 2.8 seconds
-  if (_aiTimer < 2.0) {
-    // Charge phase — simulate key held
-    ciyangPowerObj.value = clamp(ciyangPowerObj.value + ciyangPowerObj.chargeRatePerSec * dt, 0, ciyangPowerObj.max);
-    ciyangPowerObj.isCharging = true;
-    ciyangPowerObj._wasCharging = true;
-    ciyangPowerObj.justReleased = false;
-  } else if (_aiTimer < 2.05) {
-    // Release pulse
-    ciyangPowerObj.isCharging = false;
-    ciyangPowerObj.justReleased = true;
-    ciyangPowerObj._wasCharging = false;
+  // 背景浮动
+  push();
+  translate(0, levelAnim.getBgOffsetY());
+  if (typeof imgDifficultyBg !== 'undefined' && imgDifficultyBg) {
+    image(imgDifficultyBg, 0, 0, 1600, 1202);
   } else {
-    ciyangPowerObj.justReleased = false;
-    if (_aiTimer > 2.8) _aiTimer = 0;
+    image(imgPlayScreen, 0, 0, 1600, 2848);
   }
+  pop();
+
+  // 标题（黄色黑描边像素字体）
+  push();
+  textFont(pixelFont);
+  textSize(70);
+  textAlign(CENTER, CENTER);
+  fill(255, 220, 50);
+  stroke(0);
+  strokeWeight(5);
+  text(LANG.t("selectDifficulty"), 1600 / 2, 900 / 5);
+  pop();
+
+  // 按钮渐显透明度
+  const btnAlpha = levelAnim.getButtonAlpha() * 255;
+
+  const easyBtn = { x: 471, y: 294, w: 584, h: 105, text: "EASY" };
+  const medBtn = { x: 470, y: 424, w: 584, h: 105, text: "MEDIUM" };
+  const hardBtn = { x: 474, y: 550, w: 581, h: 106, text: "HARD" };
+
+  const buttons = [
+    { img: imgDiffEasy, rect: easyBtn },
+    { img: imgDiffMedium, rect: medBtn },
+    { img: imgDiffHard, rect: hardBtn }
+  ];
+
+  const descTexts = {
+    EASY: "Slower speed",
+    MEDIUM: "Stronger enemy",
+    HARD: "No aim guide"
+  };
+
+  for (let btn of buttons) {
+    const r = btn.rect;
+    const isHover = (mouseX > r.x && mouseX < r.x + r.w &&
+      mouseY > r.y && mouseY < r.y + r.h);
+
+    // 绘制按钮图片
+    push();
+    if (isHover) {
+      tint(200, 200, 255, btnAlpha);   // 悬停时提亮
+    } else {
+      tint(255, btnAlpha);              // 正常显示
+    }
+    image(btn.img, r.x, r.y, r.w, r.h);
+    pop();
+
+    // 绘制按钮文字（黑色，居中）
+    push();
+    textFont(pixelFont);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    noStroke();
+    text(r.text, r.x + r.w / 2, r.y + r.h * 0.45);
+    pop();
+
+    // 绘制说明文字（灰色，居中，小字）
+    push();
+    textFont(pixelFont);
+    textSize(14);
+    textAlign(CENTER, CENTER);
+    fill(0);
+    noStroke();
+    const descY = r.y + r.h * 0.70;
+    text(descTexts[r.text], r.x + r.w / 2, descY);
+    pop();
+  }
+
+  // 返回按钮
+  drawBackBtn(900 - 100);
+
+  rectMode(CORNER);
+  textStyle(NORMAL);
 }
-*/

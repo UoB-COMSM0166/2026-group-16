@@ -1,63 +1,88 @@
 class Navigator {
   handleClick(mx, my) {
-    if      (gameState === "START")         this._onStart(mx, my);
-    else if (gameState === "CHOOSE")        this._onChoose(mx, my);
-    else if (gameState === "MODE")          this._onMode(mx, my);
-    else if (gameState === "CHARACTER")     this._onCharacter(mx, my);
+    if (gameState === "START") this._onStart(mx, my);
+    else if (gameState === "CHOOSE") this._onChoose(mx, my);
+    else if (gameState === "MODE") this._onMode(mx, my);
+    else if (gameState === "CHARACTER") this._onCharacter(mx, my);
     else if (gameState === "WEAPON_SELECT") this._onWeaponSelect(mx, my);
-    else if (gameState === "PLAY")          this._onPlay(mx, my);
+    else if (gameState === "PLAY") this._onPlay(mx, my);
   }
 
   _onStart(mx, my) {
-    if (mx > btnX - btnW / 2 && mx < btnX + btnW / 2 &&
-      my > btnY - btnH / 2 && my < btnY + btnH / 2) {
+    const btn = startAnim.BTN_START;
+    const left = btn.x;
+    const right = btn.x + btn.w;
+    const top = btn.y;
+    const bottom = btn.y + btn.h;
+
+    // can only click when animation is done
+    if (!startAnim.isDone()) return;
+
+    if (mx > left && mx < right && my > top && my < bottom) {
       gameState = "CHOOSE";
     }
   }
 
   _onChoose(mx, my) {
     const backY = 900 - 100, bkW = 150, bkH = 50;
-    const bW = 320, bH = bW * 32 / 96, gap = 30;
-    const startY = 900 / 2 + 20 - (bH * 3 + gap * 2) / 2 + bH / 2;
-    const diffs = ["EASY", "MEDIUM", "HARD"];
 
-    for (let i = 0; i < 3; i++) {
-      const cx = 1600 / 2, cy = startY + i * (bH + gap);
-      if (mx > cx - bW / 2 && mx < cx + bW / 2 &&
-        my > cy - bH / 2 && my < cy + bH / 2) {
-        selectedDifficulty = diffs[i];
+    const easyBtn = { x: 471, y: 294, w: 584, h: 105 };
+    const medBtn = { x: 470, y: 424, w: 584, h: 105 };
+    const hardBtn = { x: 474, y: 550, w: 581, h: 106 };
+
+    const buttons = [
+      { rect: easyBtn, diff: "EASY" },
+      { rect: medBtn, diff: "MEDIUM" },
+      { rect: hardBtn, diff: "HARD" }
+    ];
+
+    for (let btn of buttons) {
+      const r = btn.rect;
+      if (mx > r.x && mx < r.x + r.w && my > r.y && my < r.y + r.h) {
+        selectedDifficulty = btn.diff;
         applyDifficultyAssets();
-        gameState = "MODE";   // ← go to mode select first
+        modeAnim.reset();
+        gameState = "MODE";
         return;
       }
     }
+
     if (mx > 1600 / 2 - bkW / 2 && mx < 1600 / 2 + bkW / 2 &&
       my > backY - bkH / 2 && my < backY + bkH / 2) {
       gameState = "START";
+      if (typeof startAnim !== 'undefined') startAnim.reset();
+      if (typeof levelAnim !== 'undefined') levelAnim.reset();
     }
   }
 
-  // ── MODE SCREEN ─────────────────────────────────────────────────
+  // ── MODE SCREEN -4.13 add UI ──────────────────────────────────────────────────
   _onMode(mx, my) {
-    const modes = ["SINGLE", "DUAL"];
-    const bW = 380, bH = 90, gap = 30;
-    const startY = 900 / 2 - (bH * 2 + gap) / 2 + bH / 2;
+    const sBtn = { x: 253, y: 639, w: 470, h: 125 };
+    const dBtn = { x: 876, y: 637, w: 476, h: 127 };
 
-    for (let i = 0; i < modes.length; i++) {
-      const cx = 1600 / 2, cy = startY + i * (bH + gap);
-      if (mx > cx - bW / 2 && mx < cx + bW / 2 &&
-          my > cy - bH / 2 && my < cy + bH / 2) {
-        gameMode = modes[i];
-        charSelectIndex    = 0;
-        dogCharSelectIndex = 0;
-        gameState = "CHARACTER";
-        return;
-      }
+    const clickSingle = (mx > sBtn.x && mx < sBtn.x + sBtn.w &&
+      my > sBtn.y && my < sBtn.y + sBtn.h);
+    const clickDouble = (mx > dBtn.x && mx < dBtn.x + dBtn.w &&
+      my > dBtn.y && my < dBtn.y + dBtn.h);
+
+    if (clickSingle) {
+      gameMode = "SINGLE";
+      charSelectIndex = 0;
+      dogCharSelectIndex = 0;
+      gameState = "CHARACTER";
+      return;
     }
 
-    // Back button
-    const bkW = 150, bkH = 40;
-    const bkX = 1600 / 2 - bkW / 2, bkYY = 820;
+    if (clickDouble) {
+      gameMode = "DUAL";
+      charSelectIndex = 0;
+      dogCharSelectIndex = 0;
+      gameState = "CHARACTER";
+      return;
+    }
+
+    // 返回按钮
+    const bkW = 150, bkH = 44, bkX = 1600 / 2 - bkW / 2, bkYY = 840;
     if (mx > bkX && mx < bkX + bkW && my > bkYY && my < bkYY + bkH) {
       gameState = "CHOOSE";
     }
@@ -79,6 +104,8 @@ class Navigator {
       } else {
         charSelectIndex = (charSelectIndex + 3) % 4;
       }
+      isSquashing = true;
+      squashTime = 0;
       return;
     }
     // right arrow (1422, 402, 135, 134)
@@ -89,6 +116,8 @@ class Navigator {
       } else {
         charSelectIndex = (charSelectIndex + 1) % 4;
       }
+      isSquashing = true;
+      squashTime = 0;
       return;
     }
     // Confirm (1015, 506, 262, 97)
@@ -124,23 +153,23 @@ class Navigator {
 
   // ── WEAPON SELECT SCREEN ─────────────────────────────────────────
   _onWeaponSelect(mx, my) {
-    const isDual  = (gameMode === "DUAL");
-    const panels  = isDual ? 2 : 1;
-    const panelW  = 1600 / panels;
-    const COLS    = 5, CELL = 78, GAP = 12;
-    const GRID_W  = COLS * CELL + (COLS - 1) * GAP;
-    const gridY   = 165;
+    const isDual = (gameMode === "DUAL");
+    const panels = isDual ? 2 : 1;
+    const panelW = 1600 / panels;
+    const COLS = 5, CELL = 78, GAP = 12;
+    const GRID_W = COLS * CELL + (COLS - 1) * GAP;
+    const gridY = 165;
 
     // Weapon cell hit-test — fires once per click via mousePressed
     for (let panelIdx = 0; panelIdx < panels; panelIdx++) {
       const weaponsObj = (panelIdx === 0) ? playerWeapons : dogWeapons;
-      const panelCX    = panelW * panelIdx + panelW / 2;
-      const gridX      = panelCX - GRID_W / 2;
+      const panelCX = panelW * panelIdx + panelW / 2;
+      const gridX = panelCX - GRID_W / 2;
 
       for (let i = 0; i < WEAPON_DEFS.length; i++) {
         const col = i % COLS, row = Math.floor(i / COLS);
-        const wx  = gridX + col * (CELL + GAP);
-        const wy  = gridY + row * (CELL + GAP);
+        const wx = gridX + col * (CELL + GAP);
+        const wy = gridY + row * (CELL + GAP);
         if (mx > wx && mx < wx + CELL && my > wy && my < wy + CELL) {
           weaponsObj.index = i;
           return;

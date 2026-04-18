@@ -129,12 +129,12 @@ const WEAPON_DEFS = [
 // ── WEAPONS selector ─────────────────────────────────────────────
 class WEAPONS {
   constructor() {
-    this.list  = WEAPON_DEFS;
+    this.list = WEAPON_DEFS;
     this.index = 0;   // active weapon index
   }
 
   get current() { return this.list[this.index]; }
-  get count()   { return this.list.length; }
+  get count() { return this.list.length; }
 
   next() { this.index = (this.index + 1) % this.count; }
   prev() { this.index = (this.index + this.count - 1) % this.count; }
@@ -170,39 +170,41 @@ function drawWeaponSelectScreen() {
   rect(0, 0, 1600, 900);
   pop();
 
-  const isDual  = (gameMode === "DUAL");
-  const panels  = isDual ? 2 : 1;
-  const panelW  = 1600 / panels;
+  const isDual = (gameMode === "DUAL");
+  const panels = isDual ? 2 : 1;
+  const panelW = 1600 / panels;
 
   // Title
   push();
   textAlign(CENTER, CENTER);
+  textFont(pixelFont);
   fill(255, 220, 50); textSize(52); noStroke();
-  text("⚔ Choose Your Weapon", 1600 / 2, 52);
+  text("Choose Your Weapon", 1600 / 2, 52);
   pop();
 
   const COLS = 5, ROWS = 2;
-  const CELL  = 78, GAP = 12;
+  const CELL = 78, GAP = 12;
   const GRID_W = COLS * CELL + (COLS - 1) * GAP;
   const GRID_H = ROWS * CELL + (ROWS - 1) * GAP;
 
   for (let p = 0; p < panels; p++) {
     const weaponsObj = (p === 0) ? playerWeapons : dogWeapons;
-    const role       = (p === 0) ? "P1" : "P2";
+    const role = (p === 0) ? "P1" : "P2";
     const playerName = (p === 0) ? LABELS.player : LABELS.target;
-    const panelCX    = panelW * p + panelW / 2;
+    const panelCX = panelW * p + panelW / 2;
 
     // Panel label
     push();
-    textAlign(CENTER, CENTER); fill(200, 220, 255); textSize(26); noStroke();
+    textAlign(CENTER, CENTER); textFont(pixelFont_intro); fill(200, 220, 255); textSize(30); noStroke();
     text(`${role} — ${playerName}`, panelCX, 110);
     pop();
 
     // Sub-hint
     push();
-    textAlign(CENTER, CENTER); fill(170, 170, 170); textSize(15); noStroke();
-    if (p === 0) text("Click to select  •  Q / E to cycle in game", panelCX, 138);
-    else         text("Click to select  •  I / P to cycle in game",  panelCX, 138);
+    textAlign(CENTER, CENTER);
+    textFont(pixelFont_intro); fill(170, 170, 170); textSize(18); noStroke();
+    if (p === 0) text("Click to select Q / E to cycle in game", panelCX, 138);
+    else text("Click to select I / P to cycle in game", panelCX, 138);
     pop();
 
     // Weapon grid
@@ -211,9 +213,9 @@ function drawWeaponSelectScreen() {
 
     for (let i = 0; i < WEAPON_DEFS.length; i++) {
       const col = i % COLS, row = Math.floor(i / COLS);
-      const cx  = gridX + col * (CELL + GAP) + CELL / 2;
-      const cy  = gridY + row * (CELL + GAP) + CELL / 2;
-      const wx  = cx - CELL / 2, wy = cy - CELL / 2;
+      const cx = gridX + col * (CELL + GAP) + CELL / 2;
+      const cy = gridY + row * (CELL + GAP) + CELL / 2;
+      const wx = cx - CELL / 2, wy = cy - CELL / 2;
       const sel = (weaponsObj.index === i);
       const hov = (mouseX > wx && mouseX < wx + CELL && mouseY > wy && mouseY < wy + CELL);
       const def = WEAPON_DEFS[i];
@@ -240,14 +242,20 @@ function drawWeaponSelectScreen() {
       }
 
       // Weapon label
+      push();
+      textFont(pixelFont_intro);
       noStroke();
       fill(sel ? color(30, 30, 0) : color(220, 220, 255));
-      textSize(11); textAlign(CENTER, BOTTOM);
+      textSize(13);
+      textAlign(CENTER, BOTTOM);
       text(def.label, cx, wy + CELL - 5);
+      pop();
 
       // Selected checkmark
       if (sel) {
-        fill(255, 220, 0); textSize(18); textAlign(RIGHT, TOP);
+        push();
+        textFont(pixelFont_intro);
+        fill(255, 220, 0); textSize(28); textAlign(RIGHT, TOP);
         text("✓", wx + CELL - 4, wy + 3);
       }
       pop();
@@ -255,7 +263,7 @@ function drawWeaponSelectScreen() {
 
     // Selected weapon info box
     const selDef = weaponsObj.current;
-    const infoY  = gridY + GRID_H + 18;
+    const infoY = gridY + GRID_H + 18;
     push();
     fill(0, 0, 0, 160); noStroke();
     rect(panelCX - 240, infoY, 480, 130, 14);
@@ -269,16 +277,20 @@ function drawWeaponSelectScreen() {
       pop();
     }
 
+    push();
     noStroke();
-    fill(255, 220, 50); textSize(20); textAlign(LEFT, TOP);
-    text(`★ ${selDef.label}`, panelCX - 130, infoY + 12);
-    fill(200, 220, 255); textSize(13);
-    text(`Damage: ${selDef.damage}   Bounces: ${selDef.maxBounces}   Shots: ${selDef.count}`, panelCX - 130, infoY + 42);
-    text(`Speed scale: ×${selDef.powerScale}   Spread: ${selDef.spreadDeg}°`, panelCX - 130, infoY + 62);
+    textFont(pixelFont_intro);
+    fill(255, 220, 50); textSize(35); textAlign(LEFT, TOP);
+    text(`★ ${selDef.label}`, panelCX - 130, infoY + 15);
+
+    fill(200, 220, 255); textSize(17);
+    text(`Damage: ${selDef.damage}   Bounces: ${selDef.maxBounces}   Shots: ${selDef.count}`, panelCX - 130, infoY + 55);
+    text(`Speed scale: ×${selDef.powerScale}   Spread: ${selDef.spreadDeg}°`, panelCX - 130, infoY + 80);
     if (selDef.special) {
       fill(180, 255, 180);
-      text(`✦ Special: ${selDef.special}`, panelCX - 130, infoY + 82);
+      text(`✦ Special: ${selDef.special}`, panelCX - 130, infoY + 105);
     }
+    pop();
     pop();
   }
 
@@ -288,11 +300,12 @@ function drawWeaponSelectScreen() {
   const cfX = 1600 / 2 - cfW / 2;
   const cfHov = (mouseX > cfX && mouseX < cfX + cfW && mouseY > confirmY && mouseY < confirmY + cfH);
   push();
+  textFont(pixelFont);
   fill(0, 0, 0, 140); noStroke();
   rect(cfX + 3, confirmY + 3, cfW, cfH, 16);
   fill(cfHov ? color(60, 200, 80) : color(40, 160, 60)); noStroke();
   rect(cfX, confirmY, cfW, cfH, 16);
-  fill(255); textSize(24); textAlign(CENTER, CENTER); textStyle(BOLD);
+  fill(255); textSize(20); textAlign(CENTER, CENTER); textStyle(BOLD);
   text("▶  CONFIRM", 1600 / 2, confirmY + cfH / 2 + 1);
   textStyle(NORMAL);
   pop();
@@ -304,8 +317,11 @@ function drawWeaponSelectScreen() {
   push();
   fill(0, 0, 0, 120); noStroke(); rect(bkX + 3, bkYY + 3, bkW, bkH, 14);
   fill(80, 80, 100); rect(bkX, bkYY, bkW, bkH, 14);
-  fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
+  push();
+  textFont(pixelFont);
+  fill(255); textSize(16); textAlign(CENTER, CENTER); noStroke();
   text("← BACK", bkX + bkW / 2, bkYY + bkH / 2);
+  pop();
   pop();
 
   // Divider for dual mode — stops above the Confirm button
@@ -317,51 +333,110 @@ function drawWeaponSelectScreen() {
   }
 }
 
-// ── MODE SELECT SCREEN ───────────────────────────────────────────
+// ── MODE SELECT SCREEN -4.13 add UI ───────────────────────────────────────────
 function drawModeScreen() {
   resetMatrix();
-  if (imgBgFantasy) drawImageCover(imgBgFantasy, 0, 0, 1600, 900);
-  push();
-  fill(0, 0, 0, 200); noStroke(); rect(0, 0, 1600, 900);
-  pop();
+
+  const bgScale = modeAnim ? modeAnim.getBgScale() : 1.0;
+
+  // --- 1. 先填充纯色背景（防止图片透明或边缘缝隙露出白色）---
+  background(20, 25, 40);  // 深蓝灰色，与背景图风格匹配（可根据实际背景微调）
 
   push();
-  textAlign(CENTER, CENTER); noStroke();
-  fill(255, 220, 50); textSize(60);
-  text("Select Mode", 1600 / 2, 200);
-  pop();
+  translate(width / 2, height / 2);
+  scale(bgScale);
+  imageMode(CENTER);
 
-  const modes = [
-    { label: "👤  Single Player", sub: "You vs AI", id: "SINGLE" },
-    { label: "👥  Dual Player",   sub: "Player vs Player", id: "DUAL"   },
-  ];
+  if (imgModeBg) {
+    const imgW = imgModeBg.width || 1800;
+    const imgH = imgModeBg.height || 1000;
 
-  const bW = 380, bH = 90, gap = 30;
-  const startY = 900 / 2 - (bH * 2 + gap) / 2 + bH / 2;
+    const scaleCover = max(width / imgW, height / imgH) * 1.02;
+    const drawW = imgW * scaleCover;
+    const drawH = imgH * scaleCover;
 
-  for (let i = 0; i < modes.length; i++) {
-    const cx = 1600 / 2, cy = startY + i * (bH + gap);
-    const hov = (mouseX > cx - bW/2 && mouseX < cx + bW/2 &&
-                 mouseY > cy - bH/2 && mouseY < cy + bH/2);
+    image(imgModeBg, 0, 0, drawW, drawH);
+  } else {
+    if (imgBgFantasy) {
+      const scaleCover = max(width / imgBgFantasy.width, height / imgBgFantasy.height) * 1.02;
+      const drawW = imgBgFantasy.width * scaleCover;
+      const drawH = imgBgFantasy.height * scaleCover;
+      image(imgBgFantasy, 0, 0, drawW, drawH);
+    }
     push();
-    fill(0, 0, 0, 140); noStroke(); rect(cx - bW/2 + 4, cy - bH/2 + 4, bW, bH, 18);
-    fill(hov ? color(80, 120, 200) : color(40, 60, 120));
-    stroke(hov ? color(200, 220, 255) : color(80, 80, 160)); strokeWeight(2);
-    rect(cx - bW/2, cy - bH/2, bW, bH, 18);
+    fill(0, 0, 0, 200);
     noStroke();
-    fill(255); textSize(32); textAlign(CENTER, CENTER); textStyle(BOLD);
-    text(modes[i].label, cx, cy - 10);
-    textStyle(NORMAL); fill(200, 200, 255); textSize(16);
-    text(modes[i].sub, cx, cy + 22);
+    rect(-width / 2, -height / 2, width, height);
     pop();
   }
+  pop();
 
-  // Back
-  const bkW = 150, bkH = 44, bkX = 1600/2 - bkW/2, bkYY = 820;
+  const singleCard = { x: 246, y: 162, w: 493, h: 456 };
+  const doubleCard = { x: 854, y: 161, w: 504, h: 469 };
+
+  const sBtn = { x: 253, y: 639, w: 470, h: 125 };
+  const dBtn = { x: 876, y: 637, w: 476, h: 127 };
+
+  const floatOffset = modeAnim ? modeAnim.getButtonFloatOffset() : 0;
+
+  const hoverS = (mouseX > sBtn.x && mouseX < sBtn.x + sBtn.w &&
+    mouseY > sBtn.y && mouseY < sBtn.y + sBtn.h);
+  const hoverD = (mouseX > dBtn.x && mouseX < dBtn.x + dBtn.w &&
+    mouseY > dBtn.y && mouseY < dBtn.y + dBtn.h);
+  window._modeScreenHovered = hoverS || hoverD;
+
+  image(imgSingleCard, singleCard.x, singleCard.y, singleCard.w, singleCard.h);
+  image(imgDoubleCard, doubleCard.x, doubleCard.y, doubleCard.w, doubleCard.h);
+
   push();
-  fill(0,0,0,120); noStroke(); rect(bkX+3, bkYY+3, bkW, bkH, 14);
-  fill(80,80,100); rect(bkX, bkYY, bkW, bkH, 14);
-  fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
-  text("← BACK", bkX + bkW/2, bkYY + bkH/2);
+  if (hoverS) {
+    tint(150, 150, 150);
+  } else {
+    noTint();
+  }
+  image(imgSButton, sBtn.x, sBtn.y + floatOffset, sBtn.w, sBtn.h);
+  pop();
+
+  push();
+  if (hoverD) {
+    tint(150, 150, 150);
+  } else {
+    noTint();
+  }
+  image(imgDButton, dBtn.x, dBtn.y + floatOffset, dBtn.w, dBtn.h);
+  pop();
+
+  push();
+  textAlign(CENTER, CENTER);
+  textFont(pixelFont);
+  noStroke();
+
+  fill(255);
+  stroke(0);
+  strokeWeight(3);
+  textSize(22);
+  text("SINGLE MODE", sBtn.x + sBtn.w / 2, sBtn.y + floatOffset + sBtn.h / 2 - 7);
+  noStroke();
+  fill(0);
+  textSize(14);
+  text("Player vs AI", sBtn.x + sBtn.w / 2, sBtn.y + floatOffset + sBtn.h / 2 + 18);
+
+  fill(255);
+  stroke(0);
+  strokeWeight(3);
+  textSize(22);
+  text("DOUBLE MODE", dBtn.x + dBtn.w / 2, dBtn.y + floatOffset + dBtn.h / 2 - 7);
+  noStroke();
+  fill(0);
+  textSize(14);
+  text("Player vs Player", dBtn.x + dBtn.w / 2, dBtn.y + floatOffset + dBtn.h / 2 + 18);
+  pop();
+
+  const bkW = 150, bkH = 44, bkX = 1600 / 2 - bkW / 2, bkYY = 840;
+  push();
+  fill(0, 0, 0, 120); noStroke(); rect(bkX + 3, bkYY + 3, bkW, bkH, 14);
+  fill(80, 80, 100); rect(bkX, bkYY, bkW, bkH, 14);
+  fill(255); textSize(18); textAlign(CENTER, CENTER);
+  text("← BACK", bkX + bkW / 2, bkYY + bkH / 2);
   pop();
 }

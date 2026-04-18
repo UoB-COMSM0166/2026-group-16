@@ -15,6 +15,44 @@ const LABEL_STYLE = {
   boxStrokeWeight: 2,
 };
 
+const CHARACTERS_FANTASY = [
+  {
+    name: "John", portrait: "portrait_John_fantasy.png", nameUI: "name_John.png", bioUI: "bio_John.png",
+    bioText: { EN: "An elven knight wielding a greatsword, a mysterious tome never leaves his hand.", ZH: "精灵骑士，手持巨剑，一本神秘的古书从不离身。" }
+  },
+  {
+    name: "Kira", portrait: "portrait_Kira_fantasy.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
+    bioText: { EN: "A winged angel, successor to Cupid. Armed with bow and arrow.", ZH: "拥有白色羽翼的天使，丘比特的后继者。手持弓箭与命运之书。" }
+  },
+  {
+    name: "Mat", portrait: "portrait_Mat_fantasy.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
+    bioText: { EN: "A high-ranking priest draped in crimson and black.", ZH: "身披红披风与黑袍的高阶传教士。" }
+  },
+  {
+    name: "Jo", portrait: "portrait_Jo_fantasy.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
+    bioText: { EN: "A wandering bard with a lamb in his arms, shrouded in mystery.", ZH: "流浪吟游诗人，一手抱羊，一手执琴。受神祝福，却身世成谜。" }
+  }
+];
+
+const CHARACTERS_MODERN = [
+  {
+    name: "John", portrait: "portrait_John_modern.png", nameUI: "name_John.png", bioUI: "bio_John.png",
+    bioText: { EN: "A master of quizzes, known for exams.", ZH: "测验达人，考试难度令人望而生畏。" }
+  },
+  {
+    name: "Kira", portrait: "portrait_Kira_modern.png", nameUI: "name_Kira.png", bioUI: "bio_Kira.png",
+    bioText: { EN: "Every detail matters under her watch, she won't let you slip.", ZH: "耐心而严谨，对细节一丝不苟。" }
+  },
+  {
+    name: "Mat", portrait: "portrait_Mat_modern.png", nameUI: "name_Mat.png", bioUI: "bio_Mat.png",
+    bioText: { EN: "No one can guess what he's thinking, especially during exams.", ZH: "平静的面孔让人猜不透当下的心情——尤其是考试时。" }
+  },
+  {
+    name: "Jo", portrait: "portrait_Jo_modern.png", nameUI: "name_Jo.png", bioUI: "bio_Jo.png",
+    bioText: { EN: "You'll love his class and fear his final.", ZH: "课堂生动有趣，但考试依旧极具挑战。" }
+  }
+];
+
 // IMAGES — fantasy
 let imgBgFantasy, imgCharSelectFantasy;
 let imgPlayerFantasy, imgTargetFantasy;
@@ -43,7 +81,6 @@ let soundUnlocked = false; // browsers block audio until first user click
 let catHP = 100, dogHP = 100;
 let ciyangAngleObj, ciyangPowerObj;
 let gameState = "START", selectedDifficulty = "";
-const btnX = 800, btnY = 450, btnW = 260, btnH = 80;
 const GROUND_Y = 850;
 
 let nav; // Navigator instance
@@ -68,9 +105,20 @@ let fantasyBioPanel, modernBioPanel;
 let csAssets_fantasy = [];
 let csAssets_modern = [];
 
+let bioF_John, bioF_Kira, bioF_Mat, bioF_Jo;
+let bioM_John, bioM_Kira, bioM_Mat, bioM_Jo;
+
+//start screen animation
+let imgStartBg, imgTitle, imgBtnStart, imgBtnIntro;
+let startAnim;
+let levelAnim;
+let imgDifficultyBg;
+let imgDiffEasy, imgDiffMedium, imgDiffHard;
+
 // ── GAME MODE ─────────────────────────────────────────────────────
 // "SINGLE" = human vs AI  |  "DUAL" = human vs human
 let gameMode = "DUAL";
+let modeAnim;
 
 // ── WEAPON OBJECTS ────────────────────────────────────────────────
 // Created in setup(), one per fighter
@@ -80,6 +128,7 @@ let dogWeapons;      // WEAPONS instance for player2 / AI
 // ── CHARACTER SELECT — P2 (dog) index ─────────────────────────────
 // P1 uses the existing charSelectIndex; P2 in DUAL uses dogCharSelectIndex
 let dogCharSelectIndex = 0;
+let imgModeBg, imgSingleCard, imgDoubleCard, imgSButton, imgDButton;
 
 // ── sound helper ───────────────────────────────────────────
 function tryPlaySound(snd) {
@@ -110,7 +159,7 @@ function applyDifficultyAssets() {
 // ── Update LABELS from selected character names ───────────────────
 function applyCharacterLabels() {
   const isModern = (selectedDifficulty === "HARD");
-  const assets   = isModern ? csAssets_modern : csAssets_fantasy;
+  const assets = isModern ? csAssets_modern : csAssets_fantasy;
   if (assets && assets.length) {
     LABELS.player = assets[charSelectIndex % assets.length].name;
     imgPlayer = assets[charSelectIndex % assets.length].portrait;
@@ -147,11 +196,11 @@ function resetGame() {
   // In SINGLE mode use dummy keys so real arrow keys never move the AI;
   // VKEY will press these dummy codes. In DUAL mode use real arrow keys.
   if (gameMode === "SINGLE") {
-    dogBody.leftKey  = 201;
+    dogBody.leftKey = 201;
     dogBody.rightKey = 202;
     dogBody.controllable = true;
   } else {
-    dogBody.leftKey  = LEFT_ARROW;
+    dogBody.leftKey = LEFT_ARROW;
     dogBody.rightKey = RIGHT_ARROW;
     dogBody.controllable = true;
   }
@@ -200,25 +249,43 @@ function preload() {
   // Shared
   imgPan = loadImage("pan.png");
   imgWall = loadImage("assets/images/bg/wall_fantasy.png");
-  keyA = loadImage("assets/ui/key_a.png");
-  keyD = loadImage("assets/ui/key_d.png");
-  keyUp = loadImage("assets/ui/key_up.png");
-  keyDown = loadImage("assets/ui/key_down.png");
-  keyLeft = loadImage("assets/ui/key_left.png");
-  keyRight = loadImage("assets/ui/key_right.png");
-  keySpace = loadImage("assets/ui/key_space.png");
   difficultyUI = loadImage("assets/ui/difficult-select-01.png");
+  imgDifficultyBg = loadImage("assets/images/DifficultySelect/difficult_bg.png");
+  imgDiffEasy = loadImage("assets/images/DifficultySelect/easy_button.png");
+  imgDiffMedium = loadImage("assets/images/DifficultySelect/medium_button.png");
+  imgDiffHard = loadImage("assets/images/DifficultySelect/hard_button.png");
+
+  pixelFont = loadFont('assets/font/Press_Start_2P/PressStart2P-Regular.ttf');
+  pixelFont_intro = loadFont('assets/font/ZLabsBitmap_12px_CN.ttf');
+
+  const BIO_F_BASE = "assets/images/CharacterSelect/fantasy/";
+  bioF_John = loadImage(BIO_F_BASE + "bioo_John_fantasy.png");
+  bioF_Kira = loadImage(BIO_F_BASE + "bioo_Kira_fantasy.png");
+  bioF_Mat = loadImage(BIO_F_BASE + "bioo_Mat_fantasy.png");
+  bioF_Jo = loadImage(BIO_F_BASE + "bioo_Jo_fantasy.png");
+
+  const BIO_M_BASE = "assets/images/CharacterSelect/modern/";
+  bioM_John = loadImage(BIO_M_BASE + "bioo_John_modern.png");
+  bioM_Kira = loadImage(BIO_M_BASE + "bioo_Kira_modern.png");
+  bioM_Mat = loadImage(BIO_M_BASE + "bioo_Mat_modern.png");
+  bioM_Jo = loadImage(BIO_M_BASE + "bioo_Jo_modern.png");
   // NOTE: sound is loaded in setup() so a bad path never blocks preload
 
   // ── Weapon images ──────────────────────────────────────────────
   const WPATH = "assets/weapons/";
   const wNames = [
-    "weapon_bomb","weapon_boomerang","weapon_cannon","weapon_dagger",
-    "weapon_doubletap","weapon_ghost","weapon_ice","weapon_pan",
-    "weapon_poison","weapon_triple"
+    "weapon_bomb", "weapon_boomerang", "weapon_cannon", "weapon_dagger",
+    "weapon_doubletap", "weapon_ghost", "weapon_ice", "weapon_pan",
+    "weapon_poison", "weapon_triple"
   ];
   for (const n of wNames) {
     weaponImages[n] = loadImage(WPATH + n + ".png");
+
+    // Start screen animation assets
+    imgStartBg = loadImage("assets/images/StartScreen/start_bg.png");
+    imgTitle = loadImage("assets/images/StartScreen/title.png");
+    imgBtnStart = loadImage("assets/images/StartScreen/start_button.png");
+    imgBtnIntro = loadImage("assets/images/StartScreen/intro_text.png");
   }
 
   // Grace3.31__Character Select Screen Assets — fantasy
@@ -262,6 +329,17 @@ function preload() {
   modernBtnConfirm = loadImage(BASE_M + "btn_confirm.png");
   modernBgCharSelect = loadImage(BASE_M + "bg_charselect_modern.png");
   modernBioPanel = loadImage(BASE_M + "bio_panel_modern.png");
+
+  fantasyP1Img = loadImage("assets/images/CharacterSelect/fantasy/p1.png");
+  fantasyP2Img = loadImage("assets/images/CharacterSelect/fantasy/p2.png");
+  modernP1Img = loadImage("assets/images/CharacterSelect/modern/h_p1.png");
+  modernP2Img = loadImage("assets/images/CharacterSelect/modern/h_p2.png");
+
+  imgModeBg = loadImage("assets/images/SingleDouble/sd_bg.png");
+  imgSingleCard = loadImage("assets/images/SingleDouble/single.png");
+  imgDoubleCard = loadImage("assets/images/SingleDouble/double.png");
+  imgSButton = loadImage("assets/images/SingleDouble/s_button.png");
+  imgDButton = loadImage("assets/images/SingleDouble/d_button.png");
 }
 
 function setup() {
@@ -279,16 +357,18 @@ function setup() {
   // Fix Bug 1: add the wall/pedestal as a real collision body so projectiles can't pass through it
   cd.addStaticRect({ x: 750, y: GROUND_Y - 200, w: 100, h: 200, tag: "wall" });
 
-  dogBody = cd.addCharacter({ x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog",
+  dogBody = cd.addCharacter({
+    x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog",
     // Use dummy key codes (201/202) — real arrow keys won't match these.
     // In SINGLE mode the AI presses these via VKEY; in DUAL mode we reassign them in resetGame.
-    leftKey: 201, rightKey: 202 });
+    leftKey: 201, rightKey: 202
+  });
   dogBody.facing = -1;
   player = cd.addCharacter({ x: 380, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "player", leftKey: 65, rightKey: 68 });
 
   // Create weapon instances — one per fighter
   playerWeapons = new WEAPONS();
-  dogWeapons    = new WEAPONS();
+  dogWeapons = new WEAPONS();
 
   nav = new Navigator();
 
@@ -300,6 +380,13 @@ function setup() {
   );
 
   LANG_PATCHER.apply(); // apply language patches after p5 is ready
+
+  startAnim = new StartScreenAnimator();
+  startAnim.setImages(imgStartBg, imgTitle, imgBtnStart, imgBtnIntro);
+
+  // levelselect screen animation
+  levelAnim = new LevelScreenAnimator();
+  modeAnim = new ModeScreenAnimator();
 }
 
 function draw() {
@@ -312,14 +399,20 @@ function draw() {
   const _lw = document.getElementById("lang-wrapper");
   if (_lw) {
     if (gameState === "START") _lw.classList.remove("hidden");
-    else                       _lw.classList.add("hidden");
+    else _lw.classList.add("hidden");
   }
 
-  if      (gameState === "START")          drawStartScreen();
-  else if (gameState === "CHOOSE")         drawLevelScreen();
-  else if (gameState === "MODE")           drawModeScreen();
-  else if (gameState === "CHARACTER")      drawCharacterScreen();
-  else if (gameState === "WEAPON_SELECT")  drawWeaponSelectScreen();
+  if (gameState === "START") drawStartScreen();
+  else if (gameState === "CHOOSE") {
+    levelAnim.update();
+    drawLevelScreen();
+  }
+  else if (gameState === "MODE") {
+    modeAnim.update();
+    drawModeScreen();
+  }
+  else if (gameState === "CHARACTER") drawCharacterScreen();
+  else if (gameState === "WEAPON_SELECT") drawWeaponSelectScreen();
   else {
     if (selectedDifficulty === "HARD") {
       powerObj.difficultyAdjustment(200, 170);
@@ -332,6 +425,7 @@ function draw() {
 }
 
 function mousePressed() {
+  if (!nav) return;
   // Unlock audio context on first click (browser requirement)
   if (!soundUnlocked) {
     userStartAudio();
