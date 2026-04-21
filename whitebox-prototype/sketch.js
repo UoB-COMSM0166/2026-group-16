@@ -4,6 +4,9 @@ const LABELS = {
   player: "Rish",
   target: "Ciyang",
 };
+
+let gameState = "start";  // "start", "difficulty", "character", "battle"
+
 const LABEL_STYLE = {
   fontSize: 22,
   paddingX: 10,
@@ -17,7 +20,7 @@ const LABEL_STYLE = {
 };
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-const sign  = (v) => (v < 0 ? -1 : 1);
+const sign = (v) => (v < 0 ? -1 : 1);
 function vec2(x = 0, y = 0) { return { x, y }; }
 function vecLen(a) { return Math.hypot(a.x, a.y); }
 function vecNorm(a) { const l = vecLen(a) || 1; return { x: a.x / l, y: a.y / l }; }
@@ -26,14 +29,14 @@ function vecNorm(a) { const l = vecLen(a) || 1; return { x: a.x / l, y: a.y / l 
 class ANGLE {
   constructor({ direction = 1, angleDeg = 45, minDeg = 0, maxDeg = 80, stepDeg = 1 } = {}) {
     this.direction = direction;
-    this.angleDeg  = angleDeg;
-    this.minDeg    = minDeg;
-    this.maxDeg    = maxDeg;
-    this.stepDeg   = stepDeg;
+    this.angleDeg = angleDeg;
+    this.minDeg = minDeg;
+    this.maxDeg = maxDeg;
+    this.stepDeg = stepDeg;
   }
   setDirection(dir) { this.direction = dir >= 0 ? 1 : -1; }
   update() {
-    if (keyIsDown(UP_ARROW))   this.angleDeg += this.stepDeg;
+    if (keyIsDown(UP_ARROW)) this.angleDeg += this.stepDeg;
     if (keyIsDown(DOWN_ARROW)) this.angleDeg -= this.stepDeg;
     this.angleDeg = clamp(this.angleDeg, this.minDeg, this.maxDeg);
   }
@@ -46,18 +49,18 @@ class ANGLE {
 // ─── POWER ────────────────────────────────────────────────────────────────────
 class POWER {
   constructor({ min = 0, max = 100, chargeRatePerSec = 70, decayRatePerSec = 0 } = {}) {
-    this.min              = min;
-    this.max              = max;
+    this.min = min;
+    this.max = max;
     this.chargeRatePerSec = chargeRatePerSec;
-    this.decayRatePerSec  = decayRatePerSec;
-    this.value            = min;
-    this.isCharging       = false;
-    this.justReleased     = false;
-    this._wasCharging     = false;
+    this.decayRatePerSec = decayRatePerSec;
+    this.value = min;
+    this.isCharging = false;
+    this.justReleased = false;
+    this._wasCharging = false;
   }
   update(dt) {
     this.justReleased = false;
-    this.isCharging   = keyIsDown(32);
+    this.isCharging = keyIsDown(32);
     if (this.isCharging) {
       this.value = clamp(this.value + this.chargeRatePerSec * dt, this.min, this.max);
     } else if (this.decayRatePerSec > 0) {
@@ -72,19 +75,19 @@ class POWER {
 // ─── COLLISION DETECTION ──────────────────────────────────────────────────────
 class CollisionDetection {
   constructor({ worldWidth = 1600, worldHeight = 900, cellSize = 128, gravity = 900, windAccel = 50 } = {}) {
-    this.worldWidth   = worldWidth;
-    this.worldHeight  = worldHeight;
-    this.cellSize     = cellSize;
-    this.cols         = Math.ceil(worldWidth  / cellSize);
-    this.rows         = Math.ceil(worldHeight / cellSize);
-    this.gravity      = gravity;
-    this.windAccel    = windAccel;
+    this.worldWidth = worldWidth;
+    this.worldHeight = worldHeight;
+    this.cellSize = cellSize;
+    this.cols = Math.ceil(worldWidth / cellSize);
+    this.rows = Math.ceil(worldHeight / cellSize);
+    this.gravity = gravity;
+    this.windAccel = windAccel;
     this.staticBodies = [];
-    this.characters   = [];
-    this.projectiles  = [];
-    this.floatTexts   = [];
-    this._grid        = new Map();
-    this._nextId      = 1;
+    this.characters = [];
+    this.projectiles = [];
+    this.floatTexts = [];
+    this._grid = new Map();
+    this._nextId = 1;
   }
 
   _cellKey(cx, cy) { return `${cx},${cy}`; }
@@ -141,11 +144,11 @@ class CollisionDetection {
   spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player" }) {
     const power = powerObj.consume();
     const speed = power * powerScale;
-    const a     = angleObj.angleRad;
+    const a = angleObj.angleRad;
     const p = {
       id: this._nextId++, type: "projectile",
       x: fromX, y: fromY, r: radius,
-      vx:  Math.cos(a) * speed,
+      vx: Math.cos(a) * speed,
       vy: -Math.sin(a) * speed,
       alive: true,
       owner,
@@ -156,7 +159,7 @@ class CollisionDetection {
 
   static aabbIntersects(a, b) {
     return a.x < b.x + b.w && a.x + a.w > b.x &&
-           a.y < b.y + b.h && a.y + a.h > b.y;
+      a.y < b.y + b.h && a.y + a.h > b.y;
   }
 
   static circleAABBHit(circle, rect) {
@@ -172,9 +175,9 @@ class CollisionDetection {
 
   static resolveAABBvsAABB(dynamic, stat) {
     const ox1 = (dynamic.x + dynamic.w) - stat.x;
-    const ox2 = (stat.x + stat.w)       - dynamic.x;
+    const ox2 = (stat.x + stat.w) - dynamic.x;
     const oy1 = (dynamic.y + dynamic.h) - stat.y;
-    const oy2 = (stat.y + stat.h)       - dynamic.y;
+    const oy2 = (stat.y + stat.h) - dynamic.y;
     const penX = Math.min(ox1, ox2);
     const penY = Math.min(oy1, oy2);
     if (penX < penY) {
@@ -182,13 +185,13 @@ class CollisionDetection {
       dynamic.vx = 0;
     } else {
       if (oy1 < oy2) { dynamic.y -= penY; dynamic.vy = 0; dynamic.onGround = true; }
-      else            { dynamic.y += penY; dynamic.vy = 0; }
+      else { dynamic.y += penY; dynamic.vy = 0; }
     }
   }
 
   _updateCharacter(ch, dt, angleObj) {
     if (ch.controllable) {
-      const left  = keyIsDown(LEFT_ARROW)  || keyIsDown(65);
+      const left = keyIsDown(LEFT_ARROW) || keyIsDown(65);
       const right = keyIsDown(RIGHT_ARROW) || keyIsDown(68);
       ch.vx = left ? -ch.speed : right ? ch.speed : 0;
       ch.vy = 0;
@@ -219,13 +222,13 @@ class CollisionDetection {
 
   _updateProjectile(p, dt) {
     p.vx += this.windAccel * dt;
-    p.vy += this.gravity   * dt;
-    p.x  += p.vx * dt;
-    p.y  += p.vy * dt;
+    p.vy += this.gravity * dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
 
     if (p.x < -200 || p.x > this.worldWidth + 200 || p.y > this.worldHeight + 200) {
       p.alive = false;
-      if (turn === "waiting_rish")   { turn = "ciyang"; }
+      if (turn === "waiting_rish") { turn = "ciyang"; }
       if (turn === "waiting_ciyang") { turn = "rish"; }
       return;
     }
@@ -233,17 +236,21 @@ class CollisionDetection {
     for (const ch of this.characters) {
       if (ch.tag === p.owner) continue;
       const rect = { x: ch.x, y: ch.y, w: ch.w, h: ch.h };
-      const hit  = CollisionDetection.circleAABBHit(p, rect);
+      const hit = CollisionDetection.circleAABBHit(p, rect);
       if (hit) {
         if (ch.tag === "dog") {
           dogHP = Math.max(0, dogHP - 15);
-          this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: dogHP <= 0 ? "Ciyang defeated! 💀" : "-15 HP!" });
+          this.floatTexts.push({
+            x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
+            text: dogHP <= 0 ? "Ciyang defeated! 💀" : "-15 HP!"
+          });
           turn = "ciyang";
         } else if (ch.tag === "player") {
           catHP = Math.max(0, catHP - 15);
-          this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: catHP <= 0 ? "Rish defeated! 💀" : "-15 HP!" });
+          this.floatTexts.push({
+            x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
+            text: catHP <= 0 ? "Rish defeated! 💀" : "-15 HP!"
+          });
           turn = "rish";
         }
         p.alive = false; return;
@@ -256,7 +263,7 @@ class CollisionDetection {
       if (!stat) continue;
       const hit = CollisionDetection.circleAABBHit(p, stat);
       if (hit) {
-        if (turn === "waiting_rish")   { turn = "ciyang"; }
+        if (turn === "waiting_rish") { turn = "ciyang"; }
         if (turn === "waiting_ciyang") { turn = "rish"; }
         p.alive = false; return;
       }
@@ -266,12 +273,14 @@ class CollisionDetection {
 
 // ─── IMAGES ───────────────────────────────────────────────────────────────────
 let imgBg, imgPlayer, imgTarget, imgPan;
+let keyA, keyD, keyUp, keyDown, keyLeft, keyRight, keySpace;
+let difficultyUI;
 
 function drawImageCover(img, dx, dy, dw, dh) {
   const sr = img.width / img.height, dr = dw / dh;
   let sx = 0, sy = 0, sw = img.width, sh = img.height;
   if (dr > sr) { sh = img.width / dr; sy = (img.height - sh) / 2; }
-  else          { sw = img.height * dr; sx = (img.width  - sw) / 2; }
+  else { sw = img.height * dr; sx = (img.width - sw) / 2; }
   image(img, dx, dy, dw, dh, sx, sy, sw, sh);
 }
 
@@ -290,8 +299,8 @@ function drawHeadLabel(textStr, centerX, topY) {
   const tw = textWidth(textStr);
   const bw = tw + LABEL_STYLE.paddingX * 2;
   const bh = LABEL_STYLE.fontSize + LABEL_STYLE.paddingY * 2;
-  const x  = centerX - bw / 2;
-  const y  = topY - bh - LABEL_STYLE.offsetY;
+  const x = centerX - bw / 2;
+  const y = topY - bh - LABEL_STYLE.offsetY;
   stroke(...LABEL_STYLE.boxStroke);
   strokeWeight(LABEL_STYLE.boxStrokeWeight);
   fill(...LABEL_STYLE.boxFill);
@@ -309,7 +318,7 @@ function drawAimTrajectory(ch, angleObj, powerObj) {
   const fromX = ch.x + ch.w * (ch.facing === 1 ? 0.9 : 0.1);
   const fromY = ch.y + ch.h * 0.35;
   const speed = powerObj.value * 8;
-  const a     = angleObj.angleRad;
+  const a = angleObj.angleRad;
 
   let vx = Math.cos(a) * speed;
   let vy = -Math.sin(a) * speed;
@@ -319,9 +328,9 @@ function drawAimTrajectory(ch, angleObj, powerObj) {
 
   push();
   for (let i = 0; i < MAX_DOTS; i++) {
-    const t     = i / MAX_DOTS;
+    const t = i / MAX_DOTS;
     const alpha = lerp(240, 0, t);
-    const dotR  = lerp(7, 2, t);
+    const dotR = lerp(7, 2, t);
 
     noFill();
     stroke(255, 220, 60, alpha * 0.45);
@@ -332,7 +341,7 @@ function drawAimTrajectory(ch, angleObj, powerObj) {
     fill(255, 245, 130, alpha);
     ellipse(px, py, dotR * 2, dotR * 2);
 
-    vx += WIND    * SIM_DT;
+    vx += WIND * SIM_DT;
     vy += GRAVITY * SIM_DT;
     px += vx * SIM_DT;
     py += vy * SIM_DT;
@@ -357,21 +366,21 @@ function drawAimTrajectory(ch, angleObj, powerObj) {
 
 // ─── HEALTH BARS ──────────────────────────────────────────────────────────────
 function drawHealthBars() {
-  const HUD_Y  = 10;
-  const HUD_H  = 52;
+  const HUD_Y = 10;
+  const HUD_H = 52;
   const MARGIN = 18;
-  const GAP    = 120;
-  const BAR_W  = (width / 2) - MARGIN - GAP / 2;
-  const BAR_H  = 38;
-  const BAR_Y  = HUD_Y + (HUD_H - BAR_H) / 2;
-  const BORD   = 5;
-  const R      = 6;
+  const GAP = 120;
+  const BAR_W = (width / 2) - MARGIN - GAP / 2;
+  const BAR_H = 38;
+  const BAR_Y = HUD_Y + (HUD_H - BAR_H) / 2;
+  const BORD = 5;
+  const R = 6;
 
   push();
   noStroke();
 
   function drawFighterBar(label, hp, side) {
-    const pct  = clamp(hp / 100, 0, 1);
+    const pct = clamp(hp / 100, 0, 1);
     const barX = side === "left" ? MARGIN : width / 2 + GAP / 2;
     const barY = BAR_Y;
 
@@ -406,7 +415,7 @@ function drawHealthBars() {
   }
 
   const vsX = width / 2;
-  const vsY  = BAR_Y + BAR_H / 2;
+  const vsY = BAR_Y + BAR_H / 2;
   fill(255, 200, 0);
   ellipse(vsX, vsY, GAP - 10, HUD_H + 8);
   fill(140, 0, 0);
@@ -431,7 +440,7 @@ function drawAimTrajectoryDog(ch, angleObj, powerObj) {
   const fromX = ch.x + ch.w * (ch.facing === 1 ? 0.9 : 0.1);
   const fromY = ch.y + ch.h * 0.35;
   const speed = powerObj.value * 8;
-  const a     = angleObj.angleRad;
+  const a = angleObj.angleRad;
 
   let vx = Math.cos(a) * speed;
   let vy = -Math.sin(a) * speed;
@@ -440,9 +449,9 @@ function drawAimTrajectoryDog(ch, angleObj, powerObj) {
 
   push();
   for (let i = 0; i < MAX_DOTS; i++) {
-    const t     = i / MAX_DOTS;
+    const t = i / MAX_DOTS;
     const alpha = lerp(240, 0, t);
-    const dotR  = lerp(7, 2, t);
+    const dotR = lerp(7, 2, t);
     noFill();
     stroke(255, 140, 60, alpha * 0.45);
     strokeWeight(dotR * 0.9);
@@ -483,14 +492,26 @@ let ciyangAngleObj, ciyangPowerObj;
 const GROUND_Y = 850;
 
 function preload() {
-  imgBg     = loadImage("bg.jpg");
-  imgPlayer = loadImage("player.png");
-  imgTarget = loadImage("target.png");
-  imgPan    = loadImage("pan.png");
+  imgBg = loadImage("assets/images/bg.jpg");
+  imgPlayer = loadImage("assets/images/player.png");
+  imgTarget = loadImage("assets/images/target.png");
+  imgPan = loadImage("assets/images/pan.png");
+
+  // UI images
+  keyA = loadImage("assets/ui/key_a.png");
+  keyD = loadImage("assets/ui/key_d.png");
+  keyUp = loadImage("assets/ui/key_up.png");
+  keyDown = loadImage("assets/ui/key_down.png");
+  keyLeft = loadImage("assets/ui/key_left.png");
+  keyRight = loadImage("assets/ui/key_right.png");
+  keySpace = loadImage("assets/ui/key_space.png");
+
+  difficultyUI = loadImage("assets/ui/difficult-select-01.png");
 }
 
 function setup() {
   createCanvas(1600, 900);
+  noSmooth();
 
   angleObj = new ANGLE({ direction: 1, angleDeg: 45, minDeg: 0, maxDeg: 80, stepDeg: 1 });
   powerObj = new POWER({ min: 0, max: 100, chargeRatePerSec: 70 });
@@ -525,9 +546,90 @@ function setup() {
     w: 120, h: CAT_H,
     speed: 280, tag: "player",
   });
+
+  player.controllable = false;
+  dogBody.controllable = false;
 }
 
 function draw() {
+  // ===== State Management =====
+  if (gameState === "start") {
+    let tempTurn = turn;
+    let tempControllablePlayer = player.controllable;
+    let tempControllableDog = dogBody.controllable;
+
+    player.controllable = false;
+    dogBody.controllable = false;
+
+    // Draw background and characters (same as before)
+    drawImageCover(imgBg, 0, 0, width, height);
+
+    // Draw ground
+    noStroke();
+    fill(101, 67, 33, 220);
+    const ground = cd.staticBodies.find(b => b.tag === "ground");
+    if (ground) rect(ground.x, ground.y, ground.w, ground.h);
+
+    // Draw wall
+    const wall = cd.staticBodies.find(b => b.tag === "wall");
+    if (wall) {
+      fill(0, 0, 0, 60);
+      rect(wall.x + 6, wall.y + 6, wall.w, wall.h, 4);
+      fill(120, 90, 50, 230);
+      rect(wall.x, wall.y, wall.w, wall.h, 4);
+      fill(160, 120, 70, 180);
+      rect(wall.x + 4, wall.y + 4, wall.w - 8, 10, 3);
+    }
+
+    // Draw dog
+    push();
+    if (dogBody.facing === 1) {
+      translate(dogBody.x + dogBody.w, 0);
+      scale(-1, 1);
+      drawContain(imgTarget, 0, dogBody.y, dogBody.w, dogBody.h);
+    } else {
+      drawContain(imgTarget, dogBody.x, dogBody.y, dogBody.w, dogBody.h);
+    }
+    pop();
+    drawHeadLabel(LABELS.target, dogBody.x + dogBody.w / 2, dogBody.y);
+
+    // Draw cat
+    push();
+    if (player.facing === -1) {
+      translate(player.x + player.w, 0);
+      scale(-1, 1);
+      drawContain(imgPlayer, 0, player.y, player.w, player.h);
+    } else {
+      drawContain(imgPlayer, player.x, player.y, player.w, player.h);
+    }
+    pop();
+    drawHeadLabel(LABELS.player, player.x + player.w / 2, player.y);
+
+    // Restore temporary variables
+    turn = tempTurn;
+    player.controllable = tempControllablePlayer;
+    dogBody.controllable = tempControllableDog;
+
+    // Draw start screen overlay
+    drawStartScreen();
+    return;
+
+  } else if (gameState === "difficulty") {
+    // Draw background first
+    drawImageCover(imgBg, 0, 0, width, height);
+    // Draw difficulty selection overlay
+    drawDifficultyScreen();
+    return;
+
+  } else if (gameState === "character") {
+    // Draw background first
+    drawImageCover(imgBg, 0, 0, width, height);
+    // Draw character selection overlay
+    drawCharacterScreen();
+    return;
+  }
+
+
   const dt = Math.min(deltaTime / 1000, 0.033);
 
   const gameOver = catHP <= 0 || dogHP <= 0;
@@ -535,7 +637,7 @@ function draw() {
   if (!gameOver) {
     // ── RISH'S TURN ─────────────────────────────────────────────────────────
     if (turn === "rish") {
-      player.controllable  = true;
+      player.controllable = true;
       dogBody.controllable = false;
       angleObj.update();
       powerObj.update(dt);
@@ -547,15 +649,15 @@ function draw() {
         turn = "waiting_rish";
       }
 
-    // ── RISH PAN FLYING ──────────────────────────────────────────────────────
+      // ── RISH PAN FLYING ──────────────────────────────────────────────────────
     } else if (turn === "waiting_rish") {
       player.controllable = false;
 
-    // ── CIYANG'S TURN ────────────────────────────────────────────────────────
+      // ── CIYANG'S TURN ────────────────────────────────────────────────────────
     } else if (turn === "ciyang") {
-      player.controllable  = false;
+      player.controllable = false;
       dogBody.controllable = true;
-      dogBody.speed        = 280;
+      dogBody.speed = 280;
       ciyangAngleObj.update();
       ciyangPowerObj.update(dt);
       for (const ch of cd.characters) cd._updateCharacter(ch, dt, ciyangAngleObj);
@@ -567,7 +669,7 @@ function draw() {
         turn = "waiting_ciyang";
       }
 
-    // ── CIYANG PAN FLYING ────────────────────────────────────────────────────
+      // ── CIYANG PAN FLYING ────────────────────────────────────────────────────
     } else if (turn === "waiting_ciyang") {
       player.controllable = false;
     }
@@ -611,7 +713,7 @@ function draw() {
   drawHeadLabel(LABELS.target, dogBody.x + dogBody.w / 2, dogBody.y);
 
   // Aim trajectory
-  if (turn === "rish")   drawAimTrajectory(player, angleObj, powerObj);
+  if (turn === "rish") drawAimTrajectory(player, angleObj, powerObj);
   if (turn === "ciyang") drawAimTrajectoryDog(dogBody, ciyangAngleObj, ciyangPowerObj);
 
   // ── Cat (Rish) — mirror based on facing ──
@@ -629,7 +731,7 @@ function draw() {
   // Projectiles
   for (const p of cd.projectiles) {
     if (!p.alive) continue;
-    const rot  = Math.atan2(p.vy, p.vx);
+    const rot = Math.atan2(p.vy, p.vx);
     const boxW = p.r * 8.0, boxH = p.r * 6.2;
     push();
     translate(p.x, p.y);
@@ -650,10 +752,10 @@ function draw() {
   textAlign(LEFT);
   if (turn === "ciyang") {
     text(`Angle: ${ciyangAngleObj.angleDeg.toFixed(0)}°`, 20, 82);
-    text(`Power: ${ciyangPowerObj.value.toFixed(0)}`,     20, 102);
+    text(`Power: ${ciyangPowerObj.value.toFixed(0)}`, 20, 102);
   } else {
-    text(`Angle: ${angleObj.angleDeg.toFixed(0)}°`,       20, 82);
-    text(`Power: ${powerObj.value.toFixed(0)}`,           20, 102);
+    text(`Angle: ${angleObj.angleDeg.toFixed(0)}°`, 20, 82);
+    text(`Power: ${powerObj.value.toFixed(0)}`, 20, 102);
   }
   text(`Move: A/D  |  Aim: ↑↓  |  Charge & Fire: Space`, 20, 122);
 
@@ -661,10 +763,10 @@ function draw() {
   const bannerTurn = turn === "rish"
     ? `🐱 ${LABELS.player}'s Turn — Aim & Fire!`
     : turn === "ciyang"
-    ? `🐶 ${LABELS.target}'s Turn — Aim & Fire!`
-    : (turn === "waiting_rish" || turn === "waiting_ciyang")
-    ? "💨 Projectile flying..."
-    : "";
+      ? `🐶 ${LABELS.target}'s Turn — Aim & Fire!`
+      : (turn === "waiting_rish" || turn === "waiting_ciyang")
+        ? "💨 Projectile flying..."
+        : "";
 
   if (bannerTurn && !gameOver) {
     const bx = width / 2, by = 148;
@@ -686,9 +788,9 @@ function draw() {
   // ── WIN SCREEN ────────────────────────────────────────────────────────────
   if (gameOver) {
     const winnerIsRish = dogHP <= 0;
-    const winnerName   = winnerIsRish ? LABELS.player : LABELS.target;
-    const winnerHP     = winnerIsRish ? catHP : dogHP;
-    const winnerImg    = winnerIsRish ? imgPlayer : imgTarget;
+    const winnerName = winnerIsRish ? LABELS.player : LABELS.target;
+    const winnerHP = winnerIsRish ? catHP : dogHP;
+    const winnerImg = winnerIsRish ? imgPlayer : imgTarget;
 
     push();
     fill(0, 0, 0, 180);
@@ -721,6 +823,427 @@ function draw() {
     textSize(22);
     fill(200, 200, 200);
     text("Refresh to play again", width / 2, py + ps / 2 + 145);
+
+    // --- SE-24 Grace: return button ---
+    let backBtnX = width / 2;
+    let backBtnY = height / 2 + 220;
+    let backBtnW = 200;
+    let backBtnH = 50;
+
+    // button shadow
+    fill(0, 0, 0, 100);
+    rect(backBtnX + 3, backBtnY + 3, backBtnW, backBtnH, 15);
+
+    // mouse hover effect
+    if (mouseX > backBtnX - backBtnW / 2 && mouseX < backBtnX + backBtnW / 2 &&
+      mouseY > backBtnY - backBtnH / 2 && mouseY < backBtnY + backBtnH / 2) {
+      fill(100, 150, 255);  // lighter blue
+    } else {
+      fill(70, 130, 255);   // blue
+    }
+
+    rect(backBtnX, backBtnY, backBtnW, backBtnH, 15);
+
+    fill(255);
+    textSize(22);
+    text("Return to Start Screen", backBtnX, backBtnY);
+
     pop();
   }
+}
+
+
+// ----- SE-24 Grace: Draw Start Screen -----
+function drawStartScreen() {
+  push();
+  rectMode(CENTER);
+  imageMode(CENTER);
+  textAlign(CENTER, CENTER);
+
+  // dark overlay
+  fill(0, 0, 0, 200);
+  rect(width / 2, height / 2, width, height);
+
+  // ===== TITLE =====
+  textAlign(CENTER, CENTER);
+
+  // shadow
+  fill(0, 0, 0, 150);
+  textSize(90);
+  text("🐱 MERCHANT FIGHTER 🐶", width / 2 + 6, height / 3 + 6);
+
+  // main title
+  fill(255, 220, 50);
+  text("🐱 MERCHANT FIGHTER 🐶", width / 2, height / 3);
+
+  // subtitle
+  fill(255);
+  textSize(30);
+  text("Rish vs Ciyang", width / 2, height / 3 + 80);
+
+  // ===== START BUTTON =====
+  let btnX = width / 2;
+  let btnY = height / 2 + 40;
+  let btnW = 260;
+  let btnH = 80;
+
+  // shadow
+  fill(0, 0, 0, 120);
+  rect(btnX + 4, btnY + 4, btnW, btnH, 25);
+
+  // hover
+  if (mouseX > btnX - btnW / 2 && mouseX < btnX + btnW / 2 &&
+    mouseY > btnY - btnH / 2 && mouseY < btnY + btnH / 2) {
+    fill(110, 255, 110);
+  } else {
+    fill(80, 200, 80);
+  }
+
+  rect(btnX, btnY, btnW, btnH, 25);
+  fill(255);
+  textSize(36);
+  text("START", btnX, btnY);
+
+  // ===== introduction: grid =====
+  const iconSize = 48;
+  const spacing = 20;
+  const rowStartY = height / 2 + 160;
+  const rowGap = 70;
+
+  // centerX for each of the three zones: left, center, right
+  const leftZoneX = width / 2 - 220;
+  const centerZoneX = width / 2;
+  const rightZoneX = width / 2 + 220;
+
+  // ---------- first row: move ----------
+  const row1Y = rowStartY;
+
+  image(keyLeft, leftZoneX - spacing, row1Y, iconSize, iconSize);
+  image(keyRight, leftZoneX + spacing, row1Y, iconSize, iconSize);
+
+  fill(255);
+  textSize(26);
+  text("MOVE", centerZoneX, row1Y);
+
+  image(keyA, rightZoneX - spacing, row1Y, iconSize, iconSize);
+  image(keyD, rightZoneX + spacing, row1Y, iconSize, iconSize);
+
+  // ---------- second row: aim ----------
+  const row2Y = rowStartY + rowGap;
+
+  image(keyUp, leftZoneX - spacing, row2Y, iconSize, iconSize);
+  image(keyDown, leftZoneX + spacing, row2Y, iconSize, iconSize);
+
+  fill(255);
+  textSize(26);
+  text("ADJUST ANGLE", centerZoneX, row2Y);
+
+  // ---------- third row: fire ----------
+  const row3Y = rowStartY + rowGap * 2;
+
+  fill(255);
+  textSize(22);
+  text("HOLD SPACE TO CHARGE • RELEASE TO FIRE", centerZoneX, row3Y);
+
+  // space key image
+  const row4Y = row3Y + 50;
+  push();
+  imageMode(CENTER);
+  image(keySpace, centerZoneX, row4Y, 160, 40);
+  pop();
+
+  pop();
+  rectMode(CORNER);
+}
+
+// ----- SE-24 Grace: Reset Game -----
+function resetGame() {
+  // RESET HEALTH
+  catHP = 100;
+  dogHP = 100;
+
+  // RESET CHARACTER POSITIONS
+  player.x = 380;
+  player.y = GROUND_Y - 120;
+  dogBody.x = 1100;
+  dogBody.y = GROUND_Y - 110;
+
+  // Restet angles
+  angleObj.angleDeg = 45;
+  ciyangAngleObj.angleDeg = 45;
+
+  // Reset power
+  powerObj.value = 0;
+  ciyangPowerObj.value = 0;
+
+  cd.projectiles = [];
+  turn = "rish";
+
+  player.controllable = true;
+  dogBody.controllable = false;
+}
+
+
+// ----- SE-24 Grace: mouse interactions -----
+function mousePressed() {
+  if (gameState === "start") {
+    // START screen: PLAY button
+    let btnX = width / 2;
+    let btnY = height / 2 + 40;
+    let btnW = 260;
+    let btnH = 80;
+    if (mouseX > btnX - btnW / 2 && mouseX < btnX + btnW / 2 &&
+      mouseY > btnY - btnH / 2 && mouseY < btnY + btnH / 2) {
+      gameState = "difficulty";
+    }
+  } else if (gameState === "difficulty") {
+    // Back button
+    let backBtnY = height - 100;
+    let backBtnW = 150;
+    let backBtnH = 50;
+    if (mouseX > width / 2 - backBtnW / 2 && mouseX < width / 2 + backBtnW / 2 &&
+      mouseY > backBtnY - backBtnH / 2 && mouseY < backBtnY + backBtnH / 2) {
+      gameState = "start";
+      return;
+    }
+
+    // difficulty selection: 3 buttons
+    let btnW = 320;
+    let btnH = btnW * 32 / 96; // 134
+    let gap = 30;
+    let startY = height / 2 + 20 - (btnH * 3 + gap * 2) / 2 + btnH / 2;
+    let difficulties = ["EASY", "MEDIUM", "HARD"];
+    for (let i = 0; i < 3; i++) {
+      let cx = width / 2;
+      let cy = startY + i * (btnH + gap);
+      if (mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
+        mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2) {
+        console.log(difficulties[i] + " selected");
+        gameState = "character";
+        break;
+      }
+    }
+  } else if (gameState === "character") {
+    // Character selection
+    let cardW = 300;
+    let cardH = 400;
+    let gap = 80;
+    let leftCardX = width / 2 - cardW - gap / 2;
+    let rightCardX = width / 2 + gap / 2;
+    let backBtnY = height - 60;
+    let backBtnW = 150;
+    let backBtnH = 50;
+
+    // Back button
+    if (mouseX > width / 2 - backBtnW / 2 && mouseX < width / 2 + backBtnW / 2 &&
+      mouseY > backBtnY - backBtnH / 2 && mouseY < backBtnY + backBtnH / 2) {
+      gameState = "difficulty";
+      return;
+    }
+
+    // Left character (Rish/Cat)
+    if (mouseX > leftCardX - cardW / 2 && mouseX < leftCardX + cardW / 2 &&
+      mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+      console.log("Rish selected");
+      gameState = "battle";
+      resetGame();
+    }
+
+    // Right character (Ciyang/Dog)
+    if (mouseX > rightCardX - cardW / 2 && mouseX < rightCardX + cardW / 2 &&
+      mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+      console.log("Ciyang selected");
+      gameState = "battle";
+      resetGame();
+    }
+  } else if (gameState === "battle") {
+    // Game over return button
+    let gameOver = catHP <= 0 || dogHP <= 0;
+    if (gameOver) {
+      let backBtnX = width / 2;
+      let backBtnY = height / 2 + 220;
+      let backBtnW = 200;
+      let backBtnH = 50;
+      if (mouseX > backBtnX - backBtnW / 2 && mouseX < backBtnX + backBtnW / 2 &&
+        mouseY > backBtnY - backBtnH / 2 && mouseY < backBtnY + backBtnH / 2) {
+        gameState = "start";
+      }
+    }
+  }
+}
+
+// ----- SE-24 Grace: Difficulty Selection Screen -----
+function drawDifficultyScreen() {
+  push();
+  rectMode(CENTER);
+  textAlign(CENTER, CENTER);
+  textStyle(BOLD); //pixelated looks?
+
+  // background overlay
+  fill(0, 0, 0, 200);
+  rect(width / 2, height / 2, width, height);
+
+  // title
+  fill(255, 220, 50);
+  textSize(70);
+  text("Select Difficulty", width / 2, height / 5);
+
+  // buttons
+  let btnW = 320;
+  let btnH = btnW * 32 / 96;
+  let gap = 30;
+  let startY = height / 2 + 20 - (btnH * 3 + gap * 2) / 2 + btnH / 2; // center of first button:Y
+
+  let difficulties = ["EASY", "MEDIUM", "HARD"];
+
+  for (let i = 0; i < 3; i++) {
+    let cx = width / 2;
+    let cy = startY + i * (btnH + gap);
+    let label = difficulties[i];
+
+    // hover detection
+    let hover = mouseX > cx - btnW / 2 && mouseX < cx + btnW / 2 &&
+      mouseY > cy - btnH / 2 && mouseY < cy + btnH / 2;
+
+    // image turn blue on hover
+    if (hover) {
+      tint(200, 200, 255);
+    } else {
+      noTint();
+    }
+
+    // image button
+    image(difficultyUI, cx - btnW / 2, cy - btnH / 2, btnW, btnH);
+
+    // draw text on top of image
+    noTint();
+    fill(255);
+    stroke(0);
+    strokeWeight(4);
+    textSize(35); // adjest text size to fit better
+    text(label, cx, cy);
+    noStroke();
+  }
+
+  // return button
+  let backBtnW = 150;
+  let backBtnH = 50;
+  let backBtnY = height - 100;
+  fill(0, 0, 0, 120);
+  rect(width / 2 + 3, backBtnY + 3, backBtnW, backBtnH, 20);
+  fill(150, 150, 150);
+  rect(width / 2, backBtnY, backBtnW, backBtnH, 20);
+  fill(255);
+  textSize(24);
+  text("← BACK", width / 2, backBtnY);
+
+  pop();
+  rectMode(CORNER);
+  textStyle(NORMAL);
+}
+
+// -----SE-24 Grace: Character Selection Screen -----
+function drawCharacterScreen() {
+
+  push();
+  rectMode(CENTER);
+
+  fill(0, 0, 0, 200);
+  rect(width / 2, height / 2, width, height);
+
+  // Title
+  textAlign(CENTER, CENTER);
+  fill(255, 220, 50);
+  textSize(70);
+  text("Choose Your Character", width / 2, height / 5);
+
+  // Character cards container
+  let cardW = 300;
+  let cardH = 400;
+  let gap = 80;
+  let leftCardX = width / 2 - cardW - gap / 2;
+  let rightCardX = width / 2 + gap / 2;
+
+  // ===== LEFT CHARACTER (Rish / Cat) =====
+  // Card background
+  fill(0, 0, 0, 150);
+  rect(leftCardX + 6, height / 2 + 6, cardW, cardH, 20);
+  if (mouseX > leftCardX - cardW / 2 && mouseX < leftCardX + cardW / 2 &&
+    mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+    fill(100, 150, 255, 200);
+  } else {
+    fill(50, 50, 80, 200);
+  }
+  rect(leftCardX, height / 2, cardW, cardH, 20);
+
+  // Character image placeholder (using existing player image)
+  let imgSize = 180;
+  push();
+  imageMode(CENTER);
+  if (imgPlayer) {
+    // Draw with contain to fit in circle
+    drawContain(imgPlayer, leftCardX - imgSize / 2, height / 2 - 150, imgSize, imgSize);
+  }
+  pop();
+
+  // Character name
+  fill(255);
+  textSize(36);
+  text(LABELS.player, leftCardX, height / 2 + 50);
+
+  // Character description (placeholder)
+  textSize(18);
+  fill(220, 220, 220);
+  text("The agile cat warrior", leftCardX, height / 2 + 90);
+  text("Balanced fighter", leftCardX, height / 2 + 120);
+
+  // ===== RIGHT CHARACTER (Ciyang / Dog) =====
+  // Card background
+  fill(0, 0, 0, 150);
+  rect(rightCardX + 6, height / 2 + 6, cardW, cardH, 20);
+  if (mouseX > rightCardX - cardW / 2 && mouseX < rightCardX + cardW / 2 &&
+    mouseY > height / 2 - cardH / 2 && mouseY < height / 2 + cardH / 2) {
+    fill(255, 150, 100, 200);
+  } else {
+    fill(80, 50, 50, 200);
+  }
+  rect(rightCardX, height / 2, cardW, cardH, 20);
+
+  // Character image placeholder (using existing target image)
+  push();
+  imageMode(CENTER);
+  if (imgTarget) {
+    push();
+    translate(rightCardX, height / 2 - 60);
+    scale(-1, 1); // Flip to face right for the selection screen
+    drawContain(imgTarget, -imgSize / 2, -imgSize / 2, imgSize, imgSize);
+    pop();
+  }
+  pop();
+
+  // Character name
+  fill(255);
+  textSize(36);
+  text(LABELS.target, rightCardX, height / 2 + 50);
+
+  // Character description (placeholder)
+  textSize(18);
+  fill(220, 220, 220);
+  text("The powerful dog warrior", rightCardX, height / 2 + 90);
+  text("Heavy hitter", rightCardX, height / 2 + 120);
+
+  // Back button (same as difficulty screen)
+  let backBtnW = 150;
+  let backBtnH = 50;
+  let backBtnY = height - 60;
+  fill(0, 0, 0, 120);
+  rect(width / 2 + 3, backBtnY + 3, backBtnW, backBtnH, 20);
+  fill(150, 150, 150);
+  rect(width / 2, backBtnY, backBtnW, backBtnH, 20);
+  fill(255);
+  textSize(24);
+  text("← BACK", width / 2, backBtnY);
+
+  pop();
+  rectMode(CORNER);
 }
