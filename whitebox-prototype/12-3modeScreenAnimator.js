@@ -3,10 +3,9 @@ class ModeScreenAnimator {
     this.phase = 'IDLE';
     this.startTime = 0;
 
-    // 背景缩放动画参数
-    this.bgScale = 1.0;           // 起始缩放
+    this.bgScale = 1.0;
     this.bgTargetScale = 1.05;
-    this.bgScaleDuration = 1.0; // 动画持续时间（秒）
+    this.bgScaleDuration = 1.0;
 
     this.buttonFloatEnabled = false;
     this.buttonFloatTime = 0;

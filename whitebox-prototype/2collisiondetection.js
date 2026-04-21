@@ -210,14 +210,14 @@ class CollisionDetection {
           dogHP = Math.max(0, dogHP - 15);
           this.floatTexts.push({
             x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: dogHP <= 0 ? `${LABELS.target} defeated! 💀` : "-15 HP!"
+            text: dogHP <= 0 ? `${LABELS.target} defeated!` : "-15 HP!"
           });
           tryPlaySound(sndHit);
         } else if (ch.tag === "player") {
           catHP = Math.max(0, catHP - 15);
           this.floatTexts.push({
             x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: catHP <= 0 ? `${LABELS.player} defeated! 💀` : "-15 HP!"
+            text: catHP <= 0 ? `${LABELS.player} defeated!` : "-15 HP!"
           });
           tryPlaySound(sndHit);
         }

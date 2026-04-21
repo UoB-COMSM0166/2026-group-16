@@ -81,7 +81,7 @@ class Navigator {
       return;
     }
 
-    // 返回按钮
+    // back button
     const bkW = 150, bkH = 44, bkX = 1600 / 2 - bkW / 2, bkYY = 840;
     if (mx > bkX && mx < bkX + bkW && my > bkYY && my < bkYY + bkH) {
       gameState = "CHOOSE";

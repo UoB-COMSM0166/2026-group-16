@@ -76,6 +76,13 @@ const weaponImages = {};
 // SOUNDS
 let sndHit = null;
 let soundUnlocked = false; // browsers block audio until first user click
+let bgMusic = null;
+let isMuted = false;
+
+// ── JUMP KEY STATE ───────────────────────────────────────────────
+// p5's keyIsDown(16) can't distinguish Left vs Right Shift, so we
+// track them separately via keyPressed/keyReleased using event.location
+// 1 = left key, 2 = right key
 
 //  GLOBALS
 let catHP = 100, dogHP = 100;
@@ -90,7 +97,45 @@ let gameTimer = 60;
 let timerRunning = false;
 let overtimeActive = false;
 
-// BLACKOUT
+// ── ROUND SYSTEM ─────────────────────────────────────────────────
+// Best-of-3: first player to win 2 rounds wins the match
+let roundNumber = 1;          // current round (1, 2, 3)
+let p1RoundWins = 0;          // rounds won by player 1
+let p2RoundWins = 0;          // rounds won by player 2
+let roundOverState = null;    // null | { winner: "player"|"dog", name, hp } — shown between rounds
+let roundOverTimer = 0;       // counts down before auto-advancing to next round
+const ROUND_OVER_DELAY = 3.0; // seconds to show round-over screen before next round
+const ROUNDS_TO_WIN = 2;      // first to this many round wins takes the match
+
+// ── MAP SYSTEM ───────────────────────────────────────────────────
+// 3 map layouts chosen randomly each round
+// 0 = Classic (centre wall), 1 = Platform (raised centre platform), 2 = Twin Pillars
+let currentMap = 0;
+
+// Builds static bodies for the chosen map layout into CollisionDetection instance
+function applyMap(mapIndex) {
+  // Remove old static bodies except the ground (id === 1 is always the ground)
+  cd.staticBodies = cd.staticBodies.filter(b => b.tag === "ground");
+  cd._grid = new Map();
+  // Re-insert ground into grid
+  for (const b of cd.staticBodies) cd._insertToGrid(b);
+
+  if (mapIndex === 0) {
+    // ── MAP 0: Classic — single centre wall ──────────────────────
+    cd.addStaticRect({ x: 750, y: GROUND_Y - 200, w: 100, h: 200, tag: "wall" });
+  } else if (mapIndex === 1) {
+    // ── MAP 1: Platform — raised centre platform + two short side pillars
+    cd.addStaticRect({ x: 650, y: GROUND_Y - 130, w: 300, h: 20, tag: "wall" }); // wide platform
+    cd.addStaticRect({ x: 250, y: GROUND_Y - 80, w: 80, h: 80, tag: "wall" }); // left pillar
+    cd.addStaticRect({ x: 1270, y: GROUND_Y - 80, w: 80, h: 80, tag: "wall" }); // right pillar
+  } else {
+    // ── MAP 2: Twin Pillars — two tall pillars, gap in the middle ──
+    cd.addStaticRect({ x: 560, y: GROUND_Y - 260, w: 90, h: 260, tag: "wall" }); // left pillar
+    cd.addStaticRect({ x: 950, y: GROUND_Y - 260, w: 90, h: 260, tag: "wall" }); // right pillar
+  }
+}
+
+// ── BLACKOUT
 // Tracks elapsed play time (counts up) and active blackout state
 let blackoutElapsed = 0;      // seconds since match start
 let blackoutActive = false;   // whether blackout is currently on
@@ -187,11 +232,21 @@ function resetGame() {
   blackout1Done = false;
   blackout2Done = false;
 
+  // Pick a random map for this round and apply it
+  currentMap = Math.floor(Math.random() * 3);
+  applyMap(currentMap);
+
+  // Reset round-over state
+  roundOverState = null;
+  roundOverTimer = 0;
+
   applyDifficultyAssets();
   applyCharacterLabels();
 
   player.x = 380; player.y = GROUND_Y - 160; player.facing = 1;
+  player.vy = 0; player.onGround = true;
   dogBody.x = 1100; dogBody.y = GROUND_Y - 160; dogBody.facing = -1;
+  dogBody.vy = 0; dogBody.onGround = true;
 
   // In SINGLE mode use dummy keys so real arrow keys never move the AI;
   // VKEY will press these dummy codes. In DUAL mode use real arrow keys.
@@ -221,6 +276,16 @@ function resetGame() {
   ciyangPowerObj.value = 0; ciyangPowerObj._wasCharging = false;
 
   // NOTE: weapon indexes are NOT reset here — players keep their weapon select choice
+}
+
+// Reset the entire match (round wins, round number) — called when starting a new match
+function resetMatch() {
+  roundNumber = 1;
+  p1RoundWins = 0;
+  p2RoundWins = 0;
+  roundOverState = null;
+  roundOverTimer = 0;
+  resetGame();
 }
 
 // p5.js LIFECYCLE
@@ -354,7 +419,7 @@ function setup() {
 
   cd = new CollisionDetection({ worldWidth: 1600, worldHeight: 900, cellSize: 128, gravity: 900, windAccel: 50 });
   cd.addStaticRect({ x: 0, y: GROUND_Y, w: 1600, h: 10, tag: "ground" });
-  // Fix Bug 1: add the wall/pedestal as a real collision body so projectiles can't pass through it
+  // Default map applied here; resetGame()/applyMap() will re-configure each round
   cd.addStaticRect({ x: 750, y: GROUND_Y - 200, w: 100, h: 200, tag: "wall" });
 
   dogBody = cd.addCharacter({
@@ -364,7 +429,13 @@ function setup() {
     leftKey: 201, rightKey: 202
   });
   dogBody.facing = -1;
+  // Right Shift
+  dogBody.vy = 0;
+  dogBody.onGround = true;
   player = cd.addCharacter({ x: 380, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "player", leftKey: 65, rightKey: 68 });
+  // Left Shift
+  player.vy = 0;
+  player.onGround = true;
 
   // Create weapon instances — one per fighter
   playerWeapons = new WEAPONS();
@@ -377,6 +448,12 @@ function setup() {
     "assets/sound/bamboo-hit-sound-effect.mp3",
     function (s) { sndHit = s; console.log("Hit sound loaded OK"); },
     function () { sndHit = null; console.warn("Hit sound not found — continuing without it"); }
+  );
+
+  loadSound(
+    "assets/sound/bg_music.mp3",
+    function (s) { bgMusic = s; bgMusic.setLoop(true); bgMusic.setVolume(0.4); console.log("BG music loaded OK"); },
+    function () { bgMusic = null; console.warn("BG music not found — continuing without it"); }
   );
 
   LANG_PATCHER.apply(); // apply language patches after p5 is ready
@@ -422,6 +499,23 @@ function draw() {
     }
     drawPlayScreen();
   }
+
+  // Draw mute/unmute button — always on top, top-left corner
+  drawMuteButton();
+}
+
+function drawMuteButton() {
+  push();
+  resetMatrix();
+  const bw = 48, bh = 36;
+  const bx = 1600 - bw - 10, by = 900 - bh - 10;
+  const hovered = (mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh);
+  fill(0, 0, 0, 160); noStroke(); rect(bx + 2, by + 2, bw, bh, 8);
+  fill(hovered ? color(80, 80, 110) : color(30, 30, 55, 200)); stroke(140, 140, 200, 180); strokeWeight(1);
+  rect(bx, by, bw, bh, 8);
+  noStroke(); fill(255); textSize(20); textAlign(CENTER, CENTER); textFont('sans-serif');
+  text(isMuted ? "🔇" : "🔊", bx + bw / 2, by + bh / 2);
+  pop();
 }
 
 function mousePressed() {
@@ -430,12 +524,30 @@ function mousePressed() {
   if (!soundUnlocked) {
     userStartAudio();
     soundUnlocked = true;
+    // Start background music on first user interaction
+    if (bgMusic && !bgMusic.isPlaying()) {
+      bgMusic.play();
+    }
   }
+
+  // Mute/Unmute button click (bottom-right corner)
+  const _mbx = 1600 - 48 - 10, _mby = 900 - 36 - 10;
+  if (mouseX > _mbx && mouseX < _mbx + 48 && mouseY > _mby && mouseY < _mby + 36) {
+    isMuted = !isMuted;
+    if (bgMusic) {
+      if (isMuted) bgMusic.setVolume(0);
+      else bgMusic.setVolume(0.4);
+    }
+    return;
+  }
+
   nav.handleClick(mouseX, mouseY);
 }
 
 // Prevent browser from scrolling on spacebar / arrow keys
 function keyPressed() {
+  // Track Left Shift (location 1) and Right Shift (location 2) separately
+
   if ([32, 37, 38, 39, 40].includes(keyCode)) {
     return false;
   }
@@ -459,4 +571,9 @@ function keyPressed() {
       if (keyCode === 80) dogWeapons.next();  // P
     }
   }
+}
+
+
+function keyReleased() {
+  // Track Left Shift (location 1) and Right Shift (location 2) separately
 }

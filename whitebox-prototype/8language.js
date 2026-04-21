@@ -28,12 +28,12 @@ class Language {
       overtime: { EN: "OVERTIME", ZH: "加时赛" },
       vs: { EN: "VS", ZH: "对战" },
       hitDamage: { EN: "-15 HP!", ZH: "-15 HP！" },
-      defeatDog: { EN: "Ciyang defeated! 💀", ZH: "Ciyang 被击败！💀" },
-      defeatPlayer: { EN: "Rish defeated! 💀", ZH: "Rish 被击败！💀" },
-      wins: { EN: "🏆 {name} Wins!", ZH: "🏆 {name} 胜利！" },
+      defeatDog: { EN: "Ciyang defeated! ", ZH: "Ciyang 被击败！" },
+      defeatPlayer: { EN: "Rish defeated!", ZH: "Rish 被击败！" },
+      wins: { EN: "{name} Wins!", ZH: "{name} 胜利！" },
       remainHP: { EN: "Remaining HP: {hp}", ZH: "剩余 HP：{hp}" },
-      btnPlayAgain: { EN: "🔄 Play Again", ZH: "🔄 再来一局" },
-      btnMenu: { EN: "← Back to Menu", ZH: "← 返回主菜单" },
+      btnPlayAgain: { EN: "Play Again", ZH: "再来一局" },
+      btnMenu: { EN: "Back to Menu", ZH: "返回主菜单" },
     };
   }
 
@@ -129,7 +129,7 @@ class LanguagePatcher {
       "OVERTIME": () => LANG.t("overtime"),
       "VS": () => LANG.t("vs"),
       "← BACK": () => LANG.t("btnBack"),
-      "🔄 Play Again": () => LANG.t("btnPlayAgain"),
+      "Play Again": () => LANG.t("btnPlayAgain"),
       "← Back to Menu": () => LANG.t("btnMenu"),
     });
 
@@ -186,14 +186,14 @@ class LanguagePatcher {
             dogHP = Math.max(0, dogHP - 15);
             this.floatTexts.push({
               x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-              text: dogHP <= 0 ? `${LABELS.target} defeated! 💀` : LANG.t("hitDamage")
+              text: dogHP <= 0 ? `${LABELS.target} defeated!` : LANG.t("hitDamage")
             });
             tryPlaySound(sndHit);
           } else if (ch.tag === "player") {
             catHP = Math.max(0, catHP - 15);
             this.floatTexts.push({
               x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-              text: catHP <= 0 ? `${LABELS.player} defeated! 💀` : LANG.t("hitDamage")
+              text: catHP <= 0 ? `${LABELS.player} defeated!` : LANG.t("hitDamage")
             });
             tryPlaySound(sndHit);
           }

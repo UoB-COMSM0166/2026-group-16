@@ -134,7 +134,7 @@ function drawCharacterScreen() {
 
   const portraitX = 211, portraitY = 149, portraitW = 479, portraitH = 647;
 
-  // 角色肖像（带弹跳动画）
+  // character
   push();
   let scaleX = 1, scaleY = 1;
   if (isSquashing) {
@@ -172,7 +172,7 @@ function drawCharacterScreen() {
   image(cur.nameUI, 1039, 282 + floatOffset, 202, 147);
   image(cur.bioUI, 1016, 429, 251, 58);
 
-  // 左箭头
+  // left arrow
   push();
   let sx = 1, sy = 1, yOffset = 0;
   if (leftArrowSquashTime > 0) {
@@ -187,7 +187,7 @@ function drawCharacterScreen() {
   image(arrowLeft, -135 / 2, -134 / 2, 135, 134);
   pop();
 
-  // 右箭头
+  // right arrow
   push();
   let rx = 1, ry = 1, yOffsetR = 0;
   if (rightArrowSquashTime > 0) {
@@ -202,7 +202,7 @@ function drawCharacterScreen() {
   image(arrowRight, -135 / 2, -134 / 2, 135, 134);
   pop();
 
-  // 确认按钮
+  // confirm button
   const btnX = 1015, btnY = 506, btnW = 262, btnH = 97;
   const isHover = (mouseX > btnX && mouseX < btnX + btnW && mouseY > btnY && mouseY < btnY + btnH);
   if (isHover) tint(180, 180, 180);
@@ -222,7 +222,7 @@ function drawCharacterScreen() {
   text("SELECT", btnX + btnW / 2, btnY + btnH / 2);
   pop();
 
-  // 返回按钮
+  // back button
   {
     const btnW = 150, btnH = 50;
     const btnX = 1600 / 2 - btnW / 2;
@@ -234,7 +234,7 @@ function drawCharacterScreen() {
     text("← BACK", 1600 / 2, btnY + btnH / 2);
   }
 
-  // Bio悬浮面板
+  // Bio panel
   const portraitRect = { x: 211, y: 149, w: 479, h: 647 };
   const isHovering = (mouseX > portraitRect.x && mouseX < portraitRect.x + portraitRect.w &&
     mouseY > portraitRect.y && mouseY < portraitRect.y + portraitRect.h);
@@ -299,11 +299,12 @@ function drawCharacterScreen() {
       fill(40, 25, 10);
       noStroke();
 
-      // 计算文字区域中心坐标
+      // Calculate text area center
       const textAreaX = panelX + panelW / 2;
-      const textAreaY = panelY + panelH / 2;
+      const textAreaY = panelY + panelH * 0.65;
+      let startY = textAreaY;
 
-      // 自动换行
+      // Word-wrap the bio text
       let words = bioStr.split(' ');
       let lines = [];
       let currentLine = "";
@@ -319,7 +320,6 @@ function drawCharacterScreen() {
       if (currentLine) lines.push(currentLine);
 
       const totalHeight = lines.length * lineHeight;
-      let startY = textAreaY - totalHeight / 2;
 
       for (let i = 0; i < lines.length; i++) {
         text(lines[i], textAreaX, startY + i * lineHeight);
