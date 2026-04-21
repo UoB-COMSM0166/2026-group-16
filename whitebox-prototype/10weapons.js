@@ -255,8 +255,8 @@ function drawWeaponSelectScreen() {
       if (sel) {
         push();
         textFont(pixelFont_intro);
-        fill(255, 220, 0); textSize(28); textAlign(RIGHT, TOP);
-        text("✓", wx + CELL - 4, wy + 3);
+        fill(255, 220, 0); textSize(18); textAlign(RIGHT, TOP);
+        text("[SEL]", wx + CELL - 4, wy + 3);
       }
       pop();
     }
@@ -339,8 +339,7 @@ function drawModeScreen() {
 
   const bgScale = modeAnim ? modeAnim.getBgScale() : 1.0;
 
-  // --- 1. 先填充纯色背景（防止图片透明或边缘缝隙露出白色）---
-  background(20, 25, 40);  // 深蓝灰色，与背景图风格匹配（可根据实际背景微调）
+  background(20, 25, 40);
 
   push();
   translate(width / 2, height / 2);

@@ -75,22 +75,22 @@ class AutoPlayer {
         //Failsafe to prevent deadlocks
         this.chargeStartTime = 0;
         //If held longer, force release/reset
-        this.maxChargeSeconds = 1.5;
+        this.maxChargeSeconds = 2.2;
 
         //Tuning
         this.minFirePower = 50;
-        this.maxFirePower = 145;
+        this.maxFirePower = 170;
 
         //How tightly we require angle alignment before we start charging
         this.aimToleranceDeg = 3.0;
-        this.aimOkDeg = 28;   // wider tolerance → shoots sooner
+        this.aimOkDeg = 16;
 
         //If POWER is super low, avoid micro-shots
-        this.minShotPower = 15;
+        this.minShotPower = 20;
 
-        //Hit/Miss mechanics
-        this.hitChance = 0.65;
-        this.shouldHitThisShot = false;
+        //Hit/Miss mechanics to showcase randomness of the game, making it more realistic
+        this.hitChance = 0.5;
+        this.shouldHitThisShot = false;  //will be determined by the random()
 
         //Creating noise for smooth movements
         this.noiseTime = 0;
@@ -106,17 +106,17 @@ class AutoPlayer {
         this.wallL = 750;
         this.wallR = 850;
 
-        //Keeping AI on the right — lowered so AI roams more freely
-        this.rightBiasX = 920;
+        //Keeping AI on the right
+        this.rightBiasX = 1000;
 
         //Movement control
         this.nextMoveDecisionTime = 0;
         //left: -1 | idle: 0 | right: +1
         this.moveDir = 0;
 
-        //Force shot much sooner so AI shoots frequently
+        //Min fire rate guarantee to make sure ai player shoots more frequently
         this.lastShotTime = 0;
-        this.forceShotAfter = 1.8;
+        this.forceShotAfter = 5.0;
 
         //px around the wall we never want to land in
         this.wallKeepOut = 60;
@@ -124,18 +124,6 @@ class AutoPlayer {
         //Eliminate jitterings
         this.moveIntent = 0;
         this.moveIntentUntil = 0;
-
-        // ── Target-based roaming ──────────────────────────────────
-        // AI picks a random X target on the right half and walks to it,
-        // then picks a new one. Completely independent of shooting state.
-        this.roamTargetX   = 1100;   // current destination X (mid of dogBody)
-        this.roamPickTime  = 0;      // when to pick next target
-        this.roamInterval  = 1.2;    // seconds between target picks
-        this.roamMinX      = 870;    // left edge AI can walk to (just past wall)
-        this.roamMaxX      = 1490;   // right edge (1600 - body width 110)
-
-        // ── Weapon auto-switching ─────────────────────────────────
-        this.weaponSwitchTime = 0;   // next time to switch weapon
 
     }
 
@@ -194,27 +182,28 @@ class AutoPlayer {
 
     _applyDifficultyTweaks(){
         if (selectedDifficulty === "HARD") {
-            this.maxFirePower = 145;
-            this.hitChance = 0.80;
-            this.aimOkDeg = 32;
-            this.forceShotAfter = 0.8;
-            this.minShotPower = 20;
-            this.rightBiasX = 900;
+            this.maxFirePower = 180;
+            this.hitChance = 0.6;
+            this.aimOkDeg = 24;
+            this.forceShotAfter = 1.0;
+            this.minShotPower = 30;
+            this.minFirePower = 25;
+
         } else if (selectedDifficulty === "MEDIUM") {
             this.maxFirePower = 145;
-            this.hitChance = 0.70;
-            this.aimOkDeg = 28;
-            this.forceShotAfter = 1.4;
-            this.minShotPower = 18;
-            this.rightBiasX = 920;
-        } else {
-            // EASY — shoots frequently, just less accurate
-            this.maxFirePower = 145;
             this.hitChance = 0.55;
-            this.aimOkDeg = 28;
-            this.forceShotAfter = 1.8;
-            this.minShotPower = 15;
-            this.rightBiasX = 940;
+            this.aimOkDeg = 16;
+            this.forceShotAfter = 2.0;
+            this.minShotPower = 20;
+            this.minFirePower = 20;
+
+        } else {
+            this.maxFirePower = 145;
+            this.hitChance = 0.35;
+            this.aimOkDeg = 13;
+            this.forceShotAfter = 3.0;
+            this.minShotPower = 20;
+            this.minFirePower = 20;
         }
     }
 
@@ -287,9 +276,12 @@ class AutoPlayer {
     }
 
     _getShootThreshold(){
-        if (selectedDifficulty === "HARD")   { return 0.12; }
-        else if (selectedDifficulty === "MEDIUM") { return 0.18; }
-        return 0.22; // EASY — still shoots often
+        //Hard -> fires when confidence is moderate
+        if (selectedDifficulty === "HARD")   { return 0.26; }
+        //Medium -> Balanced: needs decent confidence
+        else if (selectedDifficulty === "MEDIUM") { return 0.34; }
+        //EASY -> Hesitant: only shoots when very confident
+        return 0.38;
     }
 
     _shouldStartCharge({aimOk, overdue, confidence, shootThreshold, startFactor}){
@@ -321,7 +313,7 @@ class AutoPlayer {
         this.fireHoldUntil = now + (minHold + extra);
 
         //Lock movement so aim doesn't jitter during initial charge
-        this.lockMoveUntil = now + ((selectedDifficulty === "HARD") ? 0.15 : 0.20);
+        this.lockMoveUntil = now + ((selectedDifficulty === "HARD") ? 0.45 : 0.35);
     }
 
     _contOrRealeaseCharge(KEY_FIRE, now){
@@ -343,7 +335,7 @@ class AutoPlayer {
         this._hardResetFire();
         this.lastShotTime = now;
 
-        // More frequent shots (especially EASY)
+        //More frequent shots (especially EASY)
         let minCooldown, maxCooldown;
         if (selectedDifficulty === "HARD") { minCooldown = 0.10; maxCooldown = 0.22; }
         else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.18; maxCooldown = 0.32; }
@@ -354,15 +346,16 @@ class AutoPlayer {
 
     _noShootArea(KEY_FIRE, KEY_RIGHT, KEY_LEFT, now){
         const dogMid = dogBody.x + dogBody.w/2;
-        // Only block shooting if AI is on the wrong side of the wall (left of it)
-        const noShootX = this.wallR + 10;
+        const noShootX = this.wallR + 60;
 
         if (dogMid >= noShootX){ return false; }
 
         VKEY.release(KEY_FIRE);
         this._softResetFire();
+
         VKEY.press(KEY_RIGHT);
         VKEY.release(KEY_LEFT);
+
         this.nextFireTime = now + 0.2;
         return true;
     }
@@ -380,16 +373,6 @@ class AutoPlayer {
         //Difficulty tweaks
         this._applyDifficultyTweaks();
 
-        // ── Auto weapon switching ─────────────────────────────────
-        // Switch to a random weapon every few seconds
-        if (now >= this.weaponSwitchTime && typeof dogWeapons !== "undefined") {
-            const switchInterval = (selectedDifficulty === "HARD")   ? (3 + Math.random() * 3)
-                                 : (selectedDifficulty === "MEDIUM")  ? (4 + Math.random() * 4)
-                                 :                                       (5 + Math.random() * 4);
-            dogWeapons.index = Math.floor(Math.random() * dogWeapons.count);
-            this.weaponSwitchTime = now + switchInterval;
-        }
-
         //If we haven't fired for too long, force a shot attempt
         const overdue = (now - this.lastShotTime) >= this.forceShotAfter;
 
@@ -403,8 +386,10 @@ class AutoPlayer {
         dogBody.facing = -1;
         ciyangAngleObj.setDirection(-1);
 
-        // Movement always active — roaming is never locked by charging
-        this._updateMovement(keys.KEY_LEFT, keys.KEY_RIGHT, dt, {});
+        //Movement lock while charging / shortly after starting charge
+        const lockMovement = this.fireHolding || (now < this.lockMoveUntil);
+        //Adjusting left-right movement
+        this._updateMovement(keys.KEY_LEFT, keys.KEY_RIGHT, dt, {lockMovement});
 
 
         //--------------------------------------
@@ -512,6 +497,13 @@ class AutoPlayer {
             if (distToProjectile < triggerDist && dotProduct > 0 && projectileSpeed>50){
                 threatDetected = true;
                 escapeDir = p.vx > 0? -1:1;
+
+                const dogMid = dogBody.x + dogBody.w/2;
+                const tooCloseToWall = dogMid < (this.WallR + 100);
+                if (tooCloseToWall){
+                    //Push AI to escape right when it's near the middle barrier area
+                    escapeDir = +1;
+                }
                 break;
             }
         }
@@ -523,61 +515,107 @@ class AutoPlayer {
         this._setMoveIntent(escapeDir, now, 0.22);
         this._applyMoveIntent(KEY_LEFT, KEY_RIGHT);
 
-        /*if (escapeDir < 0) {
-            //Escape LEFT
-            VKEY.press(KEY_LEFT);
-            VKEY.release(KEY_RIGHT);
-        } else {
-            //Escape RIGHT
-            VKEY.press(KEY_RIGHT);
-            VKEY.release(KEY_LEFT);
-        }*/
         return true;
     }
 
-    // ── Target-based roaming ─────────────────────────────────────
-    // Picks random X targets across the full right half and walks to them.
-    // Runs every frame regardless of shooting state — AI never freezes.
-    _roam(KEY_LEFT, KEY_RIGHT, now) {
-        if (!dogBody) return;
+    _enforceSafeWallDistance(KEY_LEFT, KEY_RIGHT){
         const dogMid = dogBody.x + dogBody.w / 2;
+        const safeX = this.wallR + 240;  // tweak
 
-        // Pick a new roam target periodically
-        if (now >= this.roamPickTime) {
-            this.roamTargetX = this.roamMinX + Math.random() * (this.roamMaxX - this.roamMinX);
-            let interval;
-            if      (selectedDifficulty === "HARD")   interval = 0.5 + Math.random() * 0.5;
-            else if (selectedDifficulty === "MEDIUM")  interval = 0.7 + Math.random() * 0.6;
-            else                                       interval = 0.9 + Math.random() * 0.8;
-            this.roamPickTime = now + interval;
+        if (dogMid >= safeX) { return false;}
+        //Too close to the middle barrier, moving right
+        VKEY.press(KEY_RIGHT);
+        VKEY.release(KEY_LEFT);
+        return true;
+    }
+
+
+    _enforceRightBias(KEY_LEFT, KEY_RIGHT){
+        const dogMid = dogBody.x + dogBody.w/2;
+
+        if (dogMid >= this.rightBiasX) { return false;}
+
+        VKEY.press(KEY_RIGHT);
+        VKEY.release(KEY_LEFT);
+        return true;
+    }
+
+
+    _noiseWalk(KEY_LEFT, KEY_RIGHT, dt, now){
+        if (now >= this.nextMoveDecisionTime) {
+            this.noiseTime += dt * this.noiseScale;
+            const v = noise(this.noiseTime) * 2 - 1;
+
+            //Per difficulty: more idle on EASY, slightly more reposition on HARD
+            let idleChance, decisionIntervalMin, decisionIntervalMax, deadzone;
+            if (selectedDifficulty === "HARD") {
+                idleChance = 0.55;
+                decisionIntervalMin = 0.25; decisionIntervalMax = 0.45;
+                deadzone = 0.55;
+            } else if (selectedDifficulty === "MEDIUM") {
+                idleChance = 0.70;
+                decisionIntervalMin = 0.35; decisionIntervalMax = 0.65;
+                deadzone = 0.60;
+            } else {
+                idleChance = 0.80;
+                decisionIntervalMin = 0.45; decisionIntervalMax = 0.85;
+                deadzone = 0.65;
+            }
+
+            if (Math.random() < idleChance) {this.moveDir = 0;}
+            else if (v < -deadzone) {this.moveDir = -1;}
+            else if (v > deadzone) {this.moveDir = 1;}
+            else {this.moveDir = 0;}
+
+            this.nextMoveDecisionTime =
+                now + (decisionIntervalMin + Math.random() * (decisionIntervalMax - decisionIntervalMin));
         }
 
-        // Walk toward target — stop when within 15px
-        const err = this.roamTargetX - dogMid;
-        if (Math.abs(err) > 15) {
-            if (err < 0) { VKEY.press(KEY_LEFT);  VKEY.release(KEY_RIGHT); }
-            else         { VKEY.press(KEY_RIGHT); VKEY.release(KEY_LEFT);  }
+        // Apply chosen direction
+        if (this.moveDir < 0) {
+            VKEY.press(KEY_LEFT);
+            VKEY.release(KEY_RIGHT);
+        } else if (this.moveDir > 0) {
+            VKEY.press(KEY_RIGHT);
+            VKEY.release(KEY_LEFT);
         } else {
             VKEY.release(KEY_LEFT);
             VKEY.release(KEY_RIGHT);
         }
     }
 
-    // Stubs kept so nothing breaks if called elsewhere
-    _enforceSafeWallDistance() { return false; }
-    _enforceRightBias()        { return false; }
-    _noiseWalk()               {}
-
-    // Movement entry point — movement is ALWAYS active, never locked
-    _updateMovement(KEY_LEFT, KEY_RIGHT, dt, _opts) {
+    //Left-right Movement Logic
+    _updateMovement(KEY_LEFT, KEY_RIGHT, dt, { lockMovement = false } = {}) {
         const now = millis() / 1000;
-        if (!dogBody || !player) return;
-        // Escape incoming projectiles first, then roam
-        if (!this._escapeProjectiles(KEY_LEFT, KEY_RIGHT)) {
-            this._roam(KEY_LEFT, KEY_RIGHT, now);
-        }
-    }
 
+        if (!dogBody || !player) return;
+
+        //Movement lock to reduce jittering while aiming/charging
+        if (lockMovement) {
+            VKEY.release(KEY_LEFT);
+            VKEY.release(KEY_RIGHT);
+            return;
+        }
+
+        //Further block jittering
+        if (now < this.moveIntentUntil) {
+            this._applyMoveIntent(KEY_LEFT, KEY_RIGHT);
+            return;
+        }
+
+        //Avoid stuck at the "blind spot" behind the center barrier
+        if (this._enforceSafeWallDistance(KEY_LEFT, KEY_RIGHT)) {return;}
+
+        // Escape Control
+        if (!this._escapeProjectiles(KEY_LEFT, KEY_RIGHT)) { return;}
+
+        //Keep AI player generally on the right side to avoid attack from middle barrier rebounce
+        if (this._enforceRightBias(KEY_LEFT, KEY_RIGHT)) { return;}
+
+        //For less walking movement -> trying to resolve jittering behavior
+        this._noiseWalk(KEY_LEFT, KEY_RIGHT, dt, now);
+
+    }
 
     //--------------------------------------
     //----------Fire Reset------------------
@@ -615,6 +653,8 @@ class AutoPlayer {
         }else{
             //Intended to miss — always miss LEFT of target so projectile never curves back toward AI
             const missOffset = 150 + Math.random()*100;
+            //Miss left or right randomly
+            const missDir = Math.random()<0.5? -1:1;
             toX = target.x - missOffset;
             toY = target.y + (Math.random()*100 - 50);
         }
@@ -622,21 +662,21 @@ class AutoPlayer {
         //Ensure landing well past the wall
         const wallSafetyLeft = this.wallL - this.wallKeepOut;
 
-        // If target is too close to the wall, shift it left so the arc clears the wall and doesn't bounce back
+        //If target is too close to the wall, shift it left so the arc clears the wall and doesn't bounce back
         if (toX > wallSafetyLeft) {toX = wallSafetyLeft;}
-
-        // Guard: toX must always be clearly LEFT of fromX (AI always fires left toward player)
-        if (toX >= fromX - 80) { toX = fromX - 80; }
 
         const dist = Math.abs(toX - fromX);
 
         //Angle Selection: angle bucket based on distance
         let angleDeg;
-        if (dist < 250) {angleDeg = 60;}       // was 80 — high angle at short dist caused self-hits
-        else if (dist < 500) {angleDeg = 65;}
-        else if (dist < 800) {angleDeg = 50;}
-        else if (dist < 1100) {angleDeg = 38;}
-        else {angleDeg = 28;}
+        //Short distance -> steepest angle (avoid rebounce from middle barrier)
+        if (dist < 250) {angleDeg = 75;}
+        //Medium distance
+        else if (dist < 500) {angleDeg = 55;}
+        //Long distance
+        else if (dist < 800) {angleDeg = 45;}
+        //Very long distance
+        else {angleDeg = 35;}
 
         const base = (angleDeg * Math.PI) / 180;
         //Facing left
@@ -661,10 +701,10 @@ class AutoPlayer {
             const wallR = this.wallR;
             const keepOut = this.wallKeepOut;
 
-            // nearWall means landing on the right of the wall region
+            //nearWall means landing on the right of the wall region
             const nearWall =landing.x < (wallR + keepOut);
 
-            // Distance from target
+            //Distance from target
             const dx_error = landing.x - toX;
             const dy_error = landing.y - toY;
 
@@ -677,9 +717,9 @@ class AutoPlayer {
                 bestPower = testPower;
             }
 
-            // Adjust search range
+            //Adjust search range
             if (landing.x > toX) {
-                // Need more power
+                //Need more power
                 minPower = testPower;
             } else {
                 maxPower_search = testPower;
@@ -695,32 +735,3 @@ class AutoPlayer {
 //For AutoPlayer
 window.GAME_AUTO = new AutoPlayer();
 console.log("[AUTO] GAME_AUTO ready", window.GAME_AUTO);
-
-/*
-    _antiNearWall(KEY_LEFT, KEY_RIGHT, dt){
-        const wallR = this.wallR;
-        const padArea = this.wallPad;
-
-        const dogMid = dogBody.x + dogBody.w/2;
-        const dogNearWall = dogMid < (wallR + padArea);
-
-        //When ai player fall in the near wall area
-        if (dogNearWall) {
-            this.nearWallSeconds += dt;
-            VKEY.press(KEY_RIGHT);
-            VKEY.release(KEY_LEFT);
-
-            // If it keeps sticking near wall, kick it harder to the right for a moment
-            if (this.nearWallSeconds > this.nearWallKickAfter) {
-                VKEY.press(KEY_RIGHT);
-                VKEY.release(KEY_LEFT);
-                return true;
-            }
-            return true;
-        }
-
-        this.nearWallSeconds = 0;
-
-        return false;
-    }
- */
