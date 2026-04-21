@@ -90,7 +90,7 @@ class AutoPlayer {
 
         //Hit/Miss mechanics to showcase randomness of the game, making it more realistic
         this.hitChance = 0.5;
-        this.shouldHitThisShot = false; //will be determined by the noise imported
+        this.shouldHitThisShot = false;  //will be determined by the random()
 
         //Creating noise for smooth movements
         this.noiseTime = 0;
@@ -109,14 +109,14 @@ class AutoPlayer {
         //Keeping AI on the right
         this.rightBiasX = 1000;
 
-        //Movement control -> used to increase shooting frequency
+        //Movement control
         this.nextMoveDecisionTime = 0;
         //left: -1 | idle: 0 | right: +1
         this.moveDir = 0;
 
         //Min fire rate guarantee to make sure ai player shoots more frequently
-        this.lastShotTime=0;
-        this.forceShotAfter =5.0;
+        this.lastShotTime = 0;
+        this.forceShotAfter = 5.0;
 
         //px around the wall we never want to land in
         this.wallKeepOut = 60;
@@ -182,24 +182,28 @@ class AutoPlayer {
 
     _applyDifficultyTweaks(){
         if (selectedDifficulty === "HARD") {
-            this.maxFirePower = 190;
+            this.maxFirePower = 180;
             this.hitChance = 0.6;
-            //keep firing in hard mode
             this.aimOkDeg = 24;
             this.forceShotAfter = 1.0;
-            this.minShotPower = 25;
-        } else if (selectedDifficulty === "MEDIUM") {
-            this.maxFirePower = 170;
-            this.hitChance = 0.5;
-            this.aimOkDeg = 16;
-            this.forceShotAfter = 2.5;
             this.minShotPower = 30;
-        } else {
-            this.maxFirePower = 150;
-            this.hitChance = 0.35;
+            this.minFirePower = 25;
+
+        } else if (selectedDifficulty === "MEDIUM") {
+            this.maxFirePower = 145;
+            this.hitChance = 0.55;
             this.aimOkDeg = 16;
+            this.forceShotAfter = 2.0;
+            this.minShotPower = 20;
+            this.minFirePower = 20;
+
+        } else {
+            this.maxFirePower = 145;
+            this.hitChance = 0.35;
+            this.aimOkDeg = 13;
             this.forceShotAfter = 3.0;
-            this.minShotPower = 32;
+            this.minShotPower = 20;
+            this.minFirePower = 20;
         }
     }
 
@@ -273,9 +277,9 @@ class AutoPlayer {
 
     _getShootThreshold(){
         //Hard -> fires when confidence is moderate
-        if (selectedDifficulty === "HARD") {return 0.26;}
-        //Medirum -> Balanced: needs decent confidence
-        else if (selectedDifficulty === "MEDIUM") {return 0.34;}
+        if (selectedDifficulty === "HARD")   { return 0.26; }
+        //Medium -> Balanced: needs decent confidence
+        else if (selectedDifficulty === "MEDIUM") { return 0.34; }
         //EASY -> Hesitant: only shoots when very confident
         return 0.38;
     }
@@ -331,7 +335,7 @@ class AutoPlayer {
         this._hardResetFire();
         this.lastShotTime = now;
 
-        // More frequent shots (especially EASY)
+        //More frequent shots (especially EASY)
         let minCooldown, maxCooldown;
         if (selectedDifficulty === "HARD") { minCooldown = 0.10; maxCooldown = 0.22; }
         else if (selectedDifficulty === "MEDIUM") { minCooldown = 0.18; maxCooldown = 0.32; }
@@ -342,9 +346,9 @@ class AutoPlayer {
 
     _noShootArea(KEY_FIRE, KEY_RIGHT, KEY_LEFT, now){
         const dogMid = dogBody.x + dogBody.w/2;
-        const noShootX = this.wallR+ 60;
+        const noShootX = this.wallR + 60;
 
-        if (dogMid >= noShootX){ return false;}
+        if (dogMid >= noShootX){ return false; }
 
         VKEY.release(KEY_FIRE);
         this._softResetFire();
@@ -352,7 +356,7 @@ class AutoPlayer {
         VKEY.press(KEY_RIGHT);
         VKEY.release(KEY_LEFT);
 
-        this.nextFireTime = now+0.2;
+        this.nextFireTime = now + 0.2;
         return true;
     }
 
@@ -385,7 +389,7 @@ class AutoPlayer {
         //Movement lock while charging / shortly after starting charge
         const lockMovement = this.fireHolding || (now < this.lockMoveUntil);
         //Adjusting left-right movement
-        this._updateMovement(keys.KEY_LEFT, keys.KEY_RIGHT, dt, { lockMovement });
+        this._updateMovement(keys.KEY_LEFT, keys.KEY_RIGHT, dt, {lockMovement});
 
 
         //--------------------------------------
@@ -493,6 +497,13 @@ class AutoPlayer {
             if (distToProjectile < triggerDist && dotProduct > 0 && projectileSpeed>50){
                 threatDetected = true;
                 escapeDir = p.vx > 0? -1:1;
+
+                const dogMid = dogBody.x + dogBody.w/2;
+                const tooCloseToWall = dogMid < (this.WallR + 100);
+                if (tooCloseToWall){
+                    //Push AI to escape right when it's near the middle barrier area
+                    escapeDir = +1;
+                }
                 break;
             }
         }
@@ -504,15 +515,6 @@ class AutoPlayer {
         this._setMoveIntent(escapeDir, now, 0.22);
         this._applyMoveIntent(KEY_LEFT, KEY_RIGHT);
 
-        /*if (escapeDir < 0) {
-            //Escape LEFT
-            VKEY.press(KEY_LEFT);
-            VKEY.release(KEY_RIGHT);
-        } else {
-            //Escape RIGHT
-            VKEY.press(KEY_RIGHT);
-            VKEY.release(KEY_LEFT);
-        }*/
         return true;
     }
 
@@ -528,7 +530,6 @@ class AutoPlayer {
     }
 
 
-
     _enforceRightBias(KEY_LEFT, KEY_RIGHT){
         const dogMid = dogBody.x + dogBody.w/2;
 
@@ -538,6 +539,7 @@ class AutoPlayer {
         VKEY.release(KEY_LEFT);
         return true;
     }
+
 
     _noiseWalk(KEY_LEFT, KEY_RIGHT, dt, now){
         if (now >= this.nextMoveDecisionTime) {
@@ -583,10 +585,10 @@ class AutoPlayer {
     }
 
     //Left-right Movement Logic
-    _updateMovement(KEY_LEFT, KEY_RIGHT, dt, { lockMovement = false } = {}){
+    _updateMovement(KEY_LEFT, KEY_RIGHT, dt, { lockMovement = false } = {}) {
         const now = millis() / 1000;
 
-        if (!dogBody || !player){ return;}
+        if (!dogBody || !player) return;
 
         //Movement lock to reduce jittering while aiming/charging
         if (lockMovement) {
@@ -601,19 +603,19 @@ class AutoPlayer {
             return;
         }
 
-        //Escape Control
-        if (this._escapeProjectiles(KEY_LEFT, KEY_RIGHT)) {return;}
-
         //Avoid stuck at the "blind spot" behind the center barrier
         if (this._enforceSafeWallDistance(KEY_LEFT, KEY_RIGHT)) {return;}
+
+        // Escape Control
+        if (!this._escapeProjectiles(KEY_LEFT, KEY_RIGHT)) { return;}
 
         //Keep AI player generally on the right side to avoid attack from middle barrier rebounce
         if (this._enforceRightBias(KEY_LEFT, KEY_RIGHT)) { return;}
 
         //For less walking movement -> trying to resolve jittering behavior
         this._noiseWalk(KEY_LEFT, KEY_RIGHT, dt, now);
-    }
 
+    }
 
     //--------------------------------------
     //----------Fire Reset------------------
@@ -649,18 +651,18 @@ class AutoPlayer {
             toY = target.y + target.h*0.35;
 
         }else{
-            //Intended to miss the target
+            //Intended to miss — always miss LEFT of target so projectile never curves back toward AI
             const missOffset = 150 + Math.random()*100;
             //Miss left or right randomly
             const missDir = Math.random()<0.5? -1:1;
-            toX = target.x + missDir * missOffset;
+            toX = target.x - missOffset;
             toY = target.y + (Math.random()*100 - 50);
         }
 
         //Ensure landing well past the wall
         const wallSafetyLeft = this.wallL - this.wallKeepOut;
 
-        // If target is too close to the wall, shift it left so the arc clears the wall and doesn't bounce back
+        //If target is too close to the wall, shift it left so the arc clears the wall and doesn't bounce back
         if (toX > wallSafetyLeft) {toX = wallSafetyLeft;}
 
         const dist = Math.abs(toX - fromX);
@@ -668,7 +670,7 @@ class AutoPlayer {
         //Angle Selection: angle bucket based on distance
         let angleDeg;
         //Short distance -> steepest angle (avoid rebounce from middle barrier)
-        if (dist < 250) {angleDeg = 80;}
+        if (dist < 250) {angleDeg = 75;}
         //Medium distance
         else if (dist < 500) {angleDeg = 55;}
         //Long distance
@@ -699,10 +701,10 @@ class AutoPlayer {
             const wallR = this.wallR;
             const keepOut = this.wallKeepOut;
 
-            // nearWall means landing on the right of the wall region
+            //nearWall means landing on the right of the wall region
             const nearWall =landing.x < (wallR + keepOut);
 
-            // Distance from target
+            //Distance from target
             const dx_error = landing.x - toX;
             const dy_error = landing.y - toY;
 
@@ -715,9 +717,9 @@ class AutoPlayer {
                 bestPower = testPower;
             }
 
-            // Adjust search range
+            //Adjust search range
             if (landing.x > toX) {
-                // Need more power
+                //Need more power
                 minPower = testPower;
             } else {
                 maxPower_search = testPower;
@@ -733,32 +735,3 @@ class AutoPlayer {
 //For AutoPlayer
 window.GAME_AUTO = new AutoPlayer();
 console.log("[AUTO] GAME_AUTO ready", window.GAME_AUTO);
-
-/*
-    _antiNearWall(KEY_LEFT, KEY_RIGHT, dt){
-        const wallR = this.wallR;
-        const padArea = this.wallPad;
-
-        const dogMid = dogBody.x + dogBody.w/2;
-        const dogNearWall = dogMid < (wallR + padArea);
-
-        //When ai player fall in the near wall area
-        if (dogNearWall) {
-            this.nearWallSeconds += dt;
-            VKEY.press(KEY_RIGHT);
-            VKEY.release(KEY_LEFT);
-
-            // If it keeps sticking near wall, kick it harder to the right for a moment
-            if (this.nearWallSeconds > this.nearWallKickAfter) {
-                VKEY.press(KEY_RIGHT);
-                VKEY.release(KEY_LEFT);
-                return true;
-            }
-            return true;
-        }
-
-        this.nearWallSeconds = 0;
-
-        return false;
-    }
- */

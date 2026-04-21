@@ -1,3 +1,5 @@
+# 2026-group-16
+2026 COMSM0166 group 16
 <div align="center" style="border:2px solid #e4572e; padding:20px; border-radius:10px;">
 
 # MERCHANT FIGHTERS
@@ -37,7 +39,6 @@
 | Ziquan Liu            | nb25183@bristol.ac.uk |             |
 
 </div>
- 
 ---
 
 </p>
@@ -111,6 +112,23 @@ Using the **Onion Ring Model** helped us clearly map out all the stakeholders in
 - 15% ~750 words
 
 - Describe implementation of your game, in particular highlighting the TWO areas of *technical challenge* in developing your game. 
+
+### Design
+### Screen Flow
+![Screen Flow](docs/design/Screen_Flow.png)
+
+### Character Selection
+![Character Select](docs/design/caracter_select(sketch)_1.JPG)
+
+### Battle Scene
+![Battle Scene](docs/design/battle_scence(sketch).jpg)
+
+### Assets Tracker
+![Assets Tracker](docs/design/AssetsTracker.png)
+
+- 15% ~750 words
+- System architecture. Class diagrams, behavioural diagrams.
+
 
 ### Evaluation
 
