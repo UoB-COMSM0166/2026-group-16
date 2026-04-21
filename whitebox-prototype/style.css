@@ -1,7 +1,83 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
+  font-family: sans-serif;
+  background: #0b0a1a;
 }
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+#canvas-wrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
 canvas {
   display: block;
+  max-width: 100%;
+  height: auto;
+  width: auto;
+  /*16:9 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+}
+
+/* ── Language Dropdown Overlay ───────────────────────────── */
+#lang-wrapper {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(20, 16, 40, 0.8);
+  backdrop-filter: blur(4px);
+  border-radius: 30px;
+  padding: 5px 12px 5px 16px;
+  border: 1px solid rgba(255, 224, 102, 0.3);
+}
+
+#lang-label {
+  color: #ffe066;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 4px #000a;
+  user-select: none;
+}
+
+#lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  color: #ffe066;
+  border: none;
+  padding: 4px 28px 4px 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffe066' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+}
+
+#lang-select option {
+  background: #1a1428;
+  color: #ffe066;
+}
+
+#lang-wrapper.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s;
 }

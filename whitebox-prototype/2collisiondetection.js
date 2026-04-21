@@ -1,19 +1,19 @@
 // ---------- COLLISION DETECTION --------------------------
 class CollisionDetection {
   constructor({ worldWidth = 1600, worldHeight = 900, cellSize = 128, gravity = 900, windAccel = 50 } = {}) {
-    this.worldWidth   = worldWidth;
-    this.worldHeight  = worldHeight;
-    this.cellSize     = cellSize;
-    this.cols         = Math.ceil(worldWidth  / cellSize);
-    this.rows         = Math.ceil(worldHeight / cellSize);
-    this.gravity      = gravity;
-    this.windAccel    = windAccel;
+    this.worldWidth = worldWidth;
+    this.worldHeight = worldHeight;
+    this.cellSize = cellSize;
+    this.cols = Math.ceil(worldWidth / cellSize);
+    this.rows = Math.ceil(worldHeight / cellSize);
+    this.gravity = gravity;
+    this.windAccel = windAccel;
     this.staticBodies = [];
-    this.characters   = [];
-    this.projectiles  = [];
-    this.floatTexts   = [];
-    this._grid        = new Map();
-    this._nextId      = 1;
+    this.characters = [];
+    this.projectiles = [];
+    this.floatTexts = [];
+    this._grid = new Map();
+    this._nextId = 1;
   }
 
   _cellKey(cx, cy) {
@@ -58,7 +58,7 @@ class CollisionDetection {
     return body;
   }
 
-  addCharacter({ x, y, w = 60, h = 60, speed = 280, tag = "player", leftKey = LEFT_ARROW, rightKey = RIGHT_ARROW}) {
+  addCharacter({ x, y, w = 60, h = 60, speed = 280, tag = "player", leftKey = LEFT_ARROW, rightKey = RIGHT_ARROW }) {
     const ch = {
       id: this._nextId++, type: "character", tag,
       x, y, w, h, vx: 0, vy: 0, speed,
@@ -71,17 +71,20 @@ class CollisionDetection {
     return ch;
   }
 
-  spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player" }) {
+  spawnProjectile({ fromX, fromY, radius = 12, angleObj, powerObj, powerScale = 8, owner = "player", maxBounces = 3 }) {
     const power = powerObj.consume();
     const speed = power * powerScale;
-    const a     = angleObj.angleRad;
+    const a = angleObj.angleRad;
     const p = {
       id: this._nextId++, type: "projectile",
       x: fromX, y: fromY, r: radius,
-      vx:  Math.cos(a) * speed,
+      vx: Math.cos(a) * speed,
       vy: -Math.sin(a) * speed,
       alive: true,
       owner,
+      windDir: angleObj.direction,  // +1 = firing right, -1 = firing left
+      bounces: 0,
+      maxBounces: maxBounces,
     };
     this.projectiles.push(p);
     return p;
@@ -89,7 +92,7 @@ class CollisionDetection {
 
   static aabbIntersects(a, b) {
     return a.x < b.x + b.w && a.x + a.w > b.x &&
-           a.y < b.y + b.h && a.y + a.h > b.y;
+      a.y < b.y + b.h && a.y + a.h > b.y;
   }
 
   static circleAABBHit(circle, rect) {
@@ -105,9 +108,9 @@ class CollisionDetection {
 
   static resolveAABBvsAABB(dynamic, stat) {
     const ox1 = (dynamic.x + dynamic.w) - stat.x;
-    const ox2 = (stat.x + stat.w)       - dynamic.x;
+    const ox2 = (stat.x + stat.w) - dynamic.x;
     const oy1 = (dynamic.y + dynamic.h) - stat.y;
-    const oy2 = (stat.y + stat.h)       - dynamic.y;
+    const oy2 = (stat.y + stat.h) - dynamic.y;
     const penX = Math.min(ox1, ox2);
     const penY = Math.min(oy1, oy2);
     if (penX < penY) {
@@ -115,13 +118,13 @@ class CollisionDetection {
       dynamic.vx = 0;
     } else {
       if (oy1 < oy2) { dynamic.y -= penY; dynamic.vy = 0; dynamic.onGround = true; }
-      else            { dynamic.y += penY; dynamic.vy = 0; }
+      else { dynamic.y += penY; dynamic.vy = 0; }
     }
   }
 
   _updateCharacter(ch, dt, angleObj) {
     if (ch.controllable) {
-      const left  = keyIsDown(ch.leftKey);
+      const left = keyIsDown(ch.leftKey);
       const right = keyIsDown(ch.rightKey);
       ch.vx = left ? -ch.speed : right ? ch.speed : 0;
       ch.vy = 0;
@@ -151,30 +154,71 @@ class CollisionDetection {
   }
 
   _updateProjectile(p, dt) {
-    p.vx += this.windAccel * dt;
-    p.vy += this.gravity   * dt;
-    p.x  += p.vx * dt;
-    p.y  += p.vy * dt;
+    // Wind pushes in the direction the projectile was fired — fair for both players
+    const windDir = p.windDir !== undefined ? p.windDir : 1;
+    const gravScale = p.gravityScale !== undefined ? p.gravityScale : 1;
+    p.vx += this.windAccel * windDir * dt;
+    p.vy += this.gravity * gravScale * dt;
+    p.x += p.vx * dt;
+    p.y += p.vy * dt;
 
-    if (p.x < -200 || p.x > this.worldWidth + 200 || p.y > this.worldHeight + 200) {
+    // ── 1) 边界反弹 ──────────────────────────────────
+    let bounced = false;
+
+    // 左边界
+    if (p.x - p.r < 0) {
+      p.x = p.r;
+      p.vx = Math.abs(p.vx) * 0.8;   // 0.8 = 能量衰减系数，可调
+      bounced = true;
+    }
+    // 右边界
+    if (p.x + p.r > this.worldWidth) {
+      p.x = this.worldWidth - p.r;
+      p.vx = -Math.abs(p.vx) * 0.8;
+      bounced = true;
+    }
+    // 上边界
+    if (p.y - p.r < 0) {
+      p.y = p.r;
+      p.vy = Math.abs(p.vy) * 0.8;
+      bounced = true;
+    }
+    // 下边界（掉出屏幕底部 — 直接消亡，不反弹）
+    if (p.y > this.worldHeight + 200) {
       p.alive = false;
       return;
     }
 
+    if (bounced) {
+      p.bounces++;
+      if (p.bounces > p.maxBounces) {
+        p.alive = false;
+        return;
+      }
+    }
+
+    // ── 2) 角色碰撞（反弹后依然能打中人）────────────
+    //    注意：去掉了 owner 跳过检测，反弹后可以打到所有人包括自己
     for (const ch of this.characters) {
-      if (ch.tag === p.owner) continue;
+      // 第一次发射时跳过自己（未反弹），反弹后可伤害任何人
+      if (p.bounces === 0 && ch.tag === p.owner) continue;
+
       const rect = { x: ch.x, y: ch.y, w: ch.w, h: ch.h };
-      const hit  = CollisionDetection.circleAABBHit(p, rect);
+      const hit = CollisionDetection.circleAABBHit(p, rect);
       if (hit) {
         if (ch.tag === "dog") {
           dogHP = Math.max(0, dogHP - 15);
-          this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: dogHP <= 0 ? "Ciyang defeated! 💀" : "-15 HP!" });
+          this.floatTexts.push({
+            x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
+            text: dogHP <= 0 ? `${LABELS.target} defeated! 💀` : "-15 HP!"
+          });
           tryPlaySound(sndHit);
         } else if (ch.tag === "player") {
           catHP = Math.max(0, catHP - 15);
-          this.floatTexts.push({ x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
-            text: catHP <= 0 ? "Rish defeated! 💀" : "-15 HP!" });
+          this.floatTexts.push({
+            x: ch.x + ch.w / 2, y: ch.y - 20, vy: -50, life: 1.2,
+            text: catHP <= 0 ? `${LABELS.player} defeated! 💀` : "-15 HP!"
+          });
           tryPlaySound(sndHit);
         }
         p.alive = false;
@@ -182,19 +226,66 @@ class CollisionDetection {
       }
     }
 
+    // ── 3) 静态障碍物反弹 ────────────────────────────
     const box = { x: p.x - p.r, y: p.y - p.r, w: p.r * 2, h: p.r * 2 };
     for (const id of this._queryNearbyAABB(box)) {
       const stat = this.staticBodies.find(b => b.id === id);
       if (!stat) continue;
       const hit = CollisionDetection.circleAABBHit(p, stat);
       if (hit) {
-        p.alive = false;
-        return;
+        // 超过反弹上限 → 销毁
+        p.bounces++;
+        if (p.bounces > p.maxBounces) {
+          p.alive = false;
+          return;
+        }
+
+        // 根据碰撞法线反射速度
+        const n = hit.normal;
+        // v_reflect = v - 2(v·n)n
+        const dot = p.vx * n.x + p.vy * n.y;
+        p.vx = (p.vx - 2 * dot * n.x) * 0.8;
+        p.vy = (p.vy - 2 * dot * n.y) * 0.8;
+
+        // 把弹体推出障碍物，防止卡在里面
+        p.x = hit.point.x + n.x * (p.r + 1);
+        p.y = hit.point.y + n.y * (p.r + 1);
+
+        break; // 每帧只处理一次碰撞
       }
     }
   }
 
   updateSpeed(ch, speed) {
     ch.speed = speed;
+  }
+
+  //Shared physics simulator
+  //Simulates where a projectile lands given angle and power
+  //Used by AI to calculate where shots will land
+  simulateProjectileLanding(fromX, fromY, angleRad, power, powerScale, windDir = 1, maxDist = 2000) {
+    let x = fromX, y = fromY;
+    let vx = Math.cos(angleRad) * power * powerScale;
+    let vy = -Math.sin(angleRad) * power * powerScale;
+
+    //Same timestep as actual projectiles
+    const simStep = 0.016;
+    const maxSteps = 500;
+
+    for (let frame = 0; frame < maxSteps; frame++) {
+      // Apply wind and gravity (same as _updateProjectile)
+      vx += this.windAccel * windDir * simStep;
+      vy += this.gravity * simStep;
+
+      x += vx * simStep;
+      y += vy * simStep;
+
+      // Out of bounds
+      if (x < -200 || x > this.worldWidth + 200 || y > this.worldHeight + 200) {
+        break;
+      }
+    }
+
+    return { x, y, vx, vy };
   }
 }

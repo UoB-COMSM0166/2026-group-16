@@ -1,22 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <meta charset="utf-8" />
 
-  </head>
-  <body>
-    <main>
-    </main>
-    <script src="4helpers.js"></script>
-    <script src="7navigator.js"></script>
-    <script src="sketch.js"></script>
-    <script src="5renderer.js"></script>
-    <script src="6screens.js"></script>
-    <script src="3power.js"></script>
-    <script src="2collisiondetection.js"></script>
-    <script src="1angle.js"></script>
-  </body>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8" />
+
+  <style>
+    #canvas-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    #lang-wrapper {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.70);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      border-radius: 8px;
+      padding: 6px 4px 6px 10px;
+      font-family: sans-serif;
+      transition: opacity 0.2s, visibility 0.2s;
+    }
+
+    #lang-wrapper.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #lang-label {
+      font-size: 16px;
+    }
+
+    /* Hide the native select, show a styled wrapper instead */
+    .lang-select-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    #lang-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+      padding: 2px 26px 2px 4px;
+      /* right padding makes room for arrow */
+    }
+
+    #lang-select option {
+      background: #1a1a2e;
+      color: #fff;
+    }
+
+    /* Custom dropdown arrow */
+    .lang-select-wrap::after {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="canvas-wrapper">
+    <main></main>
+    <div id="lang-wrapper">
+      <span id="lang-label">🌐</span>
+      <div class="lang-select-wrap">
+        <select id="lang-select">
+          <option value="EN">🇬🇧 English</option>
+          <option value="ZH">🇨🇳 中文</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script src="1angle.js"></script>
+  <script src="2collisiondetection.js"></script>
+  <script src="3power.js"></script>
+  <script src="4helpers.js"></script>
+  <script src="5renderer.js"></script>
+  <script src="6screens.js"></script>
+  <script src="7navigator.js"></script>
+  <script src="8language.js"></script>
+  <script src="9character.js"></script>
+  <script src="10weapons.js"></script>
+  <script src="11autoplayer.js"></script>
+  <script src="12-1startScreenAnimator.js"></script>
+  <script src="12-2levelScreenAnimator.js"></script>
+  <script src="12-3modeScreenAnimator.js"></script>
+  <script src="sketch.js"></script>
+  <script src="TestCases.js"></script>
+</body>
+
 </html>
