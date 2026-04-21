@@ -12,6 +12,7 @@
       position: relative;
       display: inline-block;
     }
+
     #lang-wrapper {
       position: absolute;
       top: 14px;
@@ -27,12 +28,16 @@
       font-family: sans-serif;
       transition: opacity 0.2s, visibility 0.2s;
     }
+
     #lang-wrapper.hidden {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
     }
-    #lang-label { font-size: 16px; }
+
+    #lang-label {
+      font-size: 16px;
+    }
 
     /* Hide the native select, show a styled wrapper instead */
     .lang-select-wrap {
@@ -40,6 +45,7 @@
       display: flex;
       align-items: center;
     }
+
     #lang-select {
       appearance: none;
       -webkit-appearance: none;
@@ -50,12 +56,15 @@
       font-weight: 600;
       cursor: pointer;
       outline: none;
-      padding: 2px 26px 2px 4px; /* right padding makes room for arrow */
+      padding: 2px 26px 2px 4px;
+      /* right padding makes room for arrow */
     }
+
     #lang-select option {
       background: #1a1a2e;
       color: #fff;
     }
+
     /* Custom dropdown arrow */
     .lang-select-wrap::after {
       content: "";
@@ -98,8 +107,11 @@
   <script src="9character.js"></script>
   <script src="10weapons.js"></script>
   <script src="11autoplayer.js"></script>
+  <script src="12-1startScreenAnimator.js"></script>
+  <script src="12-2levelScreenAnimator.js"></script>
+  <script src="12-3modeScreenAnimator.js"></script>
   <script src="sketch.js"></script>
-  <script src="TestCases.js"></script> 
+  <script src="TestCases.js"></script>
 </body>
 
 </html>
