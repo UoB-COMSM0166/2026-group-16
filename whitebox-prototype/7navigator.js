@@ -1,6 +1,7 @@
 class Navigator {
   handleClick(mx, my) {
     if (gameState === "START") this._onStart(mx, my);
+    else if (gameState === "INTRO") this._onIntro(mx, my);
     else if (gameState === "CHOOSE") this._onChoose(mx, my);
     else if (gameState === "MODE") this._onMode(mx, my);
     else if (gameState === "CHARACTER") this._onCharacter(mx, my);
@@ -9,7 +10,9 @@ class Navigator {
   }
 
   _onStart(mx, my) {
+    if (!startAnim) return;
     const btn = startAnim.BTN_START;
+    if (!btn) return;
     const left = btn.x;
     const right = btn.x + btn.w;
     const top = btn.y;
@@ -19,7 +22,23 @@ class Navigator {
     if (!startAnim.isDone()) return;
 
     if (mx > left && mx < right && my > top && my < bottom) {
+      gameState = "INTRO";
+    }
+  }
+
+  _onIntro(mx, my) {
+    // Start button
+    const btnX = 634, btnY = 664, btnW = 305, btnH = 90;
+    if (mx > btnX && mx < btnX + btnW && my > btnY && my < btnY + btnH) {
       gameState = "CHOOSE";
+      return;
+    }
+    // Back button
+    const backW = 150, backH = 44;
+    const backX = 1600 / 2 - backW / 2, backY = 820;
+    if (mx > backX && mx < backX + backW && my > backY && my < backY + backH) {
+      gameState = "START";
+      return;
     }
   }
 
@@ -48,9 +67,8 @@ class Navigator {
     }
 
     if (mx > 1600 / 2 - bkW / 2 && mx < 1600 / 2 + bkW / 2 &&
-      my > backY - bkH / 2 && my < backY + bkH / 2) {
-      gameState = "START";
-      if (typeof startAnim !== 'undefined') startAnim.reset();
+      my > backY && my < backY + bkH) {
+      gameState = "INTRO";
       if (typeof levelAnim !== 'undefined') levelAnim.reset();
     }
   }

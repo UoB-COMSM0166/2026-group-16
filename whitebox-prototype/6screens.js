@@ -373,15 +373,12 @@ function drawStartScreen() {
   const btnStart = startAnim.BTN_START;
   const btnIntro = startAnim.BTN_INTRO;
 
-  // hover detection for both buttons
+  // hover detection for start button
   const hoverStart = (mouseX > btnStart.x && mouseX < btnStart.x + btnStart.w &&
     mouseY > btnStart.y && mouseY < btnStart.y + btnStart.h);
-  const hoverIntro = (mouseX > btnIntro.x && mouseX < btnIntro.x + btnIntro.w &&
-    mouseY > btnIntro.y && mouseY < btnIntro.y + btnIntro.h);
-  const anyHover = hoverStart || hoverIntro;
 
   if (startAnim.setButtonHovered) {
-    startAnim.setButtonHovered(anyHover);
+    startAnim.setButtonHovered(hoverStart);
   }
 
   const btnAlpha = startAnim.getButtonAlpha() * 255;
@@ -415,25 +412,8 @@ function drawStartScreen() {
   push();
   tint(255, btnAlpha);
   image(startAnim.imgBtnIntro,
-    startAnim.BTN_INTRO.x, startAnim.BTN_INTRO.y,
-    startAnim.BTN_INTRO.w, startAnim.BTN_INTRO.h);
-  pop();
-
-  push();
-  textFont(pixelFont);
-  textSize(16);
-  textAlign(CENTER, CENTER);
-  fill(255, 255, 255, btnAlpha);
-  noStroke();
-
-  const introX = btnIntro.x + btnIntro.w / 2;
-  const introY = btnIntro.y + btnIntro.h / 2;
-  const lineHeight = 24;
-
-  text("Player 1: Move left/right with A/D, fire with F", introX, introY - lineHeight);
-  text("Player 2: Move with ← →, fire with Space", introX, introY);
-  text("Adjust angle with ↑ ↓", introX, introY + lineHeight);
-  text("Single player mode: Control Player 1 (A/D/F)", introX, introY + lineHeight * 2);
+    btnIntro.x, btnIntro.y,
+    btnIntro.w, btnIntro.h);
   pop();
 
   pop();
