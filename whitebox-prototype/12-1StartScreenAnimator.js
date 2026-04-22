@@ -28,9 +28,9 @@ class StartScreenAnimator {
 
     this.MAX_BG_OFFSET = -(this.BG_H - this.SCREEN_H);
 
-    this.TITLE = { x: 294, y: 153, w: 1061, h: 380 };
-    this.BTN_START = { x: 659, y: 558, w: 279, h: 101 };
-    this.BTN_INTRO = { x: 283, y: 723, w: 1035, h: 96 };
+    this.TITLE = { x: 294, y: 199, w: 1061, h: 380 };
+    this.BTN_START = { x: 663, y: 630, w: 279, h: 101 };
+    this.BTN_INTRO = { x: 468, y: 845, w: 688, h: 17 };
 
     this.imgBg = null;
     this.imgTitle = null;

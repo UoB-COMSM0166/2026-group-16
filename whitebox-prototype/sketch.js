@@ -111,6 +111,8 @@ const ROUNDS_TO_WIN = 2;      // first to this many round wins takes the match
 // 3 map layouts chosen randomly each round
 // 0 = Classic (centre wall), 1 = Platform (raised centre platform), 2 = Twin Pillars
 let currentMap = 0;
+let imgIntroBg, imgIntroStartBtn;
+let introAnim;
 
 // Builds static bodies for the chosen map layout into CollisionDetection instance
 function applyMap(mapIndex) {
@@ -405,6 +407,9 @@ function preload() {
   imgDoubleCard = loadImage("assets/images/SingleDouble/double.png");
   imgSButton = loadImage("assets/images/SingleDouble/s_button.png");
   imgDButton = loadImage("assets/images/SingleDouble/d_button.png");
+
+  imgIntroBg = loadImage("assets/images/IntroControls/intro_bg.png");
+  imgIntroStartBtn = loadImage("assets/images/IntroControls/start_button.png");
 }
 
 function setup() {
@@ -456,7 +461,7 @@ function setup() {
     function () { bgMusic = null; console.warn("BG music not found — continuing without it"); }
   );
 
-  LANG_PATCHER.apply(); // apply language patches after p5 is ready
+
 
   startAnim = new StartScreenAnimator();
   startAnim.setImages(imgStartBg, imgTitle, imgBtnStart, imgBtnIntro);
@@ -464,6 +469,10 @@ function setup() {
   // levelselect screen animation
   levelAnim = new LevelScreenAnimator();
   modeAnim = new ModeScreenAnimator();
+  // intro screen animation
+  introAnim = new IntroScreenAnimator();
+
+  LANG_PATCHER.apply(); // apply language patches after p5 is ready
 }
 
 function draw() {
@@ -480,6 +489,7 @@ function draw() {
   }
 
   if (gameState === "START") drawStartScreen();
+  else if (gameState === "INTRO") drawIntroScreen();
   else if (gameState === "CHOOSE") {
     levelAnim.update();
     drawLevelScreen();
@@ -519,7 +529,7 @@ function drawMuteButton() {
 }
 
 function mousePressed() {
-  if (!nav) return;
+  if (!nav || !startAnim) return;
   // Unlock audio context on first click (browser requirement)
   if (!soundUnlocked) {
     userStartAudio();
@@ -540,7 +550,6 @@ function mousePressed() {
     }
     return;
   }
-
   nav.handleClick(mouseX, mouseY);
 }
 
