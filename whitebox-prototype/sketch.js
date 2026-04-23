@@ -70,19 +70,14 @@ let keyA, keyD, keyUp, keyDown, keyLeft, keyRight, keySpace;
 let difficultyUI;
 
 // ── WEAPON IMAGES ─────────────────────────────────────────────────
-// Loaded in preload(), referenced by WEAPON_DEFS[i].imgKey
 const weaponImages = {};
 
 // SOUNDS
 let sndHit = null;
-let soundUnlocked = false; // browsers block audio until first user click
+let soundUnlocked = false;
+// ── MUTE/UNMUTE (added) ───────────────────────────────────────────
 let bgMusic = null;
 let isMuted = false;
-
-// ── JUMP KEY STATE ───────────────────────────────────────────────
-// p5's keyIsDown(16) can't distinguish Left vs Right Shift, so we
-// track them separately via keyPressed/keyReleased using event.location
-// 1 = left key, 2 = right key
 
 //  GLOBALS
 let catHP = 100, dogHP = 100;
@@ -97,53 +92,12 @@ let gameTimer = 60;
 let timerRunning = false;
 let overtimeActive = false;
 
-// ── ROUND SYSTEM ─────────────────────────────────────────────────
-// Best-of-3: first player to win 2 rounds wins the match
-let roundNumber = 1;          // current round (1, 2, 3)
-let p1RoundWins = 0;          // rounds won by player 1
-let p2RoundWins = 0;          // rounds won by player 2
-let roundOverState = null;    // null | { winner: "player"|"dog", name, hp } — shown between rounds
-let roundOverTimer = 0;       // counts down before auto-advancing to next round
-const ROUND_OVER_DELAY = 3.0; // seconds to show round-over screen before next round
-const ROUNDS_TO_WIN = 2;      // first to this many round wins takes the match
-
-// ── MAP SYSTEM ───────────────────────────────────────────────────
-// 3 map layouts chosen randomly each round
-// 0 = Classic (centre wall), 1 = Platform (raised centre platform), 2 = Twin Pillars
-let currentMap = 0;
-let imgIntroBg, imgIntroStartBtn;
-let introAnim;
-
-// Builds static bodies for the chosen map layout into CollisionDetection instance
-function applyMap(mapIndex) {
-  // Remove old static bodies except the ground (id === 1 is always the ground)
-  cd.staticBodies = cd.staticBodies.filter(b => b.tag === "ground");
-  cd._grid = new Map();
-  // Re-insert ground into grid
-  for (const b of cd.staticBodies) cd._insertToGrid(b);
-
-  if (mapIndex === 0) {
-    // ── MAP 0: Classic — single centre wall ──────────────────────
-    cd.addStaticRect({ x: 750, y: GROUND_Y - 200, w: 100, h: 200, tag: "wall" });
-  } else if (mapIndex === 1) {
-    // ── MAP 1: Platform — raised centre platform + two short side pillars
-    cd.addStaticRect({ x: 650, y: GROUND_Y - 130, w: 300, h: 20, tag: "wall" }); // wide platform
-    cd.addStaticRect({ x: 250, y: GROUND_Y - 80, w: 80, h: 80, tag: "wall" }); // left pillar
-    cd.addStaticRect({ x: 1270, y: GROUND_Y - 80, w: 80, h: 80, tag: "wall" }); // right pillar
-  } else {
-    // ── MAP 2: Twin Pillars — two tall pillars, gap in the middle ──
-    cd.addStaticRect({ x: 560, y: GROUND_Y - 260, w: 90, h: 260, tag: "wall" }); // left pillar
-    cd.addStaticRect({ x: 950, y: GROUND_Y - 260, w: 90, h: 260, tag: "wall" }); // right pillar
-  }
-}
-
-// ── BLACKOUT
-// Tracks elapsed play time (counts up) and active blackout state
-let blackoutElapsed = 0;      // seconds since match start
-let blackoutActive = false;   // whether blackout is currently on
-let blackoutTimer = 0;        // countdown for current blackout (seconds)
-let blackout1Done = false;    // first blackout trigger used
-let blackout2Done = false;    // second blackout trigger used (HARD only)
+// BLACKOUT
+let blackoutElapsed = 0;
+let blackoutActive = false;
+let blackoutTimer = 0;
+let blackout1Done = false;
+let blackout2Done = false;
 
 // Character Select Screen
 let fantasyArrowLeft, fantasyArrowRight, fantasyPlatformGlow, fantasyFrameDiamond, fantasyBtnConfirm, fantasyBgCharSelect;
@@ -157,23 +111,22 @@ let bioM_John, bioM_Kira, bioM_Mat, bioM_Jo;
 
 //start screen animation
 let imgStartBg, imgTitle, imgBtnStart, imgBtnIntro;
+let imgIntroBg, imgIntroStartBtn;
+let introAnim;
 let startAnim;
 let levelAnim;
 let imgDifficultyBg;
 let imgDiffEasy, imgDiffMedium, imgDiffHard;
 
 // ── GAME MODE ─────────────────────────────────────────────────────
-// "SINGLE" = human vs AI  |  "DUAL" = human vs human
 let gameMode = "DUAL";
 let modeAnim;
 
 // ── WEAPON OBJECTS ────────────────────────────────────────────────
-// Created in setup(), one per fighter
-let playerWeapons;   // WEAPONS instance for player1
-let dogWeapons;      // WEAPONS instance for player2 / AI
+let playerWeapons;
+let dogWeapons;
 
 // ── CHARACTER SELECT — P2 (dog) index ─────────────────────────────
-// P1 uses the existing charSelectIndex; P2 in DUAL uses dogCharSelectIndex
 let dogCharSelectIndex = 0;
 let imgModeBg, imgSingleCard, imgDoubleCard, imgSButton, imgDButton;
 
@@ -185,10 +138,7 @@ function tryPlaySound(snd) {
     snd.play();
   } catch (e) { }
 }
-// ──────────────────────────────────────────────────────────
 
-// Call this after difficulty is selected to point imgBg/imgPlayer/imgTarget
-// at the right asset set
 function applyDifficultyAssets() {
   if (selectedDifficulty === "HARD") {
     imgBg = imgBgModern;
@@ -203,7 +153,6 @@ function applyDifficultyAssets() {
   }
 }
 
-// ── Update LABELS from selected character names ───────────────────
 function applyCharacterLabels() {
   const isModern = (selectedDifficulty === "HARD");
   const assets = isModern ? csAssets_modern : csAssets_fantasy;
@@ -212,7 +161,6 @@ function applyCharacterLabels() {
     imgPlayer = assets[charSelectIndex % assets.length].portrait;
 
     if (gameMode === "SINGLE") {
-      // AI opponent: fixed name and robot image
       LABELS.target = "AI";
       imgTarget = imgRobotAI;
     } else {
@@ -222,6 +170,7 @@ function applyCharacterLabels() {
   }
 }
 
+// ── resetGame: identical to working doc18, NO applyMap ───────────
 function resetGame() {
   catHP = 100; dogHP = 100;
   gameTimer = 60;
@@ -234,24 +183,12 @@ function resetGame() {
   blackout1Done = false;
   blackout2Done = false;
 
-  // Pick a random map for this round and apply it
-  currentMap = Math.floor(Math.random() * 3);
-  applyMap(currentMap);
-
-  // Reset round-over state
-  roundOverState = null;
-  roundOverTimer = 0;
-
   applyDifficultyAssets();
   applyCharacterLabels();
 
   player.x = 380; player.y = GROUND_Y - 160; player.facing = 1;
-  player.vy = 0; player.onGround = true;
   dogBody.x = 1100; dogBody.y = GROUND_Y - 160; dogBody.facing = -1;
-  dogBody.vy = 0; dogBody.onGround = true;
 
-  // In SINGLE mode use dummy keys so real arrow keys never move the AI;
-  // VKEY will press these dummy codes. In DUAL mode use real arrow keys.
   if (gameMode === "SINGLE") {
     dogBody.leftKey = 201;
     dogBody.rightKey = 202;
@@ -265,7 +202,6 @@ function resetGame() {
   cd.projectiles = [];
   cd.floatTexts = [];
 
-  // Enable AI once here — not every frame — so VKEY.clear() doesn't wipe keys each frame
   if (window.GAME_AUTO) {
     if (gameMode === "SINGLE") {
       window.GAME_AUTO.setEnabled(true);
@@ -276,44 +212,27 @@ function resetGame() {
 
   powerObj.value = 0; powerObj._wasCharging = false;
   ciyangPowerObj.value = 0; ciyangPowerObj._wasCharging = false;
-
-  // NOTE: weapon indexes are NOT reset here — players keep their weapon select choice
-}
-
-// Reset the entire match (round wins, round number) — called when starting a new match
-function resetMatch() {
-  roundNumber = 1;
-  p1RoundWins = 0;
-  p2RoundWins = 0;
-  roundOverState = null;
-  roundOverTimer = 0;
-  resetGame();
 }
 
 // p5.js LIFECYCLE
 function preload() {
-  // Fantasy assets
   imgBgFantasy = loadImage("assets/images/bg/bg_battle_fantasy_1.png");
   imgCharSelectFantasy = loadImage("assets/images/bg/bg_charselect_fantasy.png");
   imgPlayerFantasy = loadImage("assets/images/Sprites/sprite_John_fantasy.png");
   imgTargetFantasy = loadImage("assets/images/Sprites/sprite_Mattew_fantasy.png");
 
-  // Modern assets
   imgBgModern = loadImage("assets/images/bg/bg_battle_modern_1.png");
   imgCharSelectModern = loadImage("assets/images/bg/bg_charselect_modern.png");
   imgPlayerModern = loadImage("assets/images/Sprites/sprite_John_modern.png");
   imgTargetModern = loadImage("assets/images/Sprites/sprite_Mattew_modern.png");
 
-  // Defaults (fantasy) — will be overwritten by applyDifficultyAssets()
   imgBg = imgBgFantasy;
   imgPlayScreen = imgCharSelectFantasy;
   imgPlayer = imgPlayerFantasy;
   imgTarget = imgTargetFantasy;
 
-  // AI robot image (used in SINGLE player mode for the opponent)
   imgRobotAI = loadImage("assets/AI/ai_robot.png");
 
-  // Shared
   imgPan = loadImage("pan.png");
   imgWall = loadImage("assets/images/bg/wall_fantasy.png");
   difficultyUI = loadImage("assets/ui/difficult-select-01.png");
@@ -336,9 +255,7 @@ function preload() {
   bioM_Kira = loadImage(BIO_M_BASE + "bioo_Kira_modern.png");
   bioM_Mat = loadImage(BIO_M_BASE + "bioo_Mat_modern.png");
   bioM_Jo = loadImage(BIO_M_BASE + "bioo_Jo_modern.png");
-  // NOTE: sound is loaded in setup() so a bad path never blocks preload
 
-  // ── Weapon images ──────────────────────────────────────────────
   const WPATH = "assets/weapons/";
   const wNames = [
     "weapon_bomb", "weapon_boomerang", "weapon_cannon", "weapon_dagger",
@@ -347,15 +264,12 @@ function preload() {
   ];
   for (const n of wNames) {
     weaponImages[n] = loadImage(WPATH + n + ".png");
-
-    // Start screen animation assets
     imgStartBg = loadImage("assets/images/StartScreen/start_bg.png");
     imgTitle = loadImage("assets/images/StartScreen/title.png");
     imgBtnStart = loadImage("assets/images/StartScreen/start_button.png");
     imgBtnIntro = loadImage("assets/images/StartScreen/intro_text.png");
   }
 
-  // Grace3.31__Character Select Screen Assets — fantasy
   const BASE_F = "assets/images/CharacterSelect/fantasy/";
   for (const c of CHARACTERS_FANTASY) {
     csAssets_fantasy.push({
@@ -366,7 +280,6 @@ function preload() {
       name: c.name
     });
   }
-  // Fantasy UI
   fantasyArrowLeft = loadImage(BASE_F + "arrow_left.png");
   fantasyArrowRight = loadImage(BASE_F + "arrow_right.png");
   fantasyPlatformGlow = loadImage(BASE_F + "platform_glow.png");
@@ -375,9 +288,7 @@ function preload() {
   fantasyBgCharSelect = loadImage(BASE_F + "bg_charselect_fantasy.png");
   fantasyBioPanel = loadImage(BASE_F + "bio_panel_fantasy.png");
 
-  // Modern UI
   const BASE_M = "assets/images/CharacterSelect/modern/";
-
   csAssets_modern = [];
   for (const c of CHARACTERS_MODERN) {
     csAssets_modern.push({
@@ -388,7 +299,6 @@ function preload() {
       name: c.name
     });
   }
-
   modernArrowLeft = loadImage(BASE_M + "arrow_left.png");
   modernArrowRight = loadImage(BASE_M + "arrow_right.png");
   modernPlatformGlow = loadImage(BASE_M + "platform_glow.png");
@@ -424,55 +334,41 @@ function setup() {
 
   cd = new CollisionDetection({ worldWidth: 1600, worldHeight: 900, cellSize: 128, gravity: 900, windAccel: 50 });
   cd.addStaticRect({ x: 0, y: GROUND_Y, w: 1600, h: 10, tag: "ground" });
-  // Default map applied here; resetGame()/applyMap() will re-configure each round
   cd.addStaticRect({ x: 750, y: GROUND_Y - 200, w: 100, h: 200, tag: "wall" });
 
   dogBody = cd.addCharacter({
     x: 1100, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "dog",
-    // Use dummy key codes (201/202) — real arrow keys won't match these.
-    // In SINGLE mode the AI presses these via VKEY; in DUAL mode we reassign them in resetGame.
     leftKey: 201, rightKey: 202
   });
   dogBody.facing = -1;
-  // Right Shift
-  dogBody.vy = 0;
-  dogBody.onGround = true;
   player = cd.addCharacter({ x: 380, y: GROUND_Y - 160, w: 110, h: 160, speed: 280, tag: "player", leftKey: 65, rightKey: 68 });
-  // Left Shift
-  player.vy = 0;
-  player.onGround = true;
 
-  // Create weapon instances — one per fighter
   playerWeapons = new WEAPONS();
   dogWeapons = new WEAPONS();
 
   nav = new Navigator();
 
-  // Load hit sound with callbacks — a wrong path warns but never hangs the game
+  // Load sounds
   loadSound(
     "assets/sound/bamboo-hit-sound-effect.mp3",
     function (s) { sndHit = s; console.log("Hit sound loaded OK"); },
     function () { sndHit = null; console.warn("Hit sound not found — continuing without it"); }
   );
-
+  // ── MUTE/UNMUTE: bg music (added) ────────────────────────────────
   loadSound(
     "assets/sound/bg_music.mp3",
     function (s) { bgMusic = s; bgMusic.setLoop(true); bgMusic.setVolume(0.4); console.log("BG music loaded OK"); },
     function () { bgMusic = null; console.warn("BG music not found — continuing without it"); }
   );
 
-
+  LANG_PATCHER.apply();
 
   startAnim = new StartScreenAnimator();
   startAnim.setImages(imgStartBg, imgTitle, imgBtnStart, imgBtnIntro);
 
-  // levelselect screen animation
   levelAnim = new LevelScreenAnimator();
   modeAnim = new ModeScreenAnimator();
-  // intro screen animation
   introAnim = new IntroScreenAnimator();
-
-  LANG_PATCHER.apply(); // apply language patches after p5 is ready
 }
 
 function draw() {
@@ -481,7 +377,6 @@ function draw() {
   imageMode(CORNER);
   rectMode(CORNER);
 
-  // Show language selector only on START screen
   const _lw = document.getElementById("lang-wrapper");
   if (_lw) {
     if (gameState === "START") _lw.classList.remove("hidden");
@@ -510,10 +405,11 @@ function draw() {
     drawPlayScreen();
   }
 
-  // Draw mute/unmute button — always on top, top-left corner
+  // ── MUTE/UNMUTE button (added) ────────────────────────────────
   drawMuteButton();
 }
 
+// ── MUTE/UNMUTE button renderer (added) ──────────────────────────
 function drawMuteButton() {
   push();
   resetMatrix();
@@ -529,18 +425,17 @@ function drawMuteButton() {
 }
 
 function mousePressed() {
-  if (!nav || !startAnim) return;
-  // Unlock audio context on first click (browser requirement)
+  if (!nav) return;
   if (!soundUnlocked) {
     userStartAudio();
     soundUnlocked = true;
-    // Start background music on first user interaction
+    // ── MUTE/UNMUTE: start bg music on first click (added) ────────
     if (bgMusic && !bgMusic.isPlaying()) {
       bgMusic.play();
     }
   }
 
-  // Mute/Unmute button click (bottom-right corner)
+  // ── MUTE/UNMUTE button click handler (added) ──────────────────
   const _mbx = 1600 - 48 - 10, _mby = 900 - 36 - 10;
   if (mouseX > _mbx && mouseX < _mbx + 48 && mouseY > _mby && mouseY < _mby + 36) {
     isMuted = !isMuted;
@@ -550,39 +445,28 @@ function mousePressed() {
     }
     return;
   }
+
   nav.handleClick(mouseX, mouseY);
 }
 
-// Prevent browser from scrolling on spacebar / arrow keys
 function keyPressed() {
-  // Track Left Shift (location 1) and Right Shift (location 2) separately
-
   if ([32, 37, 38, 39, 40].includes(keyCode)) {
     return false;
   }
 
-  // ── Weapon cycling during PLAY ──────────────────────────────────
   if (gameState === "PLAY") {
     playerWeapons.handleKey(keyCode, "player");
-    // In DUAL mode P2 also cycles; in SINGLE mode AI doesn't need keys
     if (gameMode === "DUAL") {
       dogWeapons.handleKey(keyCode, "dog");
     }
   }
 
-  // ── Weapon selection grid click-cycling in WEAPON_SELECT ─────────
-  // (arrow keys optionally cycle through grid too)
   if (gameState === "WEAPON_SELECT") {
-    if (keyCode === 81) playerWeapons.prev(); // Q
-    if (keyCode === 69) playerWeapons.next(); // E
+    if (keyCode === 81) playerWeapons.prev();
+    if (keyCode === 69) playerWeapons.next();
     if (gameMode === "DUAL") {
-      if (keyCode === 73) dogWeapons.prev();  // I
-      if (keyCode === 80) dogWeapons.next();  // P
+      if (keyCode === 73) dogWeapons.prev();
+      if (keyCode === 80) dogWeapons.next();
     }
   }
-}
-
-
-function keyReleased() {
-  // Track Left Shift (location 1) and Right Shift (location 2) separately
 }

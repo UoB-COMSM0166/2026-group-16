@@ -145,7 +145,7 @@ class CollisionDetection {
         const ox2 = (stat.x + stat.w) - ch.x;
         const oy1 = (ch.y + ch.h) - stat.y;
         const oy2 = (stat.y + stat.h) - ch.y;
-        if (Math.min(ox1, ox2) < Math.min(oy1, oy2)) {
+        if (Math.min(ox1, ox2) <= Math.min(oy1, oy2)) {
           ch.x += ox1 < ox2 ? -Math.min(ox1, ox2) : Math.min(ox1, ox2);
         }
         box.x = ch.x;
