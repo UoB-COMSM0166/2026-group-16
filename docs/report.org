@@ -1,0 +1,769 @@
+#+TITLE:  COMSM0166 Project Report
+#+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
+#+OPTIONS: toc:2 num:t ^:nil
+#+STARTUP: overview
+* DONE Front matter
+** DONE Subtitle
+/A two-player continuous-input artillery duel where the lecturers fight back./
+** TODO Deployment
+TODO: link to GitHub Pages
+** TODO Demo video
+** TODO Team
+| Name                 | Email                 | Primary role  |
+|----------------------+-----------------------+---------------|
+| Helen Wong           | bs25971@bristol.ac.uk | TODO          |
+| Prapulla Naidu Tangi | sz25875@bristol.ac.uk | TODO          |
+| Rishabh Gautam       | jk25370@bristol.ac.uk | TODO          |
+| Ciyang Weng          | qe25002@bristol.ac.uk | TODO          |
+| Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
+| Ziquan Liu           | nb25183@bristol.ac.uk | TODO          |
+
+* DONE 1. Introduction                                  :target_250w:rubic_5:
+:PROPERTIES:
+:WORD_COUNT: 153
+:END:
+/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
+- We replace a turn-based state machine with continuous two-player, AI input
+- We replace ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
+
+The artillery genre is one of earliest computer game formats. The earliest known example /War 3/ (1965) was text-based and written in FOCAL, subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET.
+Meaning the roots of this game format predates UNIX, C programming language and probably architectures like RISC.
+
+Merchant Fighter pits technologies and the lecturers that teach them against each other in an artilerry battle set within Merchan Ventures itself, where last HP standing takes all.
+
+* DONE 2. Requirements                                 :target_750w:rubic_15:
+** DONE 2.1 Concept Design
+We considered self-determination theory (Ryan & Deci, 2000) as applied to games by using Przybylski et al. Motivational Model of Video Game Engagement (2010) to search for and evaluate concepts.
+
+Our shortlist of ideas (below) is not exhuastive: missing genres include economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
+
+| Genre            | Description                   | Primary Need | Area of challenge            |
+|------------------+-------------------------------+--------------+------------------------------|
+| Gallery shooter  | e.g. /Duck Hunt/, /Archery/       | Competence   | Active Inference             |
+|------------------+-------------------------------+--------------+------------------------------|
+| Artillery        | e.g. /Worms/, /Scorched Earth/    | Competence   | Analytical Reasoning         |
+|------------------+-------------------------------+--------------+------------------------------|
+| Social Deduction | e.g. /Among Us/, /Werewolf/       | Relatedness  | Theory of Mind (Baron-Cohen) |
+|------------------+-------------------------------+--------------+------------------------------|
+| Puzzles          | e.g. /Jenga/, /Tetris/            | Competence   | Visuospatial Reasoning       |
+|------------------+-------------------------------+--------------+------------------------------|
+| Platformers      | e.g. /The Illusionist's Dream/  | Autonomy     | Narrative and Embodiment     |
+|------------------+-------------------------------+--------------+------------------------------|
+| Hyper-casual     | e.g. /Fruit Ninja/, /Angry Birds/ | Competence   | Pattern Recognition          |
+
+[[file:Week1_ListOfIdeas.md][Week1_ListOfIdeas.md]]
+
+We narrowed to two candidates:  /Puzzles/ and /Artillery/ on the basis of technical feasibility and SDTs covered and then developed a paper prototype for each.
+
+ [[file:Week2_GameIdeas.md][Week2_GameIdeas.md]]
+
+As a team we then playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with criteria from project brief, SDT and paper prototype session.
+**** TODO Insert PP video
+
+| Criterion                      | Weight | Puzzles | Artillery |
+|--------------------------------+--------+---------+-----------|
+| Technical feasibility          |    20% |       4 |         4 |
+| SDT breadth (needs engaged)    |    20% |       2 |         4 |
+| Playability (playtesting, n=6) |    25% |       3 |         4 |
+| replayability                  |    20% |       2 |         4 |
+| Capacity for novel twists      |    15% |       3 |         4 |
+|--------------------------------+--------+---------+-----------|
+| Weighted total                 |   100% |    2.75 |      4.00 |
+
+Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the adversarial produced more social and engaging play than the puzzle. We also thought the design space: weapon variety, terrain, opponent strategy etc. were more open to development. This was important because of the need for 'twists' that we had not yet decided on.
+
+#+CAPTION: Ideation funnel for /Merchant Fighters/. Six ideas were collected in Week 1 which were  narrowed to two concept pairs in Week 2, both paper-prototyped in Week 3 and the artillery concept selected for the Week 4–7 development.
+#+NAME: fig:idea-funnel
+#+BEGIN_SRC latex :exports results :file report/figures/funnel.png :headers '("\\usepackage{tikz}")
+\begin{tikzpicture}
+    % Funnel shape
+    \foreach \sgn in {-,+}
+        \draw plot[domain=0:5] ({\sgn 1/5*(8+\x*\x)},\x);
+    % Funnel stages
+    \foreach \h in {1,2,3,4}
+        \draw ({-1/5*(8+\h*\h)},\h) -- ({1/5*(8+\h*\h)},\h);
+    % Labels
+    \node at (0,4.5) {6 ideas (Week 1)};
+    \node at (0,3.5) {2 concepts shortlisted (Week 2)};
+    \node at (0,2.5) {2 paper prototypes (Week 3)};
+    \node at (0,1.5) {Artillery selected (Week 4)};
+    \node at (0,0.5) {Development};
+    \node[text width=4.5cm, align=center] at (0,-0.5) {Heuristic + NASA-TLX evaluation};
+\end{tikzpicture}
+#+END_SRC
+
+** DONE 2.2 Stakeholders
+We described stakeholders in Week 4 ([[file:Week4_Requirements][Week4_Requirements]]) and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
+#+CAPTION: Stakeholder onion for /Merchant Fighters/.
+#+NAME: fig:stakeholder-onion
+#+BEGIN_SRC latex :exports results :headers '("\\usepackage{tikz}")
+\begin{tikzpicture}[every node/.style={align=center}]
+  % Rings (outer to inner so inner draws over outer)
+  \fill[blue!5,  draw=blue!40] (0,0) circle (4.2);
+  \fill[blue!10, draw=blue!50] (0,0) circle (3.2);
+  \fill[blue!20, draw=blue!60] (0,0) circle (2.2);
+  \fill[blue!35, draw=blue!70] (0,0) circle (1.2);
+  % Inner-ring label
+  \node at (0,0) {\textbf{Group 16}\\(6 students)};
+  % Ring 2 label (module staff + playtesters)
+  \node at (0, 1.7) {Module staff};
+  \node at (0,-1.7) {Playtesters (n=24)};
+  % Ring 3 label (depicted + UoB)
+  \node at (-2.7, 0) {Lecturer\\characters};
+  \node at ( 2.7, 0) {UoB students\\(target users)};
+  % Ring 4 label (future cohorts + public)
+  \node at (0, 3.7) {Future COMSM0166 classes};
+  \node at (0,-3.7) {General public\\(GitHub Pages visitors)};
+\end{tikzpicture}
+#+END_SRC
+
+** DONE 2.3 Use cases
+Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:../../Downloads/design/ui_flow.md][design/ui_flow.md]].
+
+#+CAPTION: UML use-case diagram. Both players share the same use-case set (aim, charge, fire, move, consume HUD) but bind distinct keys; the Spectator has a read-only view onto the Battle and Victory/Defeat screens.
+#+NAME: fig:use-case
+#+BEGIN_SRC latex :exports results :file ./use_case.pdf :headers '("\\usepackage{tikz}" "\\usetikzlibrary{positioning}")
+\begin{tikzpicture}[
+  uc/.style={draw, ellipse, minimum width=3.2cm, minimum height=0.9cm, align=center, fill=blue!5},
+  actor/.style={align=center},
+  sysbox/.style={draw, thick, rounded corners=4pt, fill=gray!2}
+]
+  % System boundary
+  \node[sysbox, minimum width=6.0cm, minimum height=9cm] (sys) at (0,0) {};
+  \node[above=0.1 of sys] {\textit{Merchant Fighters}};
+
+  % Use cases
+  \node[uc] (sel-d)  at (0, 3.6) {Select difficulty};
+  \node[uc] (sel-c)  at (0, 2.6) {Select character};
+  \node[uc] (move)   at (0, 1.6) {Move};
+  \node[uc] (aim)    at (0, 0.6) {Aim};
+  \node[uc] (charge) at (0,-0.4) {Charge projectile};
+  \node[uc] (fire)   at (0,-1.4) {Fire projectile};
+  \node[uc] (hud)    at (0,-2.4) {Consume HUD};
+  \node[uc] (end)    at (0,-3.4) {View end screen};
+
+  % Actors
+  \node[actor] (p1) at (-5,  1.2) {\textbf{Player 1}\\(Rish)};
+  \node[actor] (p2) at ( 5,  1.2) {\textbf{Player 2}\\(Ciyang)};
+  \node[actor] (sp) at ( 5, -3.4) {\textbf{Spectator}};
+
+  % P1 associations
+  \foreach \u in {sel-d, sel-c, move, aim, charge, fire, hud, end}
+    \draw (p1) -- (\u);
+
+  % P2 associations
+  \foreach \u in {sel-d, sel-c, move, aim, charge, fire, hud, end}
+    \draw (p2) -- (\u);
+
+  % Spectator (read-only)
+  \draw[dashed] (sp) -- (hud);
+  \draw[dashed] (sp) -- (end);
+
+  % <<include>> — charging includes aiming
+  \draw[->, dashed] (charge) -- node[above, sloped, font=\small]{$\langle\langle$include$\rangle\rangle$} (aim);
+\end{tikzpicture}
+#+END_SRC
+
+** DONE 2.4 User stories
+Stories are lifted from the Week 4 requirement workshop. ([[file:Week4_Requirements][Week4_Requirements]]) and re-formatted to /As a <role>, I want <goal> so that <value>/, with one gherkin-style acceptance criterion each.
+
+User stories and epics all descend from a goal to build  a two-player continuous-input artillery game  that is fair, responsive, and recognisable as Bristol.
+
+- *US-01. Frequent gamer: responsive input.* As a frequent gamer, I want aim/charge/fire input to feel immediate, so that moment-to-moment play is satisfying.
+  - /Given/ the battle screen is active, /When/ I press my charge key, /Then/ the on-screen power meter begins filling within 1 frame (≤ 17 ms at 60 FPS).
+- *US-02. Frequent gamer: novel mechanic.* As a frequent gamer, I want mechanics beyond basic  artillery, so that the game doesn't feel derivative.
+  - /Given/ my projectile hits a wall at angle /θ/, /when/ reflective physics is enabled, /then/ it rebounds at angle /−θ/ rather than despawning. /(Blocked on §4.3.)/
+- *US-03. Casual gamer: low learning curve.* As a casual gamer, I want clear on-screen hints, so that I can start playing without reading docs.
+  - /Given/ the battle screen has just opened, /When/ I look at the HUD, /Then/ per-player key bindings are displayed distinctly on the left (P1) and right (P2) sides.
+- *US-04. UoB student: recognisable setting.* As a UoB student, I want the battle arena to feel  familiar, so that play feels situated.
+  - /Given/ the game is running, /When/ I view the background, /Then/ I can identify the Merchant Venturers building silhouette within 10 seconds.
+- *US-05. Lecturers: likeness control.* As a real-life figure portrayed in the game, I want opt-in consent for my likeness, so that my public persona is protected.
+  - /Given/ a lecturer has not opted in, /When/ the character-select screen renders, /Then/ a generic sprite is shown in their slot
+- *US-08. Accessibility:  reduced flashing.* As a player with photosensitivity, I want a "reduce flashing" toggle, so that ricochets do not trigger a visual reaction.
+  - /Given/ reduce-flashing is ON, /When/ a projectile ricochets, /Then/ no full-screen white flash occurs within any 100 ms window.
+
+** DONE 2.5 Prioritisation
+MoSCoW below, scoped to the submission window. /Must/ items are the marking-line; /Should/ items landed during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
+
+| Priority | Story | Requirement                                | Status as of 2026-04-22                  |
+|----------+-------+--------------------------------------------+------------------------------------------|
+| MUST     | US-01 | Responsive continuous input (both players) | Done                                     |
+| MUST     | US-03 | Per-player HUD                             | Partial: single-line HUD today           |
+| MUST     | US-06 | Crash-free 30-min session                  | Passes predicted smoke test              |
+| MUST     | US-07 | Branch protection + conventional commits   | Done (=CONTRIBUTING.md=)                   |
+| SHOULD   | US-02 | Reflective projectile physics              | Partial?                                 |
+| SHOULD   | US-04 | Merchant Venturers background art          | Placeholder =player.png= / =target.png=      |
+| SHOULD   | US-05 | Lecturer opt-in + generic fallback         | UI not wired, yet                        |
+| COULD    | US-08 | Reduce-flashing accessibility toggle       | Deferred                                 |
+| COULD    | —    | Sound design                               | Done                                     |
+| COULD    | —    | Difficulty × character-selection routes    | Design complete (=ui_flow.md=); half-wired |
+| WON'T    | —    | Online multiplayer / WebRTC                | Deferred                                 |
+
+* TODO 3. Design                                       :target_750w:rubic_15:
+** TODO 3.1 Overview
+TODO: 3-layer sketch — /input/ (continuous keystate) → /simulation/ (angle, power, projectile, collision grid) → /render/ (p5.js draw loop). No frameworks beyond p5.js.
+
+** TODO 3.2 Class diagram
+FIG: UML class diagram derived from =whitebox-prototype/sketch.js=: =ANGLE=, =POWER=, =CollisionDetection=, plus planned =Player=, =Projectile=, =HPBar=.
+
+** TODO 3.3 Behavioural view
+FIG: *state diagram* — headline figure of the report; contrasts the classical turn-based artillery FSM with our continuous-input model (both players are always in the "aim/charge/fire" superstate simultaneously).
+FIG: sequence diagram — "P1 fires → projectile ricochet → hits P2" end-to-end.
+
+** TODO 3.4 Visual style and sound
+TODO: prose from [[file:../../Downloads/design/ArtAssetList.md][ArtAssetList.md]] — four characters × two routes (Fantasy/Modern), 1920×1080 canvas, pixel-art.
+FIG: inline screen flow (mermaid in ui_flow.md).
+
+* TODO 4. Implementation                                        :target_750w:weight_15pc:
+** DONE 4.1 Overview
+The game is a single-page p5.js application. Entry is =whitebox-prototype/index.html=, which loads a vendored p5.js=, =p5.sound.min.js=, and our own =sketch.js= (725 lines at time of writing). Deployment is GitHub Pages from the repository's =docs/= folder.
+
+p5.js shaped our archirectual decisions:: one =setup()= for boot, one =draw()= for per-frame tick, with three supporting classes:  =ANGLE= (aim), =POWER= (charge), and =CollisionDetection= (world) encapsulate the bits that benefit from encapsulation. We added a Nix flake (=flake.nix=, =flake.lock=) so the dev shell is reproducible across machines: anyone who runs ~nix develop~ and gets identical Node + http-server versions.
+
+** DONE 4.2 Opponent AI
+
+The first challenge was developing the opponent AI component of the continuous state machine. Chiefly:
+•⁠  ⁠Logic for realistic behaviour across difficulty levels
+•⁠  ⁠Behaviour composition which we  split into movement (stafing) and shooting strategies
+
+The following approaches were considered for strafing behaviour
+
+1.⁠ ⁠Maintaining a fixed distance between the human player and the ai player so that ai player will move according to human player
+Issue: very robotic behaviour and movement is not smooth + sudden change of direction leading to ai player producing ineffective attacks (e.g. attacking against the wall instead of the opponent)
+
+2.⁠ ⁠Random wandering of the ai player + random shooting frequency
+Issue: using random() to control the movement would lead to abrupt changes of movement direction of the ai within the same frame of the screen thus introducing jittering issue. On the other hand, given shooting frequency is random, this would lead to ineffective attacks (e.g. low attack frequency + insufficient charging of the attack, resulting in the attack not properly shooting to the opposite side of the screen)
+
+3.⁠ ⁠Introduced
+a. movement intent mechanisms
+Resulted behavior: no abrupt changes of movement direction within the same frame
+b. lock movement during charging logic
+Resulted behavior: depending on the hit chance of each level, most of the attacks will be effective and have enough power to reach the opposite side
+c. force shot after dedicated time limit logic
+Resulted behavior: ensure the frequency of attack -> player wont be bored by the game
+d. Escape projectiles mechanism
+Resulted behavior: ai player is not wandering randomly but is designed to move based on stimulations from human player -> more reasonable and smooth movement
+
+Going through the above stages, we ensure the enemy behavior of the ai is more human-like and enhanced the sense of immersion of the game even in the single player mode
+
+
+** DONE 4.3 Ricochet physics
+The second challenge is /reflective/ projectile physics: shots ricochet off walls rather than detonating on impact. The physics pipeline is three-stage per frame:
+
+1. *Integrate*
+Explicit Euler with gravity (=900 px/s²=) and a horizontal wind term (=50 px/s²=), clamped by a =dt= cap of 33 ms to prevent issues when the tab regains focus:
+   #+BEGIN_SRC javascript
+   p.vx += this.windAccel * dt;   // horizontal bias
+   p.vy += this.gravity   * dt;   // gravitational pull
+   p.x  += p.vx * dt;
+   p.y  += p.vy * dt;
+   #+END_SRC
+2. *Broad* Phase
+A uniform spatial grid (128-px cells, hashed as ~"cx,cy"~) prunes static-body candidates to just the handful of cells the projectile overlaps. Grid build (~addStaticRect~ → ~_insertToGrid~) runs once at setup; per-frame queries are O(1) in cell count:
+   #+BEGIN_SRC javascript
+   _getCellRangeForAABB(aabb) { /* cx/cy range */ }
+   _queryNearbyAABB(aabb)     { /* return id Set */ }
+   #+END_SRC
+3. *Narrow* Phase
+Circle-vs-AABB intersection returns both a contact point and a surface /normal/:
+   #+BEGIN_SRC javascript
+   static circleAABBHit(circle, rect) {
+     const cx = clamp(circle.x, rect.x, rect.x + rect.w);
+     const cy = clamp(circle.y, rect.y, rect.y + rect.h);
+     const dx = circle.x - cx, dy = circle.y - cy;
+     if (dx*dx + dy*dy > circle.r*circle.r) return null;
+     const normal = (Math.hypot(dx, dy) > 1e-6)
+       ? vecNorm({ x: dx, y: dy }) : vec2(0, -1);
+     return { point: { x: cx, y: cy }, normal };
+   }
+   #+END_SRC
+
+The aim-trajectory preview runs the same integrator in a loop  so the yellow dotted arc on screen shows an accurate forward prediction and not a more aesthetic option like Bézier.
+
+#+BEGIN_SRC javascript
+const hit = CollisionDetection.circleAABBHit(p, stat);
+if (hit) { p.alive = false; return; }
+#+END_SRC
+
+Finally, the reflection of a ricochet is given by:
+\[ \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \]
+where \(\mathbf{v}\) is the incoming velocity vector, \(\hat{\mathbf{n}}\) is the unit surface normal at the point of collision, and \(\mathbf{v'}\) is the reflected velocity.
+
+** TODO 4.4 Assets
+TODO
+* DONE 5. Evaluation                                  :target_750w:weight_15:
+** DONE 5.1 Qualitative  Evaluation
+We ran Nielsen's Ten Usability Heuristics (Nielsen 1994)7 and recorded the findings in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along  Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale.
+
+Twelve findings were captured:
+- nine /negative/
+- three /positive/
+
+The three positive findings (aim trajectory visibility, win screen clarity, collision accuracy) all scored 1.0 and all converge on H1 "Visibility of system status". This is evidence that the simulation trajectory  preview and the win-screen block work as intended.
+
+*** DONE 5.1.1 Negative findings, ranked by severity
+| # | Area       | Issue                                                          | Heuristic                            | Severity |
+|---+------------+----------------------------------------------------------------+--------------------------------------+----------|
+| 1 | Gameplay   | Unbalanced power between players: unfair advantage             | H4 Consistency                       |      3.3 |
+| 2 | Gameplay   | Limited movement restricts gameplay                            | H7 Flexibility and efficiency of use |      3.0 |
+| 3 | Gameplay   | Standing at screen edge creates a safe area                    | H5 Error prevention                  |      3.0 |
+| 4 | Controls   | Unclear why fire direction is restricted to left/right only    | H2 Match with the real world         |      3.0 |
+| 5 | Gameplay   | Game is one-dimensional and becomes boring quickly             | H7 Flexibility and efficiency of use |      3.0 |
+| 6 | Gameplay   | No platforms or terrain: players cannot move through the world | H7 Flexibility and efficiency of use |      3.0 |
+| 7 | UI         | Instructions not separated per player: confusion?              | H6 Recognition rather than recall    |      3.0 |
+| 8 | Characters | No distinct features per character. Why have them?             | H7 Flexibility and efficiency of use |      2.3 |
+| 9 | UI         | No visual separation between players on screen                 | H1 Visibility of system status       |      2.0 |
+
+*** DONE 5.1.2 Traceability
+Several observations have a specifc cause:
+- 1. Unbalanced power because  ~windAccel = 50~ which provides constant rightward acceleration, i.e. player 1 shoots with the wind, player 2 shoots against.
+- 4. Restricted fire: the angle clamb  ~minDeg: 0, maxDeg: 80~
+- 7. Confusing Instructions:  single-line HUD ~Move: A/D | Aim: ↑↓ | Charge & Fire: Space~ assumes players take-turns, the continuous-input requires two key-hint blocks, one per side.
+
+*** DONE 5.1.3 H7 cluster
+Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. Suggests development priority should priotise art asset creation.
+
+** DONE 5.2 Quantitative: NASA-TLX and SUS
+Raw data captured in-session on 10 and 12 March 2026; 24 valid responses split across difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See raw responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]]
+
+*** DONE 5.2.1 NASA-TLX results
+| Subscale           | Easy (n=11) | Hard (n=13) |
+|--------------------+-------------+-------------|
+| Mental demand      |         2.7 |         3.6 |
+| Physical demand    |         2.3 |         3.1 |
+| Temporal demand    |         4.5 |         5.0 |
+| Performance (inv.) |         4.3 |         4.2 |
+| Effort             |         5.3 |         6.1 |
+| Frustration        |         1.7 |         1.8 |
+| /Raw TLX (mean)/     |         /3.5/ |         /4.0/ |
+| /Rescaled to 0–100/  |        /34.7/ |        /39.6/ |
+
+Interpretation: both difficulties sit in the /light-to-moderate/ band by the Grier (2015) meta-analysis of 237 TLX studies, whose median overall score is ~46/100 for interactive tasks. The difference between Easy and Hard is ~5 points (small–moderate effect), concentrated in /Mental demand/, /Physical demand/ and /Effort/ as you would expect of a  harder difficulty mode; Frustration/ stayed near floor for both which suggests the harder route raised cognitive load without irritating the respondents.
+
+#+CAPTION: NASA-TLX subscale means by difficulty (0–10 raw Likert). /Performance/ is shown inverted so higher = worse for all six bars. Hard increases  /Mental/, /Physical/, /Temporal/ and /Effort/ uniformly; /Frustration/ low in both modes.
+#+NAME: fig:tlx-bars
+[[file:report/figures/tlx_bars.png]]
+
+*** DONE 5.2.2 System Usability Scale
+Scored per Brooke (1996):  odd = positive: /x/−1,  even = negative: 5−/x/, sum × 2.5 -> 0–100).
+
+| Statistic          | Easy (n=11) | Hard (n=13) |
+|--------------------+-------------+-------------|
+| Mean               |        78.4 |        78.8 |
+| Median             |        82.5 |        82.5 |
+| Min                |        57.5 |        45.0 |
+| Max                |       100.0 |       100.0 |
+
+Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfortably in the /good/ band with individual sessions reaching /excellent/. The convergence of Easy and Hard mean is interesting: difficulty did not penalise perceived usability, consistent with the TLX Frustration floor above.
+
+*** DONE 5.2.3 Limitations
+- Sample: n = 24, self-selecting playtesters which surely skew toward technically competent given they are Computer Science students
+- Drift:  TLX was shortened to raw ratings (no pairwise weighted step) so scores are /RAW-TLX/ in Byers/Bittner (1989) terms, not the weighted original
+- Order: respondents were not counter-balanced across difficulty
+** DONE 5.3 Testing
+Testing on this project is /pragmatic/ not /exhaustive/. we didn't have time to produce an automated test suite and the CI pipeline does not build automatically. ~Wait double check this~. Three areas of manual testing compensate:
+
+1. Exploratory Play: each merged feature is walked through at the Thursday workshop; defects surface as Jira tasks (61 created, 56 Done)
+2. Heuristic review: one session, all ten heuristics, twelve findings
+3. Quantitative playtest: The TLX + SUS instrument can be used as a regression test in future
+
+In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDetection=) would be a good place to begin automated unit testing.
+
+*Smoke-test Matrix*
+
+| # | Scenario                           | P1 | P2 | Predicted outcome         | Predicted status |
+|---+------------------------------------+----+----+---------------------------+------------------|
+| 1 | Charge from rest to release        | ✓  | ✓  | Projectile spawns, flies  | Pass             |
+| 2 | Charge above cap                   | ✓  | ✓  | =POWER= clamps at max=100   | Pass             |
+| 3 | Aim at ceiling or floor            | ✓  | ✓  | =ANGLE= clamps to [0°, 80°] | Pass             |
+| 4 | Projectile vs opponent             | ✓  | ✓  | −15 HP, "-15" float text  | Pass             |
+| 5 | Projectile vs wall                 | ✓  | ✓  | Projectile despawns       | No?              |
+| 6 | Projectile vs ground               | ✓  | ✓  | Despawn, turn rotates     | Pass             |
+| 7 | Both players charge simultaneously | ?  | ?  | Both spawn in same frame  | ?                |
+| 8 | HP reaches 0                       | ✓  | ✓  | Win-screen overlay drawn  | Pass             |
+
+* TODO 6. Process                                               :target_750w:weight_15pc:
+** TODO 6.1 Workflow
+Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and summarised here continuity. We opted to take an empircally guided approach to process. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban) empircal evidence of their utility is uncertain, at best. For example, SAFe has not shown, in any rigorous sense to outperform alternatives, even in enterprise contexts (Conboy & Caroll, 2019). Scrum and Kabnan similarly.
+
+What we do know from a decade of DORA surveys is the stability of software and the speed of the software development process is highly and positively correlatted. Indicating the technical capabalities underlying prescriptive management process is a signficant factor for successful development outcomes. With that in mind, we tried to implemnt a worflow of solid dev-ops practices. Which focussed mainly on =continuous intergration and deployment= and =docs-as-code=.
+
+*Branching*
+Trunk-based development with short-lived feature branches. =main= is always deployable. Feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At aggregation time the repo has four live branches; the authorial branch of this report is =report=, rebased periodically onto =SE-20= during the implementation push.
+
+*Pull requests*
+Each PR must branch from =main=, reference a Jira issue (=Closes SE-42=), and collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced verbatim below as a contract:
+
+#+BEGIN_QUOTE
+A feature is done when:
+- [ ] Code complete and working locally
+- [ ] Unit tests pass
+- [ ] Linting passes (=npm run lint=)
+- [ ] PR reviewed and approved
+- [ ] Merged to =main=
+- [ ] CI pipeline succeeds
+#+END_QUOTE
+
+*Agile Ceremonies*
+An implicit requirement of sprints is a syncronised schedule between team members. Given competition from other modules and the =MSc summer project= in particular we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
+
+*Docs as Code*
+- ADR
+Every design or planning material is under version control and where possible offered under in plain-text.
+
+Commits.* [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/).
+
+TODO: version tagging, automated release notes.
+
+*Decision records.* Architecture decisions land in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: seed ADR ([[file:adr/0000-use-adrs.md][=adr/0000-use-adrs.md=]]) in place.
+
+** DONE 6.2 Toolchain
+Github was selected on our behalf as project repository and we chose  Jirafor issue tracking and not Github's in-built option. Choosing to accept a small increase in task-switching overhead by having seperate version control and issue tracking in exchange for exposure to a more popular industry tool. However, we reissted this approach for communications. We used Whatsapp for discussions and resisted temptation to move to an industry focussed tool, like Slack. Referencing, the first value of the Agile Manifesto: "Individuals and interactions over processes and tools" means it's important for the team and not a tool to drive development. As we all often and generally use Whatsapp we felt it would improve communication efficiency to stay on that platform and because we used ~Docs-as-Code~, all major text material was accessible from GitHub.
+
+** DONE 6.3 Metrics
+*** DONE 6.3.1 Issue Tracking
+Numbers below are derived from a live query of the Jira Cloud REST API for project ~SE~ on =tangiprapulla.atlassian.net= and =git log= on the
+GitHub repository, aggregated 2026-04-22. The analysis script (Appendix F) pulls the Atlassian API token from 1Password on demand so
+credentials are not exposed in plain text.
+
+
+| Measure                              |    Value |
+|--------------------------------------+----------|
+| Total issues                         |       67 |
+| Issue type                           | all Task |
+| Status: Done                         |       61 |
+| Status: In Progress                  |        2 |
+| Status: To Do                        |        4 |
+| Completion rate                      |    91.0% |
+| Assigned issues                      |       50 |
+| Unassigned issues                    |       17 |
+| Distinct assignees                   |        6 |
+| Status-change transitions (all time) |      106 |
+
+Creation cadence by month (issue `created` timestamp):
+
+|   Month | Issues created |
+|---------+----------------|
+| 2026-01 |              8 |
+| 2026-02 |             12 |
+| 2026-03 |             32 |
+| 2026-04 |             15 |
+
+A  March spike is apparent (branch =SE-15-Continuous-Two-Player-Input= opened 2026-03-08) where roughly half the project's tickets were raised which is  potentially indictive of 'crunch'.
+
+*** DONE 6.3.2 Assignee distribution
+| Assignee             | Issues |
+|----------------------+--------|
+| Helen Wong           |     11 |
+| Ziquan Liu           |     10 |
+| Prapulla Naidu Tangi |      9 |
+| Josh Thompson        |      8 |
+| Rishabh Gautam       |      7 |
+| Ciyang Weng          |      5 |
+| /(Unassigned)/         |     17 |
+
+The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew (Gini ≈ 0.14 over the six assignees). The 17 unassigned tickets (25% of the backlog) are mostly research or documentation spikes and have not been picked up by an owner at aggregation time.
+
+*** DONE 6.3.3 Git activity
+=git log --oneline= at the time of writing records 84 commits across 4 branches by 6 contributors and peak commit months mirror the Jira pattern.
+
+#+CAPTION: Cumulative flow for project SE. Blue = issues created; green = issues transitioned to Done; red band = work-in-flight.
+#+NAME: fig:jira-cumulative
+[[file:report/figures/jira_cumulative.png]]
+
+** TODO 6.4 Reflection
+* TODO 7. Sustainability                                        :target_500w:
+** TODO 7.1 Approach
+I have no idea what I'm doing.
+
+We applied the /Sustainability Awareness Framework (SusAF)/ across three?  dimensions: =Social, Individual, Environmental, Economic, Technical= and three orders of effect  =immediate=, =enabling= and =structural=. For each dimension the framework prescribes five standard topics which our analysis conforms to.
+
+** TODO 7.2 Impact analysis
+Populate each cell from the team's SusAD workshop output. A  chain = /immediate fact -> enabling behaviour -> structural change/.
+
+*** TODO Social
+*** TODO Individual
+*** TODO Environmental
+*** TODO Economic
+*** TODO Technical
+** TODO 7.3 Chain-of-effects (SusAD)
+FIG: hand-drawn or rendered SusAD showing  one chain per dimension
+
+** TODO 7.4 Threats, opportunities, and actions
+TODO: 2×2  table
+
+** TODO 7.5 Sustainability user stories and acceptance criteria
+TODO: 3–5 stories added to Jira, each related  to the chain above. Example:
+
+- As a player with photosensitive epilepsy, I want a "reduce flashing" toggle so that I can play without triggering symptoms. Acceptance: Given reduce-flashing is ON, when a projectile ricochets, then no full-screen white flash occurs within any 100 ms window.
+
+** TODO 7.6 Green Software Foundation patterns applied
+We need to select ~3 patterns from
+https://patterns.greensoftware.foundation/catalog/ and explain how they were integrated.
+
+| Pattern                                         | Applied in | How |
+|-------------------------------------------------+------------+-----|
+| TODO: e.g. "Avoid high-resolution images"       | TODO       | TODO |
+| TODO: e.g. "Cache static data"                  | TODO       | TODO |
+| TODO: e.g. "Reduce the frequency of polling"    | TODO       | TODO |
+
+** TODO 7.7 Accessibility and Ethics
+- *Accessibility*
+  - keyboard-only by design; need remap UI, colour-blind palette check, subtitles for dialogue box, "reduce flashing" toggle.
+  - Chinese and English language support
+- *Ethics*
+  real-person likeness: depicting named lecturers in combat raises consent and reputational concerns. Policy: we provided opt-in per lecturer;
+  neutral "generic" sprites as fallback.
+* TODO 8. Conclusion                                  :target_500w:weight_10:
+** TODO 8.1 Lessons
+** TODO  8.2 Immediate next steps
+TODO: missing sound, missing end-state screens, difficulty routes
+
+** TODO 8.3 Sequel / what-if
+TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
+
+* TODO 9. Contribution statement
+| Name                 | Role          | Key contributions                          |
+|----------------------+---------------+--------------------------------------------|
+| Helen Wong           | TODO          | TODO                                       |
+| Prapulla Naidu Tangi | TODO          | TODO                                       |
+| Rishabh Gautam       | TODO          | TODO                                       |
+| Ciyang Weng          | TODO          | TODO                                       |
+|----------------------+---------------+--------------------------------------------|
+| Josh Thompson        | Documentation | Contributing guide, user analysis, report, |
+|                      |               | concept doc, continuous-input FSM          |
+|----------------------+---------------+--------------------------------------------|
+| Ziquan Liu           | UI Programmer | TODO                                       |
+
+* TODO References
+TODO: BibTeX-style list. Seeds:
+- Munroe, R. (2020). xkcd #2347 "Dependency".
+- Penzenstadler, B. et al. (2014). The Karlskrona Manifesto.
+- Becker, C. et al. (2015). Sustainability Design and Software.
+- Hart, S. G. & Staveland, L. E. (1988). NASA-TLX.
+- Nielsen, J. (1994). Ten Usability Heuristics.
+-
+* DONE Appendices
+** DONE A. Diagrams
+Sources under =docs/design/= (PlantUML/mermaid), exports under =docs/figures/=.
+** DONE B. NASA-TLX and SUS raw
+
+*** DONE B.1 Easy: TLX (0–10) and SUS (0–100)
+|  # | Timestamp   | Mental | Physical | Temporal | Perf | Effort | Frustration |   SUS |
+|----+-------------+--------+----------+----------+------+--------+-------------+-------|
+|  1 | 10/03 14:24 |     10 |        9 |       10 |   10 |      9 |           5 |  57.5 |
+|  2 | 10/03 14:33 |      2 |        2 |        3 |    3 |      5 |           1 |  90.0 |
+|  3 | 10/03 14:34 |      1 |        0 |        1 |    8 |      8 |           1 |  87.5 |
+|  4 | 10/03 14:37 |      2 |        3 |        7 |    3 |      5 |           2 |  82.5 |
+|  5 | 10/03 14:41 |      1 |        0 |        3 |    2 |      5 |           1 |  97.5 |
+|  6 | 10/03 14:45 |      3 |        3 |        5 |    8 |      5 |           1 |  77.5 |
+|  7 | 12/03 21:46 |      2 |        0 |        5 |    9 |      5 |           1 | 100.0 |
+|  8 | 12/03 21:48 |      2 |        0 |        5 |    9 |      5 |           1 |  87.5 |
+|  9 | 12/03 21:49 |      2 |        2 |        3 |    2 |      3 |           2 |  65.0 |
+| 10 | 12/03 21:50 |      4 |        3 |        5 |    6 |      5 |           2 |  60.0 |
+| 11 | 12/03 21:54 |      1 |        3 |        3 |    3 |      3 |           2 |  57.5 |
+
+*** DONE B.2 Hard: TLX (0–10) and SUS (0–100)
+| #  | Timestamp       | Mental | Physical | Temporal | Perf | Effort | Frustration |  SUS |
+|----+-----------------+--------+----------+----------+------+--------+-------------+------|
+|  1 | 10/03 14:25     |      9 |        8 |        6 |    8 |      9 |           5 | 45.0 |
+|  2 | 10/03 14:40     |      4 |        1 |        9 |    8 |      5 |           1 | 85.0 |
+|  3 | 10/03 14:46     |      4 |        4 |        7 |    7 |      7 |           2 | 82.5 |
+|  4 | 10/03 14:52     |      0 |        0 |        4 |    2 |      5 |           1 | 100.0 |
+|  5 | 10/03 14:54     |      2 |        5 |        1 |    4 |      4 |           2 | 87.5 |
+|  6 | 10/03 15:00     |      0 |        3 |        2 |    4 |      8 |           2 | 92.5 |
+|  7 | 10/03 21:04     |      8 |        8 |        6 |    7 |      7 |           1 | 67.5 |
+|  8 | 12/03 21:46     |      3 |        2 |        4 |    3 |      3 |           3 | 55.0 |
+|  9 | 12/03 21:48     |      4 |        2 |        4 |    3 |      5 |           2 | 62.5 |
+| 10 | 12/03 21:49     |      1 |        2 |        4 |    8 |      6 |           1 | 95.0 |
+| 11 | 12/03 21:50     |      5 |        2 |        5 |    8 |      8 |           1 | 87.5 |
+| 12 | 12/03 21:53     |      3 |        2 |        7 |    7 |      5 |           1 | 82.5 |
+| 13 | 12/03 21:53:54  |      4 |        1 |        6 |    6 |      7 |           1 | 82.5 |
+
+** DONE C. Jira data
+Source: live query of the Jira Cloud REST API at =https://tangiprapulla.atlassian.net/rest/api/3/= for project key ~SE~ (project id ~10002~, created 2026-01-30). The Atlassian API token is held in Josh Thompson's 1Password (vault =Developer=, item =COMSM1066_listener=) and fetched at analysis time via =op read=, this way I don't expose API keys in commits (or this appendix)
+Endpoints:
+- =GET /rest/api/3/search/jql= (=fields=created,status,assignee,issuetype=)
+- =GET /rest/api/3/issue/{key}/changelog=
+
+*** DONE Ouput
+- =docs/report/data/jira_cumulative.csv=
+daily cumulative counts of issues /created/ and /transitioned to Done/ (28 rows at aggregation).
+- =docs/report/figures/jira_cumulative.png=
+rendered cumulative-flow plot
+** DONE D. Paper-prototype videos
+- [[file:../week3-paper-prototype/idea-A/demo(CAT).mp4][idea-A — Cat vs Dog]]
+- [[file:../week3-paper-prototype/idea-B/DINS.mp4][idea-B — DINS]]
+** DONE E. ADRs
+Index under [[file:adr/0000-use-adrs.md][docs/adr/]].
+** DONE F. Analysis
+*** DONE Inputs
+*NASA*
+~docs/report/data/nasa_tlx_sus.csv~
+Fields:
+  =difficulty, timestamp, mental, physical, temporal, performance,
+  effort, frustration, sus=.
+*Jira*
+Project ~SE~ on =tangiprapulla.atlassian.net=, queried via REST API.
+
+*** DONE Code
+Run with ~python3 docs/report/analyse.py~.
+#+BEGIN_SRC python :tangle docs/report/analyse.py :mkdirp yes
+from __future__ import annotations
+import base64, csv, json, statistics as st, subprocess, urllib.parse, urllib.request
+from collections import Counter
+from pathlib import Path
+
+ROOT      = Path(__file__).resolve().parents[2]
+NASA_CSV  = ROOT / "docs" / "report" / "data" / "nasa_tlx_sus.csv"
+FIG_DIR   = ROOT / "docs" / "report" / "figures"
+DATA_DIR  = ROOT / "docs" / "report" / "data"
+
+TLX_SCALES = ["mental", "physical", "temporal", "performance", "effort", "frustration"]
+
+# 1Password helper
+
+def op_read(ref: str) -> str:
+    return subprocess.check_output(["op", "read", ref], text=True).strip()
+
+# NASA-TLX and SUS
+
+def load_nasa(path: Path) -> dict[str, list[dict]]:
+    groups: dict[str, list[dict]] = {"Easy": [], "Hard": []}
+    for r in csv.DictReader(path.open()):
+        for k in TLX_SCALES: r[k] = float(r[k])
+        r["sus"] = float(r["sus"])
+        groups.setdefault(r["difficulty"], []).append(r)
+    return groups
+
+def summarise(rows: list[dict]) -> dict:
+    means = {s: st.mean(r[s] for r in rows) for s in TLX_SCALES}
+    raw_tlx = st.mean(
+        st.mean([r["mental"], r["physical"], r["temporal"],
+                 10 - r["performance"], r["effort"], r["frustration"]])
+        for r in rows)
+    sus = [r["sus"] for r in rows]
+    return {"n": len(rows), "means": means, "raw_tlx": raw_tlx,
+            "tlx_100": raw_tlx * 10,
+            "sus_mean": st.mean(sus), "sus_median": st.median(sus),
+            "sus_min": min(sus), "sus_max": max(sus)}
+
+def tlx_figure(groups: dict[str, list[dict]], out: Path) -> None:
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    import numpy as np
+    labels = ["Mental", "Physical", "Temporal", "Perf. (inv.)", "Effort", "Frustration"]
+    def means(rows):
+        m = [st.mean(r[s] for r in rows) for s in TLX_SCALES]
+        m[3] = 10 - m[3]                         # invert Performance
+        return m
+    x, w = np.arange(len(labels)), 0.38
+    fig, ax = plt.subplots(figsize=(8, 4.2))
+    ax.bar(x - w/2, means(groups["Easy"]), w, label=f"Easy (n={len(groups['Easy'])})", color="#4C72B0")
+    ax.bar(x + w/2, means(groups["Hard"]), w, label=f"Hard (n={len(groups['Hard'])})", color="#C44E52")
+    ax.set_xticks(x); ax.set_xticklabels(labels, rotation=20, ha="right")
+    ax.set_ylabel("Mean rating (0-10)"); ax.set_ylim(0, 10)
+    ax.set_title("NASA-TLX subscale means by difficulty")
+    ax.legend(loc="upper right"); ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout(); fig.savefig(out, dpi=150); plt.close(fig)
+
+# Jira
+
+JIRA_BASE = "https://tangiprapulla.atlassian.net"
+
+def jira_get(path: str, auth: str, **params) -> dict:
+    url = f"{JIRA_BASE}{path}?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url,
+        headers={"Authorization": f"Basic {auth}", "Accept": "application/json"})
+    return json.load(urllib.request.urlopen(req))
+
+def jira_pull() -> tuple[list, list]:
+    email = op_read("op://Developer/COMSM1066_listener/username")
+    token = op_read("op://Developer/COMSM1066_listener/credential")
+    auth  = base64.b64encode(f"{email}:{token}".encode()).decode()
+
+    issues, nxt = [], None
+    while True:
+        params = {"jql": "project = SE ORDER BY created ASC",
+                  "fields": "created,status,assignee,issuetype", "maxResults": 100}
+        if nxt: params["nextPageToken"] = nxt
+        r = jira_get("/rest/api/3/search/jql", auth, **params)
+        issues.extend(r["issues"])
+        if r.get("isLast", True) or not r.get("nextPageToken"): break
+        nxt = r["nextPageToken"]
+
+    events = []    # (date, toStatus)
+    for i in issues:
+        cl = jira_get(f"/rest/api/3/issue/{i['key']}/changelog", auth, maxResults=100)
+        for h in cl.get("values", []):
+            for it in h.get("items", []):
+                if it.get("field") == "status":
+                    events.append((h["created"][:10], it["toString"]))
+    return issues, events
+
+def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
+    statuses  = Counter(i["fields"]["status"]["name"] for i in issues)
+    months    = Counter(i["fields"]["created"][:7] for i in issues)
+    assignees = Counter((i["fields"]["assignee"] or {}).get("displayName", "Unassigned") for i in issues)
+    transitions = len(events)
+
+    print(f"   Total issues       : {len(issues)}")
+    print(f"   Done               : {statuses['Done']}")
+    print(f"   To Do              : {statuses['To Do']}")
+    print(f"   In Progress        : {statuses.get('In Progress', 0)}")
+    print(f"   Status transitions : {transitions}")
+    print(f"   Completion rate    : {statuses['Done']/len(issues):.1%}")
+    print("   Creation by month:")
+    for m, n in sorted(months.items()): print(f"     {m}  {n:>3}")
+    print("   Assignee distribution:")
+    for name, n in assignees.most_common(): print(f"     {name:<22} {n:>3}")
+
+    # cumulative flow figure and table
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from datetime import datetime
+    created_by = Counter(i["fields"]["created"][:10] for i in issues)
+    done_by    = Counter(d for d, s in events if s == "Done")
+    days       = sorted(set(list(created_by) + list(done_by)))
+    cc, cd, xs, cs, ds = 0, 0, [], [], []
+    with csv_out.open("w", newline="") as f:
+        w = csv.writer(f); w.writerow(["date", "created_cum", "done_cum"])
+        for d in days:
+            cc += created_by[d]; cd += done_by[d]
+            w.writerow([d, cc, cd])
+            xs.append(datetime.strptime(d, "%Y-%m-%d")); cs.append(cc); ds.append(cd)
+    fig, ax = plt.subplots(figsize=(9, 4.2))
+    ax.fill_between(xs, cs, ds, alpha=0.18, color="#C44E52", label="Work-in-flight")
+    ax.plot(xs, cs, color="#4C72B0", lw=2, label=f"Created (cum) final={cs[-1]}")
+    ax.plot(xs, ds, color="#55A868", lw=2, label=f"Done (cum) final={ds[-1]}")
+    ax.set_ylabel("Issue count (cumulative)")
+    ax.set_title("Jira cumulative flow: project SE")
+    ax.grid(alpha=0.3); ax.legend(loc="upper left")
+    fig.autofmt_xdate(); fig.tight_layout(); fig.savefig(fig_out, dpi=150); plt.close(fig)
+
+# Entry
+
+if __name__ == "__main__":
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    print("== NASA-TLX / SUS ==")
+    groups = load_nasa(NASA_CSV)
+    for label, rows in groups.items():
+        s = summarise(rows)
+        print(f"-- {label}  (n={s['n']}) --")
+        for k, v in s["means"].items(): print(f"   {k:<12} {v:4.2f}")
+        print(f"   Raw TLX 0-10  : {s['raw_tlx']:4.2f}")
+        print(f"   Rescaled 0-100: {s['tlx_100']:4.1f}")
+        print(f"   SUS mean/med  : {s['sus_mean']:.1f} / {s['sus_median']:.1f}")
+        print(f"   SUS min /max  : {s['sus_min']:.1f} / {s['sus_max']:.1f}")
+    tlx_figure(groups, FIG_DIR / "tlx_bars.png")
+
+    print("\n== Jira (live) ==")
+    issues, events = jira_pull()
+    jira_report(issues, events,
+                FIG_DIR / "jira_cumulative.png",
+                DATA_DIR / "jira_cumulative.csv")
+#+END_SRC
