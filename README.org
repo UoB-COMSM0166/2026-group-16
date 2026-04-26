@@ -22,16 +22,16 @@
 [[file:docs/design/splash.jpeg]]
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
-- Replacing a turn-based state machine with continuous two-player, AI input
+- Replacing a turn-based state machine with continuous player, AI input
 - Replacing ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
 
-The artillery genre is one of earliest computer game formats. The earliest known example, /War 3/ (1965) was text-based and written in FOCAL. Subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET. The roots of this format predates UNIX, C programming language and probably architectures like RISC. Our version, Merchant Fighter, pits these technologies and the lecturers that teach them, against each other in a battle set within Merchan Ventures itself, where last HP standing takes all.
+The artillery genre is one of earliest computer game formats. The earliest known example, /War 3/ (1965) was text-based and written in FOCAL. Subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET. The roots of this format predates UNIX, C programming language and possibly RISC-like architectures. Our version /Merchant Fighter/, pits these technologies, and the lecturers that teach them, against each other in a battle set within Merchan Ventures itself, where last HP standing takes all.
 
 * DONE Requirements                                    :target_750w:rubic_15:
 ** DONE Concept Design
 We considered self-determination theory (Ryan & Deci, 2000) as applied to games by using Przybylski et al. Motivational Model of Video Game Engagement (2010) to search for and evaluate concepts.
 
-Our shortlist of ideas (below) is not exhuastive: missing genres include economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
+Our shortlist of ideas (below) is not exhuastive: missing wonderful genres include economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
 
 | Genre            | Description                   | Primary Need | Area of challenge            |
 |------------------+-------------------------------+--------------+------------------------------|
@@ -49,14 +49,14 @@ Our shortlist of ideas (below) is not exhuastive: missing genres include economi
 
 [[file:./docs/assignments/week1-ideas.md][week1-ideas.md]]
 
-We narrowed to two candidates:  /Puzzles/ and /Artillery/ on the basis of technical feasibility and SDTs covered and then developed a paper prototype for each.
+We narrowed this list to two candidates:  /Puzzles/ and /Artillery/ on the basis of technical feasibility and the SDTs covered. From here, we developed a paper prototype for both.
 
  [[file:./docs/assignments/week2-game-ideas.md][week2-game-ideas.md]]
-As a team we then playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with criteria from project brief, SDT and paper prototype session.
+As a team we playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with a criteria derived from the project brief, SDTs and the paper prototype session.
 
 - [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
 
-Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the adversarial component of /Artillery/ produced more social and engaging play than the /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important because of the need for 'twists' that we had not yet decided on.
+Scores were given on 1-5 scale  and /Artillery/ was ultimately selected. We thought the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
 
 | Criterion                      | Weight | Puzzles | Artillery |
 |--------------------------------+--------+---------+-----------|
@@ -94,9 +94,7 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:idea-funnel
 [[file:docs/report/figures/funnel.png]]
-
 
 ** DONE Stakeholders
 We described stakeholders in [[file:./docs/assignments/week4-requirements.md][week4-requirements]] and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
@@ -551,9 +549,7 @@ where \(\mathbf{v}\) is the incoming velocity vector, \(\hat{\mathbf{n}}\) is th
 TODO
 * DONE Evaluation                                     :target_750w:weight_15:
 ** DONE Qualitative  Evaluation
-We ran Nielsen's Ten Usability Heuristics (Nielsen 1994)7 and recorded the findings in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along  Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale.
-
-Twelve findings were captured:
+We ran Nielsen's Ten Usability Heuristics (Nielsen 1994)7 and recorded the findings in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along  Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale. Twelve findings were captured:
 - nine /negative/
 - three /positive/
 
@@ -576,7 +572,7 @@ The three positive findings (aim trajectory visibility, win screen clarity, coll
 Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. Suggests development priority should priotise art asset creation.
 
 ** DONE Quantitative: NASA-TLX and SUS
-Raw data captured in-session on 10 and 12 March 2026; 24 valid responses split across difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See raw responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]]
+Data was captured in-session on 10th and 12th March 2026; 24 valid responses were split across difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]].
 
 *** DONE NASA-TLX results
 | Subscale           | Easy (n=11) | Hard (n=13) |
@@ -619,11 +615,11 @@ Scored per Brooke (1996):  odd = positive: /x/−1,  even = negative: 5−/x/, s
 | Min                |        57.5 |        45.0 |
 | Max                |       100.0 |       100.0 |
 
-Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfortably in the /good/ band with individual sessions reaching /excellent/. The convergence of Easy and Hard mean is interesting: difficulty did not penalise perceived usability, consistent with the TLX Frustration floor above.
+Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfortably in the /good/ band with individual sessions reaching /excellent/. The convergence of Easy and Hard means are interesting: difficulty did not penalise perceived usability, consistent with the TLX Frustration floor above.
 
 *** DONE Limitations
-- Sample: n = 24, self-selecting playtesters which surely skew toward technically competent given they are Computer Science students
-- Drift:  TLX was shortened to raw ratings (no pairwise weighted step) so scores are /RAW-TLX/ in Byers/Bittner (1989) terms, not the weighted original
+- Sample: small /n/ (n = 24) with self-selecting playtesters, which surely skew toward technically minded given they are computer science students
+- Drift: TLX was shortened to raw ratings (no pairwise weighted step) so scores are /RAW-TLX/ in Byers/Bittner (1989) terms and not the weighted original
 - Order: respondents were not counter-balanced across difficulty
 ** DONE Testing
 Testing on this project is /pragmatic/ not /exhaustive/. we didn't have time to produce an automated test suite and the CI pipeline does not build automatically. ~Wait double check this~. Three areas of manual testing compensate:
@@ -649,15 +645,17 @@ In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDete
 
 * TODO Process                                      :target_750w:weight_15pc:
 ** DONE Workflow
-Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and summarised here continuity. We opted to take an empircally guided approach to process. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban) empircal evidence of their utility is uncertain, at best. For example, SAFe has not shown, in any rigorous sense to outperform alternatives, even in enterprise contexts (Conboy & Caroll, 2019). Scrum and Kabnan similarly.
+Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and briefly summarised, here. We opted to take an empirical approach in selecting processes. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban), empirical evidence of their value is uncertain.
 
-What we do know from a decade of DORA surveys is the stability of software and the speed of the software development process is highly and positively correlatted. Indicating the technical capabalities underlying prescriptive management process is a signficant factor for successful development outcomes. With that in mind, we tried to implemnt a worflow of solid dev-ops practices. Which focussed mainly on =continuous intergration and deployment= and =docs-as-code=.
+For example, SAFe has not shown, in any rigorous sense, to outperform alternatives even in the enterprise contexts for which it was designed (Conboy & Caroll, 2019). Systematic reviews of Scrum and Kanban productivity find that the relationship may be positive but the evidence remains limited, composed largely of anecdotal case studies, often from consultancy organisations whose primary business depends on their benefits. (Cardozo et al., 2010; Ahmad et al., 2018).
+
+DORA, however, is the largest and longest running research programme on software practice. What we know from a decade of DORA surveys is that the stability of software and the speed of development is highly and positively correllated. This suggests the technical capabalities underlying a process is a significant factor in successful outcomes. With that in mind, we tried to implement a number of good dev-ops practices, focussing mainly on =continuous intergration and deployment= and =docs-as-code=.
 
 *Branching*
-Trunk-based development with short-lived feature branches. =main= is always deployable. Feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At the time of writing the repo has four live branches; the development branch of this report is =report=, rebased periodically from Main.
+We seelected a standard trunk-based git strategy using short-lived feature branches. =Main= is always deployable (we hope) and feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At the time of writing the repo has four live branches. The development branch of this report is =report= and is rebased periodically from =Main=.
 
 *Pull requests*
-Each PR must branch from =main=, reference a Jira issue (=Closes SE-42=), and collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced verbatim below as a contract:
+Each PR must branch from =main= and reference a Jira issue (=Closes SE-42=). Mirroring issue slugs and pull-request IDs is extremely important for orchestrating dependencies and raising bug tickets, in particular. Finally, a PR must collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced below and functions as a /contract/:
 
 #+BEGIN_QUOTE
 A feature is done when:
@@ -670,13 +668,13 @@ A feature is done when:
 #+END_QUOTE
 
 *Agile Ceremonies*
-An implicit requirement of sprints is a syncronised schedule between team members. Given competition from other modules and the =MSc summer project= in particular we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
+An implicit requirement of sprints is a syncronised schedule between team members. Given demands from other modules and the =MSc summer project= in particular, we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
 
 *Docs as Code*
-Every design or planning material is under version control and where possible offered under in plain-text. For example, this report is an example of literate programming: where the source code and the report text and 'tangled', meaning what the project does (source) and why it does (report) evolve together.
+All design and planning material are under version control and where possible offered in plain-text. For example, this report is an example of literate programming, which is to say, the source code and the report text are 'tangled' in the same file. This means what the project does (source) and why it does it (report), evolve together. Further examples of docs-as-code, include:
 
-- Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/).
-- Decision records: Architecture decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: seed ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
+- Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
+- Decision records: architectural decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: starting ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
 
 #+BEGIN_QUOTE
 - *Title*: Short noun phrase (in filename and heading)
@@ -687,7 +685,14 @@ Every design or planning material is under version control and where possible of
 #+END_QUOTE
 
 ** DONE Toolchain
-Github was selected on our behalf as project repository and we chose  Jirafor issue tracking and not Github's in-built option. Choosing to accept a small increase in task-switching overhead by having seperate version control and issue tracking in exchange for exposure to a more popular industry tool. However, we reissted this approach for communications. We used Whatsapp for discussions and resisted temptation to move to an industry focussed tool, like Slack. Referencing, the first value of the Agile Manifesto: "Individuals and interactions over processes and tools" means it's important for the team and not a tool to drive development. As we all often and generally use Whatsapp we felt it would improve communication efficiency to stay on that platform and because we used ~Docs-as-Code~, all major text material was accessible from GitHub.
+Github was selected on our behalf as project repository and we chose  Jira for issue tracking. We chose not to use Github's built-in issue tracker, choosing to accept a small increase in task-switching overhead and complexity in exchange for exposure to an industry standard tool. Such that it is.
+
+However, we reisted this approach for communications and stuck to Whatsapp instead of Slack or Microsoft Teams. Referencing the first principle of the Agile Manifesto
+#+BEGIN_QUOTE
+"Individuals and interactions over processes and tools"
+#+END_QUOTE
+
+We felt it would be better, where possible, for the tool to "meet us where we are". We all use Whatsapp socially and felt our response time would be quicker by staying on the platform. Note, because we use ~Docs-as-Code~ we had no difficulty surfacing and tracking important textual material.
 
 ** DONE Metrics
 *** DONE Issue Tracking
@@ -716,7 +721,7 @@ Creation cadence by month (issue `created` timestamp):
 | 2026-03 |             32 |
 | 2026-04 |             15 |
 
-A  March spike is apparent (branch =SE-15-Continuous-Two-Player-Input= opened 2026-03-08) where roughly half the project's tickets were raised which is  potentially indictive of 'crunch'.
+There is a noticable spike in active during the month of March  (branch =SE-15-Continuous-Two-Player-Input= opened 2026-03-08) where roughly half the project's tickets were raised and what is potentially indictive of 'crunch'.
 
 *** DONE Assignee distribution
 | Assignee             | Issues |
@@ -743,9 +748,11 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 ** TODO Approach
 I have no idea what I'm doing.
 
-We applied the /Sustainability Awareness Framework (SusAF)/ across three?  dimensions: =Social, Individual, Environmental, Economic, Technical= and three orders of effect  =immediate=, =enabling= and =structural=. For each dimension the framework prescribes five standard topics which our analysis conforms to.
+TODO
+We applied the /Sustainability Awareness Framework (SusAF)/ across three? dimensions: =Social, Individual, Environmental, Economic, Technical= and three orders of effect  =immediate=, =enabling= and =structural=. For each dimension the framework prescribes five standard topics which our analysis conforms to.
 
 ** TODO Impact analysis
+TODO
 Populate each cell from the team's SusAD workshop output. A  chain = /immediate fact -> enabling behaviour -> structural change/.
 
 *** TODO Social
@@ -775,6 +782,7 @@ https://patterns.greensoftware.foundation/catalog/ and explain how they were int
 | TODO: e.g. "Reduce the frequency of polling"    | TODO       | TODO |
 
 ** TODO Accessibility and Ethics
+TODO
 - *Accessibility*
   - keyboard-only by design; need remap UI, colour-blind palette check, subtitles for dialogue box, "reduce flashing" toggle.
   - Chinese and English language support
@@ -783,6 +791,7 @@ https://patterns.greensoftware.foundation/catalog/ and explain how they were int
   neutral "generic" sprites as fallback.
 * TODO Conclusion                                     :target_500w:weight_10:
 ** TODO Lessons
+TODO
 ** TODO Immediate
 TODO: missing sound, missing end-state screens, difficulty routes
 
@@ -790,6 +799,9 @@ TODO: missing sound, missing end-state screens, difficulty routes
 TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
 
 * TODO Contribution statement
+The team has a diversity of lived professional and academic experience from all over the world. This includes .NET development, game development, finance and behavioural research. However, we tried where possible, to assign work according to our interests as well as our strengths.
+
+
 | Name                 | Role          | Key contributions                         |
 |----------------------+---------------+-------------------------------------------|
 | Helen Wong           | TODO          | TODO                                      |
@@ -812,6 +824,11 @@ TODO: BibTeX-style list. Seeds:
 - Hart, S. G. & Staveland, L. E. (1988). NASA-TLX.
 - Nielsen, J. (1994). Ten Usability Heuristics.
 -
+
+Cardozo, E. S. F., Araújo Neto, J. B. F., França, A. C. C., & da Silva, F. Q. B. (2010). SCRUM and Productivity in Software Projects: A Systematic Literature Review. Proceedings of the 14th International Conference on Evaluation and Assessment in Software Engineering (EASE).
+
+Ahmad, M. O., Dennehy, D., Conboy, K., & Oivo, M. (2018). Kanban in Software Engineering: A Systematic Mapping Study. Journal of Systems and Software, 137, 96–113.
+
 * DONE Appendices
 ** DONE A. Diagrams
 Sources under =docs/design/=, exports under =docs/figures/=.
@@ -848,7 +865,7 @@ Sources under =docs/design/=, exports under =docs/figures/=.
 | 12 | 12/03 21:53     |      3 |        2 |        7 |    7 |      5 |           1 | 82.5 |
 | 13 | 12/03 21:53:54  |      4 |        1 |        6 |    6 |      7 |           1 | 82.5 |
 
-** DONE C. Jira data
+** DONE C. Jira Data
 
 Source is query of Jira Cloud REST API at =https://tangiprapulla.atlassian.net/rest/api/3/= for project key ~SE~ (project id ~10002~). The Atlassian API token is held in the author's 1Password (vault =Developer=, item =COMSM1066_listener=) and fetched at analysis time via =op read=, this way I don't expose API keys in commits (or in this appendix)
 
@@ -859,7 +876,7 @@ Endpoints:
 *** DONE Ouput
 - =docs/report/data/jira_cumulative.csv=
 - =docs/report/figures/jira_cumulative.png=
-** DONE D. Paper-prototype videos
+** DONE D. Paper Prototype
 [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
 ** DONE E. ADRs
 [[file:docs/adr/0000-use-adrs.md][docs/adr/]].
