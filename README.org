@@ -19,7 +19,9 @@
 :WORD_COUNT: 153
 :END:
 
+```
 /A two-player continuous-input artillery duel where the lecturers fight back./
+```
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - We replace a turn-based state machine with continuous two-player, AI input
@@ -258,7 +260,12 @@ This permits a continuous state in the simulation, just a tick that runs every f
 \end{tikzpicture}
 #+END_SRC
 
-[[file:docs/report/figures/three_layer.png][overview]]
+file:./docs/report/figures/three_layer.png
+
+file:docs/report/figures/three_layer.png
+
+file:docs/design/battle-scene.jpg
+
 
 ** DONE Class diagram
 The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root: it owns the /Game Controller/ for the lifetime of the session and dispatches to a /UI Manager/ for rendering. The /Game Controller/ is orchestrator and  polls the /InputHandler/ each frame and manages the lifecycle of the three domain entities (/Player/, /Weapon/, /Projectile/). Methods on the controller (=checkStartGame=, =checkGameOver=, =checkCollision=) implement the continuous-input FSM described, below.
