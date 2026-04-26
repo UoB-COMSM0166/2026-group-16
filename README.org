@@ -743,12 +743,12 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 
 ** TODO Reflection
 * TODO Sustainability                                           :target_500w:
-** TODO 7.1 Approach
+** TODO Approach
 I have no idea what I'm doing.
 
 We applied the /Sustainability Awareness Framework (SusAF)/ across three?  dimensions: =Social, Individual, Environmental, Economic, Technical= and three orders of effect  =immediate=, =enabling= and =structural=. For each dimension the framework prescribes five standard topics which our analysis conforms to.
 
-** TODO 7.2 Impact analysis
+** TODO Impact analysis
 Populate each cell from the team's SusAD workshop output. A  chain = /immediate fact -> enabling behaviour -> structural change/.
 
 *** TODO Social
@@ -756,18 +756,18 @@ Populate each cell from the team's SusAD workshop output. A  chain = /immediate 
 *** TODO Environmental
 *** TODO Economic
 *** TODO Technical
-** TODO 7.3 Chain-of-effects (SusAD)
+** TODO Chain-of-effects (SusAD)
 FIG: hand-drawn or rendered SusAD showing  one chain per dimension
 
-** TODO 7.4 Threats, opportunities, and actions
+** TODO Threats, opportunities, and actions
 TODO: 2×2  table
 
-** TODO 7.5 Sustainability user stories and acceptance criteria
+** TODO Sustainability user stories and acceptance criteria
 TODO: 3–5 stories added to Jira, each related  to the chain above. Example:
 
 - As a player with photosensitive epilepsy, I want a "reduce flashing" toggle so that I can play without triggering symptoms. Acceptance: Given reduce-flashing is ON, when a projectile ricochets, then no full-screen white flash occurs within any 100 ms window.
 
-** TODO 7.6 Green Software Foundation patterns applied
+** TODO Green Software Foundation patterns applied
 We need to select ~3 patterns from
 https://patterns.greensoftware.foundation/catalog/ and explain how they were integrated.
 
@@ -777,7 +777,7 @@ https://patterns.greensoftware.foundation/catalog/ and explain how they were int
 | TODO: e.g. "Cache static data"                  | TODO       | TODO |
 | TODO: e.g. "Reduce the frequency of polling"    | TODO       | TODO |
 
-** TODO 7.7 Accessibility and Ethics
+** TODO Accessibility and Ethics
 - *Accessibility*
   - keyboard-only by design; need remap UI, colour-blind palette check, subtitles for dialogue box, "reduce flashing" toggle.
   - Chinese and English language support
@@ -785,11 +785,11 @@ https://patterns.greensoftware.foundation/catalog/ and explain how they were int
   real-person likeness: depicting named lecturers in combat raises consent and reputational concerns. Policy: we provided opt-in per lecturer;
   neutral "generic" sprites as fallback.
 * TODO Conclusion                                     :target_500w:weight_10:
-** TODO 8.1 Lessons
-** TODO  8.2 Immediate next steps
+** TODO Lessons
+** TODO Immediate
 TODO: missing sound, missing end-state screens, difficulty routes
 
-** TODO 8.3 Sequel / what-if
+** TODO Future
 TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
 
 * TODO Contribution statement
