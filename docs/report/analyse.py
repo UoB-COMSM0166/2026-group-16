@@ -1,21 +1,47 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "matplotlib",
+#   "numpy",
+#   "scipy",
+# ]
+# ///
 from __future__ import annotations
 import base64, csv, json, statistics as st, subprocess, urllib.parse, urllib.request
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.lines import Line2D
+from scipy.stats import mannwhitneyu
 
 ROOT      = Path(__file__).resolve().parents[2]
 NASA_CSV  = ROOT / "docs" / "report" / "data" / "nasa_tlx_sus.csv"
 FIG_DIR   = ROOT / "docs" / "report" / "figures"
 DATA_DIR  = ROOT / "docs" / "report" / "data"
+STYLE     = ROOT / "docs" / "report" / "styles" / "tufte.mplstyle"
+
+plt.style.use(str(STYLE))
 
 TLX_SCALES = ["mental", "physical", "temporal", "performance", "effort", "frustration"]
+INK   = "#6B6B6B"
+BLUE  = "#3B7BB8"
+RED   = "#C0392B"
+GREEN = "#4A8B5C"
 
-# 1Password helper
+
+# 1Password helper ------------------------------------------------------------
 
 def op_read(ref: str) -> str:
     return subprocess.check_output(["op", "read", ref], text=True).strip()
 
-# NASA-TLX and SUS
+
+# NASA-TLX and SUS ------------------------------------------------------------
 
 def load_nasa(path: Path) -> dict[str, list[dict]]:
     groups: dict[str, list[dict]] = {"Easy": [], "Hard": []}
@@ -24,6 +50,7 @@ def load_nasa(path: Path) -> dict[str, list[dict]]:
         r["sus"] = float(r["sus"])
         groups.setdefault(r["difficulty"], []).append(r)
     return groups
+
 
 def summarise(rows: list[dict]) -> dict:
     means = {s: st.mean(r[s] for r in rows) for s in TLX_SCALES}
@@ -37,35 +64,107 @@ def summarise(rows: list[dict]) -> dict:
             "sus_mean": st.mean(sus), "sus_median": st.median(sus),
             "sus_min": min(sus), "sus_max": max(sus)}
 
-def tlx_figure(groups: dict[str, list[dict]], out: Path) -> None:
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    import numpy as np
-    labels = ["Mental", "Physical", "Temporal", "Perf. (inv.)", "Effort", "Frustration"]
-    def means(rows):
-        m = [st.mean(r[s] for r in rows) for s in TLX_SCALES]
-        m[3] = 10 - m[3]                         # invert Performance
-        return m
-    x, w = np.arange(len(labels)), 0.38
-    fig, ax = plt.subplots(figsize=(8, 4.2))
-    ax.bar(x - w/2, means(groups["Easy"]), w, label=f"Easy (n={len(groups['Easy'])})", color="#4C72B0")
-    ax.bar(x + w/2, means(groups["Hard"]), w, label=f"Hard (n={len(groups['Hard'])})", color="#C44E52")
-    ax.set_xticks(x); ax.set_xticklabels(labels, rotation=20, ha="right")
-    ax.set_ylabel("Rating"); ax.set_ylim(0, 10)
-    ax.set_title("Average NASA-TLX by Difficulty")
-    ax.legend(loc="upper right"); ax.grid(axis="y", alpha=0.3)
-    fig.tight_layout(); fig.savefig(out, dpi=150); plt.close(fig)
 
-# Jira
+def _tlx_matrix(rows: list[dict]) -> np.ndarray:
+    """Rows × subscales, with Performance inverted."""
+    m = np.array([[r[s] for s in TLX_SCALES] for r in rows], dtype=float)
+    m[:, 3] = 10 - m[:, 3]
+    return m
+
+
+def _tlx_overall(rows: list[dict]) -> np.ndarray:
+    """Per-respondent Raw TLX score (mean of six inverted-where-relevant subscales)."""
+    return np.array([
+        np.mean([r["mental"], r["physical"], r["temporal"],
+                 10 - r["performance"], r["effort"], r["frustration"]])
+        for r in rows
+    ])
+
+
+def tlx_figure(groups: dict[str, list[dict]], out: Path) -> None:
+    """Side-by-side box plots of NASA-TLX subscales by difficulty."""
+    labels = ["Mental", "Physical", "Temporal", "Perf. (inv.)", "Effort", "Frustration"]
+    easy = _tlx_matrix(groups["Easy"])
+    hard = _tlx_matrix(groups["Hard"])
+
+    x = np.arange(len(labels))
+    w = 0.35
+    fig, ax = plt.subplots(figsize=(8, 4.2))
+
+    def box(data, positions, colour):
+        return ax.boxplot(
+            [data[:, i] for i in range(data.shape[1])],
+            positions=positions, widths=w * 0.9, patch_artist=True,
+            medianprops=dict(color=colour, linewidth=1.2),
+            boxprops=dict(facecolor="none", edgecolor=colour),
+            whiskerprops=dict(color=colour),
+            capprops=dict(color=colour),
+            flierprops=dict(marker="o", markersize=3,
+                            markeredgecolor=colour, markerfacecolor="none"),
+        )
+
+    box(easy, x - w/2, BLUE)
+    box(hard, x + w/2, RED)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, ha="right")
+    ax.set_ylabel("Rating")
+    ax.set_ylim(-0.5, 10.5)
+    ax.set_title("NASA-TLX distribution by difficulty")
+    ax.legend(handles=[Line2D([], [], color=BLUE, label=f"Easy (n={len(easy)})"),
+                       Line2D([], [], color=RED,  label=f"Hard (n={len(hard)})")],
+              loc="upper right")
+
+    fig.tight_layout(); fig.savefig(out); plt.close(fig)
+
+
+def tlx_significance(groups: dict[str, list[dict]]) -> list[tuple]:
+    """Mann-Whitney U per subscale + overall Raw TLX. One-sided: H1 = Hard > Easy.
+    Returns rows of (label, median_easy, median_hard, U, p)."""
+    labels = ["Mental demand", "Physical demand", "Temporal demand",
+              "Performance (inv.)", "Effort", "Frustration"]
+    rows = []
+    for label, key in zip(labels, TLX_SCALES):
+        e = np.array([r[key] for r in groups["Easy"]], dtype=float)
+        h = np.array([r[key] for r in groups["Hard"]], dtype=float)
+        if key == "performance":
+            e, h = 10 - e, 10 - h
+        u, p = mannwhitneyu(h, e, alternative="greater")
+        rows.append((label, float(np.median(e)), float(np.median(h)), float(u), float(p)))
+
+    e_o, h_o = _tlx_overall(groups["Easy"]), _tlx_overall(groups["Hard"])
+    u, p = mannwhitneyu(h_o, e_o, alternative="greater")
+    rows.append(("Raw TLX (overall)",
+                 float(np.median(e_o)), float(np.median(h_o)), float(u), float(p)))
+
+    print("Mann-Whitney U (one-sided: Hard > Easy):")
+    for lab, me, mh, uu, pp in rows:
+        sig = "*" if pp < 0.05 else " "
+        print(f"   {lab:<22} med {me:4.1f} -> {mh:4.1f}   U={uu:5.0f}   p={pp:.3f} {sig}")
+    return rows
+
+
+def write_significance_org(rows: list[tuple], out: Path) -> None:
+    """Emit an org-mode table you can #+INCLUDE: into the report."""
+    with out.open("w") as f:
+        f.write("| Subscale | Median (Easy) | Median (Hard) | U | p |\n")
+        f.write("|----------+---------------+---------------+---+---|\n")
+        for lab, me, mh, u, p in rows:
+            star = "*" if p < 0.05 else ""
+            f.write(f"| {lab} | {me:.1f} | {mh:.1f} | {u:.0f} | {p:.3f}{star} |\n")
+
+
+# Jira ------------------------------------------------------------------------
 
 JIRA_BASE = "https://tangiprapulla.atlassian.net"
+
 
 def jira_get(path: str, auth: str, **params) -> dict:
     url = f"{JIRA_BASE}{path}?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url,
         headers={"Authorization": f"Basic {auth}", "Accept": "application/json"})
     return json.load(urllib.request.urlopen(req))
+
 
 def jira_pull() -> tuple[list, list]:
     email = op_read("op://Developer/COMSM1066_listener/username")
@@ -82,7 +181,7 @@ def jira_pull() -> tuple[list, list]:
         if r.get("isLast", True) or not r.get("nextPageToken"): break
         nxt = r["nextPageToken"]
 
-    events = []    # (date, toStatus)
+    events = []   # (date, toStatus)
     for i in issues:
         cl = jira_get(f"/rest/api/3/issue/{i['key']}/changelog", auth, maxResults=100)
         for h in cl.get("values", []):
@@ -90,6 +189,7 @@ def jira_pull() -> tuple[list, list]:
                 if it.get("field") == "status":
                     events.append((h["created"][:10], it["toString"]))
     return issues, events
+
 
 def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
     statuses  = Counter(i["fields"]["status"]["name"] for i in issues)
@@ -108,11 +208,6 @@ def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
     print("   Assignee distribution:")
     for name, n in assignees.most_common(): print(f"     {name:<22} {n:>3}")
 
-    # cumulative flow figure and table
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from datetime import datetime
     created_by = Counter(i["fields"]["created"][:10] for i in issues)
     done_by    = Counter(d for d, s in events if s == "Done")
     days       = sorted(set(list(created_by) + list(done_by)))
@@ -123,22 +218,26 @@ def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
             cc += created_by[d]; cd += done_by[d]
             w.writerow([d, cc, cd])
             xs.append(datetime.strptime(d, "%Y-%m-%d")); cs.append(cc); ds.append(cd)
-    fig, ax = plt.subplots(figsize=(9, 4.2))
-    ax.fill_between(xs, cs, ds, alpha=0.18, color="#C44E52", label="Work-in-flight")
-    ax.plot(xs, cs, color="#4C72B0", lw=2, label=f"Created")
-    ax.plot(xs, ds, color="#55A868", lw=2, label=f"Done")
-    ax.set_ylabel("Issue count (cumulative)")
-    ax.set_title("Jira Issue Flow")
-    ax.grid(alpha=0.3); ax.legend(loc="upper left")
-    fig.autofmt_xdate(); fig.tight_layout(); fig.savefig(fig_out, dpi=150); plt.close(fig)
 
-# Entry
+    fig, ax = plt.subplots(figsize=(9, 4.2))
+    ax.fill_between(xs, cs, ds, alpha=0.15, color=RED, label="Work-in-flight")
+    ax.plot(xs, cs, label="Created")             # blue (1st in cycle)
+    ax.plot(xs, ds, color=GREEN, label="Done")   # green; skip red to avoid clashing with WIP fill
+    ax.set_ylabel("Issue count (cumulative)")
+    ax.set_title("Jira issue flow")
+    ax.legend(loc="upper left")
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    fig.tight_layout(); fig.savefig(fig_out); plt.close(fig)
+
+
+# Entry -----------------------------------------------------------------------
 
 if __name__ == "__main__":
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    print("== NASA-TLX / SUS ==")
+    print("NASA-TLX / SUS")
     groups = load_nasa(NASA_CSV)
     for label, rows in groups.items():
         s = summarise(rows)
@@ -150,7 +249,10 @@ if __name__ == "__main__":
         print(f"   SUS min /max  : {s['sus_min']:.1f} / {s['sus_max']:.1f}")
     tlx_figure(groups, FIG_DIR / "tlx_bars.png")
 
-    print("\n== Jira (live) ==")
+    sig_rows = tlx_significance(groups)
+    write_significance_org(sig_rows, DATA_DIR / "tlx_significance.org")
+
+    print("\n Querying Jira...")
     issues, events = jira_pull()
     jira_report(issues, events,
                 FIG_DIR / "jira_cumulative.png",

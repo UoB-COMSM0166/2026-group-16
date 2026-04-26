@@ -2,6 +2,12 @@
 #+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
 #+OPTIONS: toc:2 num:t ^:nil
 #+STARTUP: overview
+#+LATEX_COMPILER: lualatex
+#+LATEX_HEADER: \usepackage{tufte}
+* TODO
+- [ ] do somethign basic regarding diagrams and graphs without backgrounds. Pick line colours that are agnostic to lightmode/darkmode
+-
+
 * DONE Front matter
 ** DONE Subtitle
 /A two-player continuous-input artillery duel where the lecturers fight back./
@@ -39,7 +45,7 @@ Our shortlist of ideas (below) is not exhuastive: missing genres include economi
 
 | Genre            | Description                   | Primary Need | Area of challenge            |
 |------------------+-------------------------------+--------------+------------------------------|
-| Gallery shooter  | e.g. /Duck Hunt/, /Archery/       | Competence   | Active Inference             |
+| Gallery shooter  | e.g. /Duck Hunt/, /Archery/       | Competence   | Active Inference (Friston)   |
 |------------------+-------------------------------+--------------+------------------------------|
 | Artillery        | e.g. /Worms/, /Scorched Earth/    | Competence   | Analytical Reasoning         |
 |------------------+-------------------------------+--------------+------------------------------|
@@ -58,7 +64,10 @@ We narrowed to two candidates:  /Puzzles/ and /Artillery/ on the basis of techni
  [[file:Week2_GameIdeas.md][Week2_GameIdeas.md]]
 
 As a team we then playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with criteria from project brief, SDT and paper prototype session.
-**** TODO Insert PP video
+
+- [[file:../week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
+
+Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the adversarial produced more social and engaging play than the puzzle. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important because of the need for 'twists' that we had not yet decided on.
 
 | Criterion                      | Weight | Puzzles | Artillery |
 |--------------------------------+--------+---------+-----------|
@@ -70,11 +79,15 @@ As a team we then playtested both paper prototypes and made our final selection 
 |--------------------------------+--------+---------+-----------|
 | Weighted total                 |   100% |    2.75 |      4.00 |
 
-Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the adversarial produced more social and engaging play than the puzzle. We also thought the design space: weapon variety, terrain, opponent strategy etc. were more open to development. This was important because of the need for 'twists' that we had not yet decided on.
 
 #+CAPTION: Ideation funnel for /Merchant Fighters/. Six ideas were collected in Week 1 which were  narrowed to two concept pairs in Week 2, both paper-prototyped in Week 3 and the artillery concept selected for the Week 4–7 development.
 #+NAME: fig:idea-funnel
-#+BEGIN_SRC latex :exports results :file report/figures/funnel.png :headers '("\\usepackage{tikz}")
+#+HEADER: :results file graphics :file report/figures/funnel.png :imagemagick yes
+#+HEADER: :iminoptions -density 300 -background none -alpha remove -alpha off
+#+HEADER: :imoutoptions -quality 90
+#+HEADER: :headers '("\\usepackage{tufte}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
 \begin{tikzpicture}
     % Funnel shape
     \foreach \sgn in {-,+}
@@ -83,86 +96,100 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
     \foreach \h in {1,2,3,4}
         \draw ({-1/5*(8+\h*\h)},\h) -- ({1/5*(8+\h*\h)},\h);
     % Labels
-    \node at (0,4.5) {6 ideas (Week 1)};
-    \node at (0,3.5) {2 concepts shortlisted (Week 2)};
-    \node at (0,2.5) {2 paper prototypes (Week 3)};
-    \node at (0,1.5) {Artillery selected (Week 4)};
+    \node at (0,4.5) {6 ideas};
+    \node at (0,3.5) {2 concepts shortlisted};
+    \node at (0,2.5) {2 paper prototypes played};
+    \node at (0,1.5) {Artillery selected};
     \node at (0,0.5) {Development};
     \node[text width=4.5cm, align=center] at (0,-0.5) {Heuristic + NASA-TLX evaluation};
 \end{tikzpicture}
 #+END_SRC
 
+#+RESULTS: fig:idea-funnel
+[[file:report/figures/funnel.png]]
+
 ** DONE 2.2 Stakeholders
 We described stakeholders in Week 4 ([[file:Week4_Requirements][Week4_Requirements]]) and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
+
 #+CAPTION: Stakeholder onion for /Merchant Fighters/.
 #+NAME: fig:stakeholder-onion
-#+BEGIN_SRC latex :exports results :headers '("\\usepackage{tikz}")
+#+HEADER: :results file graphics :file report/figures/onion.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none -alpha remove -alpha off
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{tufte}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
 \begin{tikzpicture}[every node/.style={align=center}]
   % Rings (outer to inner so inner draws over outer)
-  \fill[blue!5,  draw=blue!40] (0,0) circle (4.2);
-  \fill[blue!10, draw=blue!50] (0,0) circle (3.2);
-  \fill[blue!20, draw=blue!60] (0,0) circle (2.2);
-  \fill[blue!35, draw=blue!70] (0,0) circle (1.2);
+  \draw[ink] (0,0) circle (4.2);
+  \draw[ink] (0,0) circle (3.2);
+  \draw[ink] (0,0) circle (2.2);
+  \draw[ink] (0,0) circle (1.2);
   % Inner-ring label
   \node at (0,0) {\textbf{Group 16}\\(6 students)};
   % Ring 2 label (module staff + playtesters)
   \node at (0, 1.7) {Module staff};
   \node at (0,-1.7) {Playtesters (n=24)};
-  % Ring 3 label (depicted + UoB)
+  % Ring 3 label (Lecturers + UoB)
   \node at (-2.7, 0) {Lecturer\\characters};
   \node at ( 2.7, 0) {UoB students\\(target users)};
-  % Ring 4 label (future cohorts + public)
+  % Ring 4 label (future classes + public)
   \node at (0, 3.7) {Future COMSM0166 classes};
   \node at (0,-3.7) {General public\\(GitHub Pages visitors)};
 \end{tikzpicture}
 #+END_SRC
 
+#+RESULTS: fig:stakeholder-onion
+[[file:report/figures/onion.png]]
+
 ** DONE 2.3 Use cases
 Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:../../Downloads/design/ui_flow.md][design/ui_flow.md]].
-
 #+CAPTION: UML use-case diagram. Both players share the same use-case set (aim, charge, fire, move, consume HUD) but bind distinct keys; the Spectator has a read-only view onto the Battle and Victory/Defeat screens.
 #+NAME: fig:use-case
-#+BEGIN_SRC latex :exports results :file ./use_case.pdf :headers '("\\usepackage{tikz}" "\\usetikzlibrary{positioning}")
-\begin{tikzpicture}[
-  uc/.style={draw, ellipse, minimum width=3.2cm, minimum height=0.9cm, align=center, fill=blue!5},
-  actor/.style={align=center},
-  sysbox/.style={draw, thick, rounded corners=4pt, fill=gray!2}
-]
-  % System boundary
-  \node[sysbox, minimum width=6.0cm, minimum height=9cm] (sys) at (0,0) {};
-  \node[above=0.1 of sys] {\textit{Merchant Fighters}};
+#+HEADER: :results file graphics :file report/figures/use_case.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{tufte}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\begin{tikzpicture}
+  % Title
+  \node (title) at (0, 5.4) {\textit{Merchant Fighters}};
 
-  % Use cases
-  \node[uc] (sel-d)  at (0, 3.6) {Select difficulty};
-  \node[uc] (sel-c)  at (0, 2.6) {Select character};
-  \node[uc] (move)   at (0, 1.6) {Move};
-  \node[uc] (aim)    at (0, 0.6) {Aim};
-  \node[uc] (charge) at (0,-0.4) {Charge projectile};
-  \node[uc] (fire)   at (0,-1.4) {Fire projectile};
-  \node[uc] (hud)    at (0,-2.4) {Consume HUD};
-  \node[uc] (end)    at (0,-3.4) {View end screen};
+  % Use cases: relative positioning, 0.5cm gap between ellipses
+  \node[uc]                       (sel-d) at (0, 4.7) {Select difficulty};
+  \node[uc, below=0.5 of sel-d]   (sel-c)             {Select character};
+  \node[uc, below=0.5 of sel-c]   (move)              {Move};
+  \node[uc, below=0.5 of move]    (aim)               {Aim};
+  \node[uc, below=0.5 of aim]     (charge)            {Charge projectile};
+  \node[uc, below=0.5 of charge]  (fire)              {Fire projectile};
+  \node[uc, below=0.5 of fire]    (hud)               {Consume HUD};
+  \node[uc, below=0.5 of hud]     (end)               {View end screen};
 
-  % Actors
-  \node[actor] (p1) at (-5,  1.2) {\textbf{Player 1}\\(Rish)};
-  \node[actor] (p2) at ( 5,  1.2) {\textbf{Player 2}\\(Ciyang)};
-  \node[actor] (sp) at ( 5, -3.4) {\textbf{Spectator}};
+  % Actors: pushed out, vertically centred
+  \node[actor] (p1) at (-6.5,  0)    {\textbf{Player}};
+  \node[actor] (p2) at ( 6.5,  0)    {\textbf{Opponent}};
+  \node[actor] (sp) at ( 6.5, -4.7)  {\textbf{Spectator}};
 
-  % P1 associations
+  % Associations: anchor at sides so lines don't emerge from text
   \foreach \u in {sel-d, sel-c, move, aim, charge, fire, hud, end}
-    \draw (p1) -- (\u);
-
-  % P2 associations
+    \draw[association] (p1.east) -- (\u.west);
   \foreach \u in {sel-d, sel-c, move, aim, charge, fire, hud, end}
-    \draw (p2) -- (\u);
+    \draw[association] (p2.west) -- (\u.east);
 
-  % Spectator (read-only)
-  \draw[dashed] (sp) -- (hud);
-  \draw[dashed] (sp) -- (end);
+  % Spectator: read-only view
+  \draw[association, dashed] (sp.west) -- (hud.east);
+  \draw[association, dashed] (sp.west) -- (end.east);
 
-  % <<include>> — charging includes aiming
-  \draw[->, dashed] (charge) -- node[above, sloped, font=\small]{$\langle\langle$include$\rangle\rangle$} (aim);
+  % <<include>>: charging includes aiming — routed around the right
+  \draw[include] (charge.east) to[bend left=45]
+      node[midway, right, font=\small] {$\langle\langle$include$\rangle\rangle$}
+      (aim.east);
 \end{tikzpicture}
 #+END_SRC
+
+#+RESULTS: fig:use-case
+[[file:report/figures/use_case.png]]
 
 ** DONE 2.4 User stories
 Stories are lifted from the Week 4 requirement workshop. ([[file:Week4_Requirements][Week4_Requirements]]) and re-formatted to /As a <role>, I want <goal> so that <value>/, with one gherkin-style acceptance criterion each.
@@ -205,13 +232,12 @@ TODO: 3-layer sketch — /input/ (continuous keystate) → /simulation/ (angle, 
 
 ** TODO 3.2 Class diagram
 FIG: UML class diagram derived from =whitebox-prototype/sketch.js=: =ANGLE=, =POWER=, =CollisionDetection=, plus planned =Player=, =Projectile=, =HPBar=.
-
 ** TODO 3.3 Behavioural view
-FIG: *state diagram* — headline figure of the report; contrasts the classical turn-based artillery FSM with our continuous-input model (both players are always in the "aim/charge/fire" superstate simultaneously).
-FIG: sequence diagram — "P1 fires → projectile ricochet → hits P2" end-to-end.
+FIG: *state diagram*: headline figure of the report; contrasts the classical turn-based artillery FSM with our continuous-input model (both players are always in the "aim/charge/fire" superstate simultaneously).
+FIG: sequence diagram: "P1 fires -> projectile ricochet -> hits P2" end-to-end.
 
 ** TODO 3.4 Visual style and sound
-TODO: prose from [[file:../../Downloads/design/ArtAssetList.md][ArtAssetList.md]] — four characters × two routes (Fantasy/Modern), 1920×1080 canvas, pixel-art.
+TODO: prose from [[file:../../Downloads/design/ArtAssetList.md][ArtAssetList.md]]:  four characters × two routes (Fantasy/Modern), 1920×1080 canvas, pixel-art.
 FIG: inline screen flow (mermaid in ui_flow.md).
 
 * TODO 4. Implementation                                        :target_750w:weight_15pc:
@@ -338,12 +364,23 @@ Raw data captured in-session on 10 and 12 March 2026; 24 valid responses split a
 | /Raw TLX (mean)/     |         /3.5/ |         /4.0/ |
 | /Rescaled to 0–100/  |        /34.7/ |        /39.6/ |
 
-Interpretation: both difficulties sit in the /light-to-moderate/ band by the Grier (2015) meta-analysis of 237 TLX studies, whose median overall score is ~46/100 for interactive tasks. The difference between Easy and Hard is ~5 points (small–moderate effect), concentrated in /Mental demand/, /Physical demand/ and /Effort/ as you would expect of a  harder difficulty mode; Frustration/ stayed near floor for both which suggests the harder route raised cognitive load without irritating the respondents.
+Both difficulties sit in the /light-to-moderate/ band against Grier's (2015) median of ~46/100 for interactive tasks. A one-sided Mann-Whitney U test on overall Raw TLX found Hard significantly higher than Easy (U=102, p=0.043), though no individual subscale cleared α=0.05 this is consistent with a small uniform shift across subscales aggregating to a detectable overall effect. /Frustration/ stayed near floor in both modes suggesting the harder route raised cognitive load without irritating respondents.
+
+Mann-Whitney U (one-sided: Hard > Easy):
+| Subscale           | Median (Easy) | Median (Hard) |   U |      p |
+|--------------------+---------------+---------------+-----+--------|
+| Mental demand      |           2.0 |           4.0 |  92 |  0.120 |
+| Physical demand    |           2.0 |           2.0 |  83 |  0.257 |
+| Temporal demand    |           5.0 |           5.0 |  84 |  0.232 |
+| Performance (inv.) |           4.0 |           3.0 |  74 |  0.465 |
+| Effort             |           5.0 |           6.0 |  90 |  0.129 |
+| Frustration        |           1.0 |           1.0 |  74 |  0.461 |
+| Raw TLX (overall)  |           3.2 |           3.7 | 102 | 0.043* |
+
 
 #+CAPTION: NASA-TLX subscale means by difficulty (0–10 raw Likert). /Performance/ is shown inverted so higher = worse for all six bars. Hard increases  /Mental/, /Physical/, /Temporal/ and /Effort/ uniformly; /Frustration/ low in both modes.
 #+NAME: fig:tlx-bars
 [[file:report/figures/tlx_bars.png]]
-
 *** DONE 5.2.2 System Usability Scale
 Scored per Brooke (1996):  odd = positive: /x/−1,  even = negative: 5−/x/, sum × 2.5 -> 0–100).
 
@@ -531,9 +568,11 @@ TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
 | Ciyang Weng          | TODO          | TODO                                       |
 |----------------------+---------------+--------------------------------------------|
 | Josh Thompson        | Documentation | Contributing guide, user analysis, report, |
-|                      |               | concept doc, continuous-input FSM          |
+|                      |               | puzzle game concept, continuous-input FSM  |
 |----------------------+---------------+--------------------------------------------|
 | Ziquan Liu           | UI Programmer | TODO                                       |
+
+** AI Statement
 
 * TODO References
 TODO: BibTeX-style list. Seeds:
@@ -592,8 +631,7 @@ daily cumulative counts of issues /created/ and /transitioned to Done/ (28 rows 
 - =docs/report/figures/jira_cumulative.png=
 rendered cumulative-flow plot
 ** DONE D. Paper-prototype videos
-- [[file:../week3-paper-prototype/idea-A/demo(CAT).mp4][idea-A — Cat vs Dog]]
-- [[file:../week3-paper-prototype/idea-B/DINS.mp4][idea-B — DINS]]
+- [[file:../week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
 ** DONE E. ADRs
 Index under [[file:adr/0000-use-adrs.md][docs/adr/]].
 ** DONE F. Analysis
@@ -607,26 +645,52 @@ Fields:
 Project ~SE~ on =tangiprapulla.atlassian.net=, queried via REST API.
 
 *** DONE Code
-Run with ~python3 docs/report/analyse.py~.
-#+BEGIN_SRC python :tangle docs/report/analyse.py :mkdirp yes
+First run ~M-x org-babel-tangle~ and then execute  ~uv run analyse.py~
+#+BEGIN_SRC python :tangle report/analyse.py :mkdirp yes
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#   "matplotlib",
+#   "numpy",
+#   "scipy",
+# ]
+# ///
 from __future__ import annotations
 import base64, csv, json, statistics as st, subprocess, urllib.parse, urllib.request
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.lines import Line2D
+from scipy.stats import mannwhitneyu
 
 ROOT      = Path(__file__).resolve().parents[2]
 NASA_CSV  = ROOT / "docs" / "report" / "data" / "nasa_tlx_sus.csv"
 FIG_DIR   = ROOT / "docs" / "report" / "figures"
 DATA_DIR  = ROOT / "docs" / "report" / "data"
+STYLE     = ROOT / "docs" / "report" / "styles" / "tufte.mplstyle"
+
+plt.style.use(str(STYLE))
 
 TLX_SCALES = ["mental", "physical", "temporal", "performance", "effort", "frustration"]
+INK   = "#6B6B6B"
+BLUE  = "#3B7BB8"
+RED   = "#C0392B"
+GREEN = "#4A8B5C"
 
-# 1Password helper
+
+# 1Password helper ------------------------------------------------------------
 
 def op_read(ref: str) -> str:
     return subprocess.check_output(["op", "read", ref], text=True).strip()
 
-# NASA-TLX and SUS
+
+# NASA-TLX and SUS ------------------------------------------------------------
 
 def load_nasa(path: Path) -> dict[str, list[dict]]:
     groups: dict[str, list[dict]] = {"Easy": [], "Hard": []}
@@ -635,6 +699,7 @@ def load_nasa(path: Path) -> dict[str, list[dict]]:
         r["sus"] = float(r["sus"])
         groups.setdefault(r["difficulty"], []).append(r)
     return groups
+
 
 def summarise(rows: list[dict]) -> dict:
     means = {s: st.mean(r[s] for r in rows) for s in TLX_SCALES}
@@ -648,35 +713,107 @@ def summarise(rows: list[dict]) -> dict:
             "sus_mean": st.mean(sus), "sus_median": st.median(sus),
             "sus_min": min(sus), "sus_max": max(sus)}
 
-def tlx_figure(groups: dict[str, list[dict]], out: Path) -> None:
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    import numpy as np
-    labels = ["Mental", "Physical", "Temporal", "Perf. (inv.)", "Effort", "Frustration"]
-    def means(rows):
-        m = [st.mean(r[s] for r in rows) for s in TLX_SCALES]
-        m[3] = 10 - m[3]                         # invert Performance
-        return m
-    x, w = np.arange(len(labels)), 0.38
-    fig, ax = plt.subplots(figsize=(8, 4.2))
-    ax.bar(x - w/2, means(groups["Easy"]), w, label=f"Easy (n={len(groups['Easy'])})", color="#4C72B0")
-    ax.bar(x + w/2, means(groups["Hard"]), w, label=f"Hard (n={len(groups['Hard'])})", color="#C44E52")
-    ax.set_xticks(x); ax.set_xticklabels(labels, rotation=20, ha="right")
-    ax.set_ylabel("Mean rating (0-10)"); ax.set_ylim(0, 10)
-    ax.set_title("NASA-TLX subscale means by difficulty")
-    ax.legend(loc="upper right"); ax.grid(axis="y", alpha=0.3)
-    fig.tight_layout(); fig.savefig(out, dpi=150); plt.close(fig)
 
-# Jira
+def _tlx_matrix(rows: list[dict]) -> np.ndarray:
+    """Rows × subscales, with Performance inverted."""
+    m = np.array([[r[s] for s in TLX_SCALES] for r in rows], dtype=float)
+    m[:, 3] = 10 - m[:, 3]
+    return m
+
+
+def _tlx_overall(rows: list[dict]) -> np.ndarray:
+    """Per-respondent Raw TLX score (mean of six inverted-where-relevant subscales)."""
+    return np.array([
+        np.mean([r["mental"], r["physical"], r["temporal"],
+                 10 - r["performance"], r["effort"], r["frustration"]])
+        for r in rows
+    ])
+
+
+def tlx_figure(groups: dict[str, list[dict]], out: Path) -> None:
+    """Side-by-side box plots of NASA-TLX subscales by difficulty."""
+    labels = ["Mental", "Physical", "Temporal", "Perf. (inv.)", "Effort", "Frustration"]
+    easy = _tlx_matrix(groups["Easy"])
+    hard = _tlx_matrix(groups["Hard"])
+
+    x = np.arange(len(labels))
+    w = 0.35
+    fig, ax = plt.subplots(figsize=(8, 4.2))
+
+    def box(data, positions, colour):
+        return ax.boxplot(
+            [data[:, i] for i in range(data.shape[1])],
+            positions=positions, widths=w * 0.9, patch_artist=True,
+            medianprops=dict(color=colour, linewidth=1.2),
+            boxprops=dict(facecolor="none", edgecolor=colour),
+            whiskerprops=dict(color=colour),
+            capprops=dict(color=colour),
+            flierprops=dict(marker="o", markersize=3,
+                            markeredgecolor=colour, markerfacecolor="none"),
+        )
+
+    box(easy, x - w/2, BLUE)
+    box(hard, x + w/2, RED)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels, ha="right")
+    ax.set_ylabel("Rating")
+    ax.set_ylim(-0.5, 10.5)
+    ax.set_title("NASA-TLX distribution by difficulty")
+    ax.legend(handles=[Line2D([], [], color=BLUE, label=f"Easy (n={len(easy)})"),
+                       Line2D([], [], color=RED,  label=f"Hard (n={len(hard)})")],
+              loc="upper right")
+
+    fig.tight_layout(); fig.savefig(out); plt.close(fig)
+
+
+def tlx_significance(groups: dict[str, list[dict]]) -> list[tuple]:
+    """Mann-Whitney U per subscale + overall Raw TLX. One-sided: H1 = Hard > Easy.
+    Returns rows of (label, median_easy, median_hard, U, p)."""
+    labels = ["Mental demand", "Physical demand", "Temporal demand",
+              "Performance (inv.)", "Effort", "Frustration"]
+    rows = []
+    for label, key in zip(labels, TLX_SCALES):
+        e = np.array([r[key] for r in groups["Easy"]], dtype=float)
+        h = np.array([r[key] for r in groups["Hard"]], dtype=float)
+        if key == "performance":
+            e, h = 10 - e, 10 - h
+        u, p = mannwhitneyu(h, e, alternative="greater")
+        rows.append((label, float(np.median(e)), float(np.median(h)), float(u), float(p)))
+
+    e_o, h_o = _tlx_overall(groups["Easy"]), _tlx_overall(groups["Hard"])
+    u, p = mannwhitneyu(h_o, e_o, alternative="greater")
+    rows.append(("Raw TLX (overall)",
+                 float(np.median(e_o)), float(np.median(h_o)), float(u), float(p)))
+
+    print("Mann-Whitney U (one-sided: Hard > Easy):")
+    for lab, me, mh, uu, pp in rows:
+        sig = "*" if pp < 0.05 else " "
+        print(f"   {lab:<22} med {me:4.1f} -> {mh:4.1f}   U={uu:5.0f}   p={pp:.3f} {sig}")
+    return rows
+
+
+def write_significance_org(rows: list[tuple], out: Path) -> None:
+    """Emit an org-mode table you can #+INCLUDE: into the report."""
+    with out.open("w") as f:
+        f.write("| Subscale | Median (Easy) | Median (Hard) | U | p |\n")
+        f.write("|----------+---------------+---------------+---+---|\n")
+        for lab, me, mh, u, p in rows:
+            star = "*" if p < 0.05 else ""
+            f.write(f"| {lab} | {me:.1f} | {mh:.1f} | {u:.0f} | {p:.3f}{star} |\n")
+
+
+# Jira ------------------------------------------------------------------------
 
 JIRA_BASE = "https://tangiprapulla.atlassian.net"
+
 
 def jira_get(path: str, auth: str, **params) -> dict:
     url = f"{JIRA_BASE}{path}?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url,
         headers={"Authorization": f"Basic {auth}", "Accept": "application/json"})
     return json.load(urllib.request.urlopen(req))
+
 
 def jira_pull() -> tuple[list, list]:
     email = op_read("op://Developer/COMSM1066_listener/username")
@@ -693,7 +830,7 @@ def jira_pull() -> tuple[list, list]:
         if r.get("isLast", True) or not r.get("nextPageToken"): break
         nxt = r["nextPageToken"]
 
-    events = []    # (date, toStatus)
+    events = []   # (date, toStatus)
     for i in issues:
         cl = jira_get(f"/rest/api/3/issue/{i['key']}/changelog", auth, maxResults=100)
         for h in cl.get("values", []):
@@ -701,6 +838,7 @@ def jira_pull() -> tuple[list, list]:
                 if it.get("field") == "status":
                     events.append((h["created"][:10], it["toString"]))
     return issues, events
+
 
 def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
     statuses  = Counter(i["fields"]["status"]["name"] for i in issues)
@@ -719,11 +857,6 @@ def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
     print("   Assignee distribution:")
     for name, n in assignees.most_common(): print(f"     {name:<22} {n:>3}")
 
-    # cumulative flow figure and table
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from datetime import datetime
     created_by = Counter(i["fields"]["created"][:10] for i in issues)
     done_by    = Counter(d for d, s in events if s == "Done")
     days       = sorted(set(list(created_by) + list(done_by)))
@@ -734,22 +867,26 @@ def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
             cc += created_by[d]; cd += done_by[d]
             w.writerow([d, cc, cd])
             xs.append(datetime.strptime(d, "%Y-%m-%d")); cs.append(cc); ds.append(cd)
-    fig, ax = plt.subplots(figsize=(9, 4.2))
-    ax.fill_between(xs, cs, ds, alpha=0.18, color="#C44E52", label="Work-in-flight")
-    ax.plot(xs, cs, color="#4C72B0", lw=2, label=f"Created (cum) final={cs[-1]}")
-    ax.plot(xs, ds, color="#55A868", lw=2, label=f"Done (cum) final={ds[-1]}")
-    ax.set_ylabel("Issue count (cumulative)")
-    ax.set_title("Jira cumulative flow: project SE")
-    ax.grid(alpha=0.3); ax.legend(loc="upper left")
-    fig.autofmt_xdate(); fig.tight_layout(); fig.savefig(fig_out, dpi=150); plt.close(fig)
 
-# Entry
+    fig, ax = plt.subplots(figsize=(9, 4.2))
+    ax.fill_between(xs, cs, ds, alpha=0.15, color=RED, label="Work-in-flight")
+    ax.plot(xs, cs, label="Created")             # blue (1st in cycle)
+    ax.plot(xs, ds, color=GREEN, label="Done")   # green; skip red to avoid clashing with WIP fill
+    ax.set_ylabel("Issue Cumulative Count")
+    ax.set_title("Jira Issue Flow")
+    ax.legend(loc="upper left")
+    ax.xaxis.set_major_locator(mdates.MonthLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b"))
+    fig.tight_layout(); fig.savefig(fig_out); plt.close(fig)
+
+
+# Entry -----------------------------------------------------------------------
 
 if __name__ == "__main__":
     FIG_DIR.mkdir(parents=True, exist_ok=True)
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    print("== NASA-TLX / SUS ==")
+    print("NASA-TLX / SUS")
     groups = load_nasa(NASA_CSV)
     for label, rows in groups.items():
         s = summarise(rows)
@@ -761,9 +898,15 @@ if __name__ == "__main__":
         print(f"   SUS min /max  : {s['sus_min']:.1f} / {s['sus_max']:.1f}")
     tlx_figure(groups, FIG_DIR / "tlx_bars.png")
 
-    print("\n== Jira (live) ==")
+    sig_rows = tlx_significance(groups)
+    write_significance_org(sig_rows, DATA_DIR / "tlx_significance.org")
+
+    print("\n Querying Jira...")
     issues, events = jira_pull()
     jira_report(issues, events,
                 FIG_DIR / "jira_cumulative.png",
                 DATA_DIR / "jira_cumulative.csv")
 #+END_SRC
+# Local Variables:
+# org-latex-compiler: "lualatex"
+# End:

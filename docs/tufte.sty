@@ -1,0 +1,69 @@
+% tufte.sty -- shared aesthetics for TikZ figures
+% Use:  \usepackage{tufte}    (in a standalone preamble)
+%   or  \input{tufte.sty}     (in org-babel :headers blocks if you'd rather)
+%
+% Provides:
+%   colours:  ink, accentBlue, accentRed, accentPink, accentGreen, paper
+%   styles:   ink, accent-pos, accent-neg, accent-alt, ringfill,
+%             uc (use-case), actor, sysbox, association, include
+%
+% Background is left transparent (no \pagecolor). When exporting to PNG via
+% imagemagick add  -background none  to the convert call.
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tufte}[2026/04/26 Tufte-esque TikZ palette and styles]
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+\usetikzlibrary{positioning,shapes.geometric,arrows.meta}
+
+% ---- palette (matches tufte.mplstyle exactly) -------------------------------
+\definecolor{ink}{HTML}{6B6B6B}          % mid grey for axes/labels/strokes
+\definecolor{accentBlue}{HTML}{3B7BB8}
+\definecolor{accentRed}{HTML}{C0392B}
+\definecolor{accentPink}{HTML}{C76A98}
+\definecolor{accentGreen}{HTML}{4A8B5C}
+\definecolor{paper}{HTML}{FAF7F0}        % only used if you ever WANT a tinted bg
+
+% ---- global defaults --------------------------------------------------------
+% Every draw command picks up ink unless overridden, every node uses serif.
+\tikzset{
+  every picture/.style = {
+    semithick,
+    color = ink,
+    text  = ink,
+  },
+  every node/.append style = {
+    color = ink,
+    text  = ink,
+  },
+  % Semantic line styles
+  ink/.style          = {draw=ink, line width=0.5pt},
+  accent-pos/.style   = {draw=accentBlue, line width=0.9pt},
+  accent-neg/.style   = {draw=accentRed,  line width=0.9pt},
+  accent-alt/.style   = {draw=accentPink, line width=0.9pt},
+  accent-alt2/.style  = {draw=accentGreen,line width=0.9pt},
+  % Disconnected hint -- ends short of nodes; pair with shorten >/< on edges
+  faint/.style        = {draw=ink!60, line width=0.4pt},
+}
+
+% ---- diagram-specific styles ------------------------------------------------
+% Use-case ellipse: no fill, just an outline. Tufte preferred outlines to fills.
+\tikzset{
+  uc/.style = {
+    draw=ink, line width=0.5pt,
+    ellipse, minimum width=3.2cm, minimum height=0.9cm, align=center,
+    inner sep=2pt,
+  },
+  actor/.style = {align=center},
+  sysbox/.style = {
+    draw=ink, line width=0.5pt, rounded corners=4pt,
+  },
+  association/.style = {draw=ink!70, line width=0.4pt, shorten >=2pt, shorten <=2pt},
+  include/.style     = {-{Latex[length=2mm]}, dashed, draw=ink!70, shorten >=2pt, shorten <=2pt},
+  % Onion-ring fills: increasing tints of ink rather than blue, so they read on
+  % both light and dark page backgrounds.
+  ringfill/.style 2 args = {fill=ink!#1, draw=ink, line width=0.4pt},
+}
+
+\endinput

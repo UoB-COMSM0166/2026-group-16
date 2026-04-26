@@ -1,0 +1,70 @@
+# Tufte shared style
+# Use:  plt.style.use("docs/report/styles/tufte.mplstyle")
+
+# ---- transparent background --------------------------------------------------
+figure.facecolor      : none
+axes.facecolor        : none
+savefig.facecolor     : none
+savefig.transparent   : True
+savefig.edgecolor     : none
+
+# ---- ink (mid grey, agnostic to light/dark backgrounds) ----------------------
+text.color            : "#6B6B6B"
+axes.labelcolor       : "#6B6B6B"
+axes.edgecolor        : "#6B6B6B"
+xtick.color           : "#6B6B6B"
+ytick.color           : "#6B6B6B"
+patch.edgecolor       : "#6B6B6B"
+hatch.color           : "#6B6B6B"
+
+# ---- accent palette: blue, red, then pink, green (for >2 series) -------------
+# Keep the first two as the primary blue/red pair; the others are fallbacks.
+axes.prop_cycle       : cycler('color', ['3B7BB8', 'C0392B', 'C76A98', '4A8B5C', '8C8C8C'])
+
+# ---- Tufte chrome: drop the box, keep only bottom + left ---------------------
+axes.spines.top       : False
+axes.spines.right     : False
+axes.spines.left      : True
+axes.spines.bottom    : True
+axes.linewidth        : 0.6
+
+# Tick marks short and outward
+xtick.direction       : out
+ytick.direction       : out
+xtick.major.size      : 3
+ytick.major.size      : 3
+xtick.major.width     : 0.6
+ytick.major.width     : 0.6
+xtick.minor.size      : 0
+ytick.minor.size      : 0
+
+# No grid by default — Tufte preferred whitespace. Re-enable per-figure if needed.
+axes.grid             : False
+grid.color            : "#6B6B6B"
+grid.linewidth        : 0.4
+grid.alpha            : 0.25
+
+# ---- typography: serif --------------------------------------------------------
+font.family           : serif
+font.serif            : EB Garamond, Garamond, Palatino, Times New Roman, DejaVu Serif
+font.size             : 10
+axes.titlesize        : 11
+axes.titleweight      : normal
+axes.labelsize        : 10
+xtick.labelsize       : 9
+ytick.labelsize       : 9
+legend.fontsize       : 9
+
+# Legend: no frame
+legend.frameon        : False
+legend.borderpad      : 0.2
+
+# ---- lines / markers ----------------------------------------------------------
+lines.linewidth       : 1.4
+lines.markersize      : 4
+
+# ---- output -------------------------------------------------------------------
+figure.dpi            : 110
+savefig.dpi           : 200
+savefig.bbox          : tight
+savefig.pad_inches    : 0.05
