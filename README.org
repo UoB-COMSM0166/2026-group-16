@@ -21,14 +21,11 @@
 
 [[file:docs/design/splash.jpeg]]
 
-/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
-- We replace a turn-based state machine with continuous two-player, AI input
-- We replace ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
+/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
+- Replacing a turn-based state machine with continuous two-player, AI input
+- Replacing ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
 
-The artillery genre is one of earliest computer game formats. The earliest known example /War 3/ (1965) was text-based and written in FOCAL, subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET.
-Meaning the roots of this game format predates UNIX, C programming language and probably architectures like RISC.
-
-Merchant Fighter pits technologies and the lecturers that teach them against each other in an artilerry battle set within Merchan Ventures itself, where last HP standing takes all.
+The artillery genre is one of earliest computer game formats. The earliest known example, /War 3/ (1965) was text-based and written in FOCAL. Subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET. The roots of this format predates UNIX, C programming language and probably architectures like RISC. Our version, Merchant Fighter, pits these technologies and the lecturers that teach them, against each other in a battle set within Merchan Ventures itself, where last HP standing takes all.
 
 * DONE Requirements                                    :target_750w:rubic_15:
 ** DONE Concept Design
