@@ -99,7 +99,7 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
 \end{tikzpicture}
 #+END_SRC
 
-[[file:docs/report/figures/funnel.png][funnel.png]]
+[[file:docs/report/figures/funnel.png]]
 
 ** DONE Stakeholders
 We described stakeholders in [[file:./docs/assignments/week4-requirements.md][week4-requirements]] and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
@@ -180,7 +180,7 @@ Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spe
 \end{tikzpicture}
 #+END_SRC
 
-[[file:docs/report/figures/use_case.png][use-case.png]]
+[[file:docs/report/figures/use_case.png]]
 
 ** DONE User stories
 Stories are lifted from the Week 4 requirement workshop. ([[file:Week4_Requirements][Week4_Requirements]]) and re-formatted to:
@@ -343,7 +343,7 @@ The behavioural difference between classical artillery and our game is captured 
 #+HEADER: :results file graphics :file docs/report/figures/fsm_contrast.png :imagemagick yes
 #+HEADER: :iminoptions -density 300 -background none
 #+HEADER: :imoutoptions -quality 100
-#+HEADER: :headers '("\\usepackage{.docs/report/styles/tufte}" "\\usetikzlibrary{calc,fit}")
+#+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}" "\\usetikzlibrary{calc,fit}")
 #+HEADER: :fit yes :border 2mm
 #+BEGIN_SRC latex
 \begin{tikzpicture}[
@@ -397,6 +397,7 @@ The behavioural difference between classical artillery and our game is captured 
 #+END_SRC
 
 [[file:docs/report/figures/fsm_contrast.png]]
+
 
 A representative end-to-end interaction is shown in figure [[fig:sequence]]: P1 presses /fire/, the GameController consults InputHandler, spawns a Projectile owned by P1 and that projectile then ticks itself each frame, ricochets off a wall  and finally collides with P2.
 
