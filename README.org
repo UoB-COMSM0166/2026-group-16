@@ -260,11 +260,11 @@ This permits a continuous state in the simulation, just a tick that runs every f
 \end{tikzpicture}
 #+END_SRC
 
-file:./docs/report/figures/three_layer.png
+[[file:./docs/report/figures/three_layer.png]]
 
-file:docs/report/figures/three_layer.png
+[[file:docs/report/figures/three_layer.png]]
 
-file:docs/design/battle-scene.jpg
+[[file:docs/design/battle-scene.jpg]]
 
 
 ** DONE Class diagram
