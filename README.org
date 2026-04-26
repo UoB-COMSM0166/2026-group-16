@@ -571,7 +571,9 @@ The three positive findings (aim trajectory visibility, win screen clarity, coll
 Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. It suggested our development priority should soon priotise art asset creation, which we did.
 
 ** DONE Quantitative
-Data was captured in-session on 10th and 12th March 2026; 24 valid responses were split across difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]].
+User feedback was captured in-session on 10th and 12th March 2026 and resulted in 24 valid responses across game difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Our hope was to realise a noticiable difference in perceived challenge between modes as it's known to significantly affect player enjoyment (Alexander et al., 2013).
+
+The workshop introduced the NASA Task Load Index (TLX) instrument for this prupsoe. TLX is known to be a reliable instrument for assessing game difficulty (Hart & Staveland, 1988; Ramkumar et al., 2016; Seyderhelm & Blackmore, 2023). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]].
 
 *** DONE NASA-TLX
 | Subscale           | Easy (n=11) | Hard (n=13) |
@@ -828,11 +830,15 @@ TODO: BibTeX-style list. Notes:
 - Becker, C. et al. (2015). Sustainability Design and Software.
 - Hart, S. G. & Staveland, L. E. (1988). NASA-TLX.
 - Nielsen, J. (1994). Ten Usability Heuristics.
--
+
+Becker, C. et al. (2015) ‘Sustainability design and software: The Karlskrona Manifesto’, 2015 IEEE/ACM 37th IEEE International Conference on Software Engineering. doi:10.1109/icse.2015.179.
 
 Cardozo, E. S. F., Araújo Neto, J. B. F., França, A. C. C., & da Silva, F. Q. B. (2010). SCRUM and Productivity in Software Projects: A Systematic Literature Review. Proceedings of the 14th International Conference on Evaluation and Assessment in Software Engineering (EASE).
 
 Ahmad, M. O., Dennehy, D., Conboy, K., & Oivo, M. (2018). Kanban in Software Engineering: A Systematic Mapping Study. Journal of Systems and Software, 137, 96–113.
+
+Hart, S. G., & Staveland, L. E. (1988). Development of NASA-TLX (Task Load Index): Results of empirical and theoretical research. Advances in Psychology, 139–183. https://doi.org/10.1016/s0166-4115(08)62386-9.
+
 
 * DONE Appendices
 ** DONE A. Diagrams
