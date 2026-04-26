@@ -199,7 +199,7 @@ User stories and epics all descend from a goal to build a two-player continuous-
   - /Given/ reduce-flashing is ON, /When/ a projectile ricochets, /Then/ no full-screen white flash occurs within any 100 ms window.
 
 ** DONE Priorities
-MoSCoW below, with stories scoped to reflect term times and Easter break. /Must/ items reflect course requirements and/or professional pride. /Should/ items landing during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
+MoSCoW below, with stories scoped to reflect term times and Easter break. /Must/ items reflect course requirements and/or professional pride. /Should/ items will land during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
 
 | Priority | Story | Requirement                                | Status as of 2026-04-22      |
 |----------+-------+--------------------------------------------+------------------------------|
@@ -568,7 +568,7 @@ The three positive findings (aim trajectory visibility, win screen clarity, coll
 | 9 | UI         | No visual separation between players on screen                 | H1 Visibility of system status       |      2.0 |
 
 *** DONE H7 Cluster
-Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. Suggests development priority should priotise art asset creation.
+Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. It suggested our development priority should soon priotise art asset creation, which we did.
 
 ** DONE Quantitative
 Data was captured in-session on 10th and 12th March 2026; 24 valid responses were split across difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]].
