@@ -199,7 +199,7 @@ User stories and epics all descend from a goal to build a two-player continuous-
   - /Given/ reduce-flashing is ON, /When/ a projectile ricochets, /Then/ no full-screen white flash occurs within any 100 ms window.
 
 ** DONE Priorities
-MoSCoW below, with stories scoped to reflect term times and Easter break. /Must/ items are the marking-line; /Should/ items landing during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
+MoSCoW below, with stories scoped to reflect term times and Easter break. /Must/ items are minimum course or personal pride requirements. /Should/ items landing during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
 
 | Priority | Story | Requirement                                | Status as of 2026-04-22      |
 |----------+-------+--------------------------------------------+------------------------------|
