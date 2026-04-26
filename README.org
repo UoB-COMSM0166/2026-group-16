@@ -1,4 +1,4 @@
-#+TITLE:  Merchant Fighters Project Report
+#+TITLE:  Merchant Fighters
 #+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
 #+OPTIONS: toc:2 num:t ^:nil
 #+STARTUP: overview
@@ -644,7 +644,7 @@ In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDete
 
 * TODO Process                                      :target_750w:weight_15pc:
 ** DONE Workflow
-Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and briefly summarised, here. We opted to take an empirical approach in selecting processes. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban), empirical evidence of their value is uncertain.
+Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and briefly summarised, here. We opted to take an empirical approach in selecting processes. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban), empirical evidence of their value remains uncertain.
 
 For example, SAFe has not shown, in any rigorous sense, to outperform alternatives even in the enterprise contexts for which it was designed (Conboy & Caroll, 2019). Systematic reviews of Scrum and Kanban productivity find that the relationship may be positive but the evidence remains limited, composed largely of anecdotal case studies, often from consultancy organisations whose primary business depends on their benefits. (Cardozo et al., 2010; Ahmad et al., 2018).
 
@@ -666,14 +666,20 @@ A feature is done when:
 - [ ] CI pipeline succeeds
 #+END_QUOTE
 
+*Issue Transitions*
+TODO
+
 *Agile Ceremonies*
 An implicit requirement of sprints is a syncronised schedule between team members. Given demands from other modules and the =MSc summer project= in particular, we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
 
 *Docs as Code*
 All design and planning material are under version control and where possible offered in plain-text. For example, this report is an example of literate programming, which is to say, the source code and the report text are 'tangled' in the same file. This means what the project does (source) and why it does it (report), evolve together. Further examples of docs-as-code, include:
 
-- Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
-- Decision records: architectural decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: starting ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
+Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
+
+In software engineering architectural decisions are design decisions that address architecturally significant requirements; they are considered to be hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant architectural decisions made during the design and development of system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat among others.
+
+Ahmeti et al. (2024) show difficulties of documentation culture,  knowledge transfer and  prioritization of information to be documented is well addressed by ADRs and finding cooperation between developers improved as a consequence of using them. Our decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: starting ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
 
 #+BEGIN_QUOTE
 - *Title*: Short noun phrase (in filename and heading)
