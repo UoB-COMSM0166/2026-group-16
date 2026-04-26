@@ -262,11 +262,6 @@ This permits a continuous state in the simulation, just a tick that runs every f
 
 [[file:./docs/report/figures/three_layer.png]]
 
-[[file:docs/report/figures/three_layer.png]]
-
-[[file:docs/design/battle-scene.jpg]]
-
-
 ** DONE Class diagram
 The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root: it owns the /Game Controller/ for the lifetime of the session and dispatches to a /UI Manager/ for rendering. The /Game Controller/ is orchestrator and  polls the /InputHandler/ each frame and manages the lifecycle of the three domain entities (/Player/, /Weapon/, /Projectile/). Methods on the controller (=checkStartGame=, =checkGameOver=, =checkCollision=) implement the continuous-input FSM described, below.
 
@@ -338,8 +333,7 @@ The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root:
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:class-diagram
-[[docs/report/figures/class_diagram.png][class-diagram]
+[[file:docs/report/figures/class_diagram.png]]
 
 ** DONE Behavioural view
 The behavioural difference between classical artillery and our game is captured in figure [[fig:fsm-contrast]]. A normal FSM treats players as mutually-exclusive: the active player passes through /Aim, Charge/ and /Fire/ and then /Wait for opponent/, during which their input is ignored. Our game removes wait state and runs two parallel regions, one per player, each ticking every frame, such that both players' inputs are sampled simultaneously.
@@ -402,8 +396,7 @@ The behavioural difference between classical artillery and our game is captured 
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:fsm-contrast
-[[file:report/docs/figures/fsm_contrast.png]]
+[[file:docs/report/figures/fsm_contrast.png]]
 
 A representative end-to-end interaction is shown in figure [[fig:sequence]]: P1 presses /fire/, the GameController consults InputHandler, spawns a Projectile owned by P1 and that projectile then ticks itself each frame, ricochets off a wall  and finally collides with P2.
 
@@ -452,8 +445,8 @@ A representative end-to-end interaction is shown in figure [[fig:sequence]]: P1 
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:sequence
 [[file:docs/report/figures/sequence.png]]
+
 ** DONE Visual style
 *** DONE Visual style
 The game is set on a 1920×1080 canvas in pixel art, with two parallel art routes selected by difficulty. /Easy/ and /Medium/ occur across Fantasy Route: a Western-fantasy castle aesthetic with bow-and-arrow combat.
@@ -615,7 +608,9 @@ Mann-Whitney U (one-sided: Hard > Easy):
 
 #+CAPTION: NASA-TLX subscale means by difficulty (0–10 raw Likert). /Performance/ is shown inverted so higher = worse for all six bars. Hard increases  /Mental/, /Physical/, /Temporal/ and /Effort/ uniformly; /Frustration/ low in both modes.
 #+NAME: fig:tlx-bars
+
 [[file:docs/report/figures/tlx_bars.png]]
+
 *** DONE System Usability Scale
 Scored per Brooke (1996):  odd = positive: /x/−1,  even = negative: 5−/x/, sum × 2.5 -> 0–100).
 
