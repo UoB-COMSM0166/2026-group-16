@@ -228,10 +228,81 @@ MoSCoW below, scoped to the submission window. /Must/ items are the marking-line
 
 * TODO 3. Design                                       :target_750w:rubic_15:
 ** TODO 3.1 Overview
-TODO: 3-layer sketch — /input/ (continuous keystate) → /simulation/ (angle, power, projectile, collision grid) → /render/ (p5.js draw loop). No frameworks beyond p5.js.
+TODO: 3-layer sketch /input/ (continuous keystate) + /simulation/ (angle, power, projectile, collision grid) +  /render/.
+** DONE 3.2 Class diagram
+The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root: it owns the /Game Controller/ for the lifetime of the session and dispatches to a /UI Manager/ for rendering. The /Game Controller/ is orchestrator and  polls the /InputHandler/ each frame and manages the lifecycle of the three domain entities (/Player/, /Weapon/, /Projectile/). Methods on the controller (=checkStartGame=, =checkGameOver=, =checkCollision=) implement the continuous-input FSM described, below.
 
-** TODO 3.2 Class diagram
-FIG: UML class diagram derived from =whitebox-prototype/sketch.js=: =ANGLE=, =POWER=, =CollisionDetection=, plus planned =Player=, =Projectile=, =HPBar=.
+#+CAPTION: Class diagram for /Merchant Fighters/. Filled diamond denotes composition; dashed arrows denote /uses/; solid arrows denote /manages/.
+#+NAME: fig:class-diagram
+#+HEADER: :results file graphics :file report/figures/class_diagram.png :imagemagick yes
+#+HEADER: :iminoptions -density 300 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{tufte}" "\\usetikzlibrary{calc}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\begin{tikzpicture}
+
+  % Boundary / orchestration layer
+  \umlclass{setup}{-5,5}{Setup}{Interface}
+    {Game state\\ Players, Weapons\\ Sound Manager\\ Home Page\\ Game Winner}
+    {+ setup()}
+
+  \umlclass{ui}{2,5}{UI Manager}{UIManager}
+    {Player Characters\\ Background\\ Weapons\\ Health Bar}
+    {+ render()\\ + update()}
+
+  % Application core
+  \umlclass{ctrl}{-5,0}{}{Game Controller}
+    {Current Player\\ Game State\\ Health Bar}
+    {+ checkStartGame()\\ + startGame()\\ + handleInput()\\ + drawHealthBar()\\
+     + drawScore()\\ + getWinner()\\ + setWinner()\\ + checkGameOver()\\
+     + checkCollision()}
+
+  \umlclass{input}{2,0}{}{InputHandler}
+    {Keys\\ mouseX, mouseY\\ mouseDown\\ mouseButton\\ selectWeapon}
+    {+ isKeyPressed()\\ + isActionPressed()\\ + selectWeapon()\\
+     + clearKeys() / reset()\\ + getState()\\ + setState()}
+
+  % Domain entities (managed by the controller) -- pushed lower for clearance
+  \umlclass{player}{-7,-9}{}{Player}
+    {player name / id\\ weapon\\ x, y (position)\\ alive indicator\\
+     projectile direction}
+    {+ move()\\ + shoot()\\ + updateHealth()\\ + isDamaged()}
+
+  \umlclass{weapon}{-2.5,-9}{}{Weapon}
+    {type\\ shooting rate\\ shootingRange\\ isShortDistance}
+    {+ shoot()\\ + updateWeapon()}
+
+  \umlclass{proj}{2,-9}{}{Projectile}
+    {x, y\\ vx, vy\\ time\\ gravity\\ owner\\ damage}
+    {+ update()\\ + angle()\\ + checkBoundary()\\ + checkCollision()}
+
+
+  % Relationships
+  \draw[uml-compose] (setup.south) -- (ctrl.north);
+
+  \draw[uml-uses] (setup.east) -- node[above, font=\small\itshape]
+    {$\langle\langle$uses$\rangle\rangle$} (ui.west);
+
+  \draw[uml-uses] (ctrl.east) -- node[above, font=\small\itshape]
+    {$\langle\langle$uses$\rangle\rangle$} (input.west);
+
+
+% Trunk-and-branch routing for the manages relationship
+ \coordinate (junction) at ($(ctrl.south) + (0,-2.4)$);
+  \draw[uml-manages] (ctrl.south) -- (junction)
+    node[midway, right=2pt, font=\small\itshape]
+    {$\langle\langle$manages$\rangle\rangle$};
+  \draw[uml-manages] (junction) -| (player.north);
+  \draw[uml-manages] (junction) -- (weapon.north);
+  \draw[uml-manages] (junction) -| (proj.north);
+
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:class-diagram
+[[file:report/figures/class_diagram.png]]
+
 ** TODO 3.3 Behavioural view
 FIG: *state diagram*: headline figure of the report; contrasts the classical turn-based artillery FSM with our continuous-input model (both players are always in the "aim/charge/fire" superstate simultaneously).
 FIG: sequence diagram: "P1 fires -> projectile ricochet -> hits P2" end-to-end.
