@@ -107,7 +107,7 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 #+CAPTION: Stakeholder onion for /Merchant Fighters/.
 #+NAME: fig:stakeholder-onion
 #+HEADER: :results file graphics :file docs/report/figures/onion.png :imagemagick yes
-#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :iminoptions -density 600 -background none -alpha remove
 #+HEADER: :imoutoptions -quality 100
 #+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}")
 #+HEADER: :fit yes :border 2mm
