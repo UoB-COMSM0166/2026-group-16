@@ -4,16 +4,6 @@
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{tufte}
-* TODO
-- [ ] do somethign basic regarding diagrams and graphs without backgrounds. Pick line colours that are agnostic to lightmode/darkmode
--
-
-* DONE Front matter
-** DONE Subtitle
-/A two-player continuous-input artillery duel where the lecturers fight back./
-** TODO Deployment
-TODO: link to GitHub Pages
-** TODO Demo video
 ** TODO Team
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
@@ -24,10 +14,12 @@ TODO: link to GitHub Pages
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | TODO          |
 
-* DONE 1. Introduction                                  :target_250w:rubic_5:
+* DONE Introduction                                  :target_250w:rubic_5:
 :PROPERTIES:
 :WORD_COUNT: 153
 :END:
+/A two-player continuous-input artillery duel where the lecturers fight back./
+
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - We replace a turn-based state machine with continuous two-player, AI input
 - We replace ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
@@ -37,8 +29,8 @@ Meaning the roots of this game format predates UNIX, C programming language and 
 
 Merchant Fighter pits technologies and the lecturers that teach them against each other in an artilerry battle set within Merchan Ventures itself, where last HP standing takes all.
 
-* DONE 2. Requirements                                 :target_750w:rubic_15:
-** DONE 2.1 Concept Design
+* DONE Requirements                                 :target_750w:rubic_15:
+** DONE Concept Design
 We considered self-determination theory (Ryan & Deci, 2000) as applied to games by using Przybylski et al. Motivational Model of Video Game Engagement (2010) to search for and evaluate concepts.
 
 Our shortlist of ideas (below) is not exhuastive: missing genres include economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
