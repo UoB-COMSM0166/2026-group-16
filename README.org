@@ -19,9 +19,9 @@
 :WORD_COUNT: 153
 :END:
 
-```
-/A two-player continuous-input artillery duel where the lecturers fight back./
-```
+#+BEGIN_QUOTE
+A two-player continuous-input artillery duel where the lecturers fight back
+#+END_QUOTE
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - We replace a turn-based state machine with continuous two-player, AI input
@@ -77,7 +77,7 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
 #+CAPTION: Ideation funnel for /Merchant Fighters/. Six ideas were collected in Week 1 which were  narrowed to two xconcept pairs in Week 2, both paper-prototyped in Week 3 and the artillery concept selected for the Week 4–7 development.
 #+NAME: fig:idea-funnel
 #+HEADER: :results file graphics :file docs/report/figures/funnel.png :imagemagick yes
-#+HEADER: :iminoptions -density 300 -background none -alpha remove -alpha off
+#+HEADER: :iminoptions -density 300 -background none -alpha remove
 #+HEADER: :imoutoptions -quality 90
 #+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}")
 #+HEADER: :fit yes :border 2mm
@@ -99,7 +99,9 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
 \end{tikzpicture}
 #+END_SRC
 
+#+RESULTS: fig:idea-funnel
 [[file:docs/report/figures/funnel.png]]
+
 
 ** DONE Stakeholders
 We described stakeholders in [[file:./docs/assignments/week4-requirements.md][week4-requirements]] and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
@@ -681,13 +683,13 @@ Every design or planning material is under version control and where possible of
 - Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/).
 - Decision records: Architecture decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: seed ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
 
-```
-- **Title**: Short noun phrase (in filename and heading)
-- **Status**: `proposed`, `accepted`, `deprecated`, or `superseded`
-- **Context**: The forces at play, stated neutrally
-- **Decision**: What we will do, stated in active voice
-- **Consequences**: All effects (positive, negative, neutral)
-```
+#+BEGIN_QUOTE
+- *Title*: Short noun phrase (in filename and heading)
+- *Status*: Proposed, accepted, deprecated, or superseded
+- *Context*: The forces at play, stated neutrally
+- *Decision*: What we will do, stated in active voice
+- *Consequences*: All effects (positive, negative, neutral)
+#+END_QUOTE
 
 ** DONE Toolchain
 Github was selected on our behalf as project repository and we chose  Jirafor issue tracking and not Github's in-built option. Choosing to accept a small increase in task-switching overhead by having seperate version control and issue tracking in exchange for exposure to a more popular industry tool. However, we reissted this approach for communications. We used Whatsapp for discussions and resisted temptation to move to an industry focussed tool, like Slack. Referencing, the first value of the Agile Manifesto: "Individuals and interactions over processes and tools" means it's important for the team and not a tool to drive development. As we all often and generally use Whatsapp we felt it would improve communication efficiency to stay on that platform and because we used ~Docs-as-Code~, all major text material was accessible from GitHub.
