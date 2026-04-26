@@ -793,17 +793,17 @@ TODO: missing sound, missing end-state screens, difficulty routes
 TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
 
 * TODO Contribution statement
-| Name                 | Role          | Key contributions                          |
-|----------------------+---------------+--------------------------------------------|
-| Helen Wong           | TODO          | TODO                                       |
-| Prapulla Naidu Tangi | TODO          | TODO                                       |
-| Rishabh Gautam       | TODO          | TODO                                       |
-| Ciyang Weng          | TODO          | TODO                                       |
-|----------------------+---------------+--------------------------------------------|
-| Josh Thompson        | Documentation | Contributing guide, user analysis, report, |
-|                      |               | puzzle game concept, continuous-input FSM  |
-|----------------------+---------------+--------------------------------------------|
-| Ziquan Liu           | UI Programmer | TODO                                       |
+| Name                 | Role          | Key contributions                         |
+|----------------------+---------------+-------------------------------------------|
+| Helen Wong           | TODO          | TODO                                      |
+| Prapulla Naidu Tangi | TODO          | TODO                                      |
+| Rishabh Gautam       | TODO          | TODO                                      |
+| Ciyang Weng          | TODO          | TODO                                      |
+|----------------------+---------------+-------------------------------------------|
+| Josh Thompson        | Documentation | contributing.md, analysis, report.org,    |
+|                      |               | puzzle game concept, continuous FSM       |
+|----------------------+---------------+-------------------------------------------|
+| Ziquan Liu           | UI Programmer | TODO                                      |
 
 ** AI Statement
 
