@@ -226,9 +226,49 @@ MoSCoW below, scoped to the submission window. /Must/ items are the marking-line
 | COULD    | —    | Difficulty × character-selection routes    | Design complete (=ui_flow.md=); half-wired |
 | WON'T    | —    | Online multiplayer / WebRTC                | Deferred                                 |
 
-* TODO 3. Design                                       :target_750w:rubic_15:
-** TODO 3.1 Overview
-TODO: 3-layer sketch /input/ (continuous keystate) + /simulation/ (angle, power, projectile, collision grid) +  /render/.
+* DONE 3. Design                                       :target_750w:rubic_15:
+** DONE 3.1 Overview
+The runtime is a single p5.js page reading a continuous keystate vector and producing a single rendered frame per tick. Three responsibilities are kept separated: /Input/ (what each player is pressing /right now/), /Simulation/ (where the world is, given that input) and /Render/ (paint the world).
+
+The simulation layer holds all game logic: angle, power, projectile motion, collision detection and is only a function of the current input and the previous world state. The render layer is 'dumb', given a world it draws sprites, the HUD  and the background.
+
+This permits a continuous state in the simulation, just a tick that runs every frame for both players.
+
+#+CAPTION: Three part architecture
+#+NAME: fig:three-layer
+#+HEADER: :results file graphics :file report/figures/three_layer.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{tufte}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\begin{tikzpicture}[
+  layer/.style = {draw=ink, rounded corners=2pt,
+                  minimum width=4.4cm, minimum height=2.4cm,
+                  align=center, font=\rmfamily},
+  arr/.style   = {-{Latex[length=3mm]}, draw=ink},
+  caption/.style = {font=\small\rmfamily\itshape, color=ink, text width=4cm,
+                    align=center},
+]
+  \node[layer] (input)
+    {\textbf{Input}\\ \footnotesize keystate vector\\ polled per frame};
+  \node[layer, right=1.2cm of input] (sim)
+    {\textbf{Simulation}\\ \footnotesize angle, power\\ projectile, collisions};
+  \node[layer, right=1.2cm of sim] (render)
+    {\textbf{Render}\\ \footnotesize p5.js \texttt{draw()}\\ sprites, HUD, world};
+
+  \draw[arr] (input)  -- (sim);
+  \draw[arr] (sim)    -- (render);
+
+  \node[caption, below=4pt of input]  {continuous, both players};
+  \node[caption, below=4pt of sim]    {pure functions of state};
+  \node[caption, below=4pt of render] {no game logic};
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:three-layer
+[[file:report/figures/three_layer.png]]
+
 ** DONE 3.2 Class diagram
 The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root: it owns the /Game Controller/ for the lifetime of the session and dispatches to a /UI Manager/ for rendering. The /Game Controller/ is orchestrator and  polls the /InputHandler/ each frame and manages the lifecycle of the three domain entities (/Player/, /Weapon/, /Projectile/). Methods on the controller (=checkStartGame=, =checkGameOver=, =checkCollision=) implement the continuous-input FSM described, below.
 
@@ -303,13 +343,146 @@ The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root:
 #+RESULTS: fig:class-diagram
 [[file:report/figures/class_diagram.png]]
 
-** TODO 3.3 Behavioural view
-FIG: *state diagram*: headline figure of the report; contrasts the classical turn-based artillery FSM with our continuous-input model (both players are always in the "aim/charge/fire" superstate simultaneously).
-FIG: sequence diagram: "P1 fires -> projectile ricochet -> hits P2" end-to-end.
+** DONE 3.3 Behavioural view
+The behavioural difference between classical artillery and our game is captured in figure [[fig:fsm-contrast]]. A normal FSM treats players as mutually-exclusive: the active player passes through /Aim, Charge/ and /Fire/ and then /Wait for opponent/, during which their input is ignored. Our game removes wait state and runs two parallel regions, one per player, each ticking every frame, such that both players' inputs are sampled simultaneously.
 
-** TODO 3.4 Visual style and sound
-TODO: prose from [[file:../../Downloads/design/ArtAssetList.md][ArtAssetList.md]]:  four characters × two routes (Fantasy/Modern), 1920×1080 canvas, pixel-art.
-FIG: inline screen flow (mermaid in ui_flow.md).
+#+CAPTION: Classical vs our continuous-input model
+#+NAME: fig:fsm-contrast
+#+HEADER: :results file graphics :file report/figures/fsm_contrast.png :imagemagick yes
+#+HEADER: :iminoptions -density 300 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{tufte}" "\\usetikzlibrary{calc,fit}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\begin{tikzpicture}[
+  state/.style = {draw=ink, rounded corners=2pt,
+                  minimum width=2.0cm, minimum height=0.7cm, align=center,
+                  font=\rmfamily, inner sep=3pt},
+  trans/.style = {-{Latex[length=2mm]}, draw=ink!70},
+  region/.style = {draw=ink!50, dashed, rounded corners=4pt, inner sep=10pt},
+  flabel/.style = {font=\rmfamily\itshape\small, color=ink},
+]
+
+  % Turn-based
+  \node[flabel] at (-4.5, 4.4) {turn-based};
+  \node[state] (c-aim)    at (-4.5,  3.2) {Aim};
+  \node[state] (c-charge) at (-4.5,  2.0) {Charge};
+  \node[state] (c-fire)   at (-4.5,  0.8) {Fire};
+  \node[state, draw=ink!50, font=\itshape\rmfamily]
+       (c-wait) at (-4.5, -0.7) {wait for\\opponent};
+
+  \draw[trans] (c-aim)    -- (c-charge);
+  \draw[trans] (c-charge) -- (c-fire);
+  \draw[trans] (c-fire)   -- (c-wait);
+  \draw[trans] (c-wait.east) to[bend right=55] (c-aim.east);
+  \node[flabel, text width=4cm, align=center]
+       at (-4.5, -2.4) {};
+
+  % Continuous
+  \node[flabel] at (3.0, 4.4) {Continuous};
+
+  \node[state] (n1-aim)    at (1.5,  3.2) {Aim};
+  \node[state] (n1-charge) at (1.5,  2.0) {Charge};
+  \node[state] (n1-fire)   at (1.5,  0.8) {Fire};
+  \draw[trans] (n1-aim)    -- (n1-charge);
+  \draw[trans] (n1-charge) -- (n1-fire);
+  \draw[trans] (n1-fire.west) to[bend left=55] (n1-aim.west);
+  \node[region, fit=(n1-aim) (n1-charge) (n1-fire),
+        label={[flabel, anchor=south]south:P1}] (r1) {};
+
+  \node[state] (n2-aim)    at (4.5,  3.2) {Aim};
+  \node[state] (n2-charge) at (4.5,  2.0) {Charge};
+  \node[state] (n2-fire)   at (4.5,  0.8) {Fire};
+  \draw[trans] (n2-aim)    -- (n2-charge);
+  \draw[trans] (n2-charge) -- (n2-fire);
+  \draw[trans] (n2-fire.east) to[bend right=55] (n2-aim.east);
+  \node[region, fit=(n2-aim) (n2-charge) (n2-fire),
+        label={[flabel, anchor=south]south:P2}] (r2) {};
+
+  \node[flabel, text width=4.5cm, align=center]
+       at (3.0, -2.4) {};
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:fsm-contrast
+[[file:report/figures/fsm_contrast.png]]
+
+A representative end-to-end interaction is shown in figure [[fig:sequence]]: P1 presses /fire/, the GameController consults InputHandler, spawns a Projectile owned by P1 and that projectile then ticks itself each frame, ricochets off a wall  and finally collides with P2.
+
+#+CAPTION: A standard gameplay sequence.
+#+NAME: fig:sequence
+#+HEADER: :results file graphics :file report/figures/sequence.png :imagemagick yes
+#+HEADER: :iminoptions -density 300 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{tufte}" "\\usetikzlibrary{calc}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\begin{tikzpicture}[
+  lifeline/.style = {draw=ink, dashed, line width=0.4pt},
+  msg/.style      = {-{Latex[length=2mm]}, draw=ink, line width=0.4pt},
+  return/.style   = {-{Latex[length=2mm]}, dashed, draw=ink!70, line width=0.4pt},
+  actor/.style    = {draw=ink, rectangle, rounded corners=2pt,
+                     minimum width=1.8cm, minimum height=0.7cm,
+                     font=\rmfamily, inner sep=4pt},
+  msglabel/.style = {font=\small\rmfamily, color=ink, fill=white, inner sep=2pt},
+  note/.style     = {font=\small\rmfamily\itshape, color=ink, fill=white, inner sep=2pt},
+]
+  \node[actor] (p1)    at ( 0, 0) {P1};
+  \node[actor] (input) at ( 3, 0) {InputHandler};
+  \node[actor] (ctrl)  at ( 6, 0) {GameController};
+  \node[actor] (proj)  at ( 9, 0) {Projectile};
+  \node[actor] (p2)    at (12, 0) {P2};
+
+  \foreach \n in {p1, input, ctrl, proj, p2}
+    \draw[lifeline] (\n.south) -- ($(\n.south) + (0,-7.2)$);
+
+  \draw[msg] (p1.south    |- 0,-1) -- node[msglabel, above]{press \texttt{fire}}                   (input.north |- 0,-1);
+  \draw[msg] (input.south |- 0,-2) -- node[msglabel, above]{\texttt{isActionPressed()}}            (ctrl.north  |- 0,-2);
+  \draw[msg] (ctrl.south  |- 0,-3) -- node[msglabel, above]{spawn(angle, power, owner=P1)}        (proj.north  |- 0,-3);
+
+  % Self-loop: per-frame update tick
+  \draw[msg] ($(proj.south |- 0,-4.2)$) -- ++(0.9,0) -- ++(0,-0.5) -- ++(-0.9,0);
+  \node[note, anchor=west] at ($(proj.south |- 0,-4.45) + (1.0,0)$) {\texttt{update()} every frame};
+
+  % Wall hit (state mutation, not a message)
+  \node[note, anchor=east] at ($(proj.south |- 0,-5.5) + (-0.2,0)$) {wall hit $\rightarrow$ reflect velocity};
+  \draw[ink, line width=0.4pt]
+    ($(proj.south |- 0,-5.5) + (-0.15,0)$) -- ($(proj.south |- 0,-5.5) + (0.15,0)$);
+
+  \draw[msg]    (proj.south |- 0,-6.5) -- node[msglabel, above]{\texttt{checkCollision()} hits P2} (p2.north |- 0,-6.5);
+  \draw[return] (p2.south   |- 0,-7.0) -- node[msglabel, above]{\texttt{updateHealth(-damage)}}    (proj.north |- 0,-7.0);
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:sequence
+[[file:report/figures/sequence.png]]
+** DONE 3.4 Visual style
+*** Visual style
+The game is set on a 1920×1080 canvas in pixel art, with two parallel art routes selected by difficulty. /Easy/ and /Medium/ occur across Fantasy Route: a Western-fantasy castle aesthetic with bow-and-arrow combat.
+
+/Hard/ runs occurs across a modern style: a contemporary computer-lab classroom with paper-scroll, red-pen and error-popup projectiles representing pedagogical hazard. Four lecturer-come-characters: =John= =Kira=, =Matt= and =Jo= are drawn in both routes (figure [[fig:characters-1]] shows John and Kira; figure [[fig:characters-2]] shows Mat and Jo). The same character has a Fantasy portrait and a "serious" Modern portrait so that the route choice carries through to character select before the player reaches the battle screen.
+
+#+CAPTION: John (left pair) and Kira (right pair). Top row: Fantasy portraits and sprites. Bottom row: Modern Route equivalents.
+#+NAME: fig:characters-1
+[[file:design/character-1.jpg]]
+
+#+CAPTION: Mat (left pair) and Jo (right pair), Fantasy and Modern routes.
+#+NAME: fig:characters-2
+[[file:design/character-2.jpg]]
+
+The Battle Screen layout (figure [[fig:battle-scene]]) is shared across routes but the background, character outfits and projectile sprites differ. The Fantasy battle is a candlelit interior whereas the Modern battle is a populated computer lab with the lecturer firing purple pixel projectiles at the player.
+
+#+CAPTION: Battle Screen, both routes. Left: Fantasy Route (vaulted interior, bow-and-arrow). Right: Modern Route (computer lab, projectile sprites).
+#+NAME: fig:battle-scene
+[[file:design/battle-scene.jpg]]
+
+The full screen-navigation graph is given in figure [[fig:screen-flow]]: from /Start/ the player chooses difficulty, which gates into the corresponding character-select carousel and from there  into the matching battle and finally to a shared Victory/Defeat screen with /Restart/ and /Main Menu/ branches.
+
+#+CAPTION: Screen-navigation flow. Easy/Medium routes through the Fantasy character select and battle; Hard routes through the Modern equivalents. Both terminate at a shared Victory/Defeat screen which loops back to either Difficulty Select (Restart) or Start Screen (Main Menu).
+#+NAME: fig:screen-flow
+[[file:design/screen-flow.png]]
+
+A complete asset inventory including  backgrounds, portraits, sprite sheets, weapons/projectiles and buttons is maintained in =docs/design/ArtAssetList.md= and tracked for completion in =docs/design/asset-tracker.xlsx=.
 
 * TODO 4. Implementation                                        :target_750w:weight_15pc:
 ** DONE 4.1 Overview
@@ -342,7 +515,6 @@ d. Escape projectiles mechanism
 Resulted behavior: ai player is not wandering randomly but is designed to move based on stimulations from human player -> more reasonable and smooth movement
 
 Going through the above stages, we ensure the enemy behavior of the ai is more human-like and enhanced the sense of immersion of the game even in the single player mode
-
 
 ** DONE 4.3 Ricochet physics
 The second challenge is /reflective/ projectile physics: shots ricochet off walls rather than detonating on impact. The physics pipeline is three-stage per frame:
@@ -491,7 +663,7 @@ In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDete
 | 8 | HP reaches 0                       | ✓  | ✓  | Win-screen overlay drawn  | Pass             |
 
 * TODO 6. Process                                               :target_750w:weight_15pc:
-** TODO 6.1 Workflow
+** DONE 6.1 Workflow
 Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and summarised here continuity. We opted to take an empircally guided approach to process. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban) empircal evidence of their utility is uncertain, at best. For example, SAFe has not shown, in any rigorous sense to outperform alternatives, even in enterprise contexts (Conboy & Caroll, 2019). Scrum and Kabnan similarly.
 
 What we do know from a decade of DORA surveys is the stability of software and the speed of the software development process is highly and positively correlatted. Indicating the technical capabalities underlying prescriptive management process is a signficant factor for successful development outcomes. With that in mind, we tried to implemnt a worflow of solid dev-ops practices. Which focussed mainly on =continuous intergration and deployment= and =docs-as-code=.
@@ -516,14 +688,18 @@ A feature is done when:
 An implicit requirement of sprints is a syncronised schedule between team members. Given competition from other modules and the =MSc summer project= in particular we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
 
 *Docs as Code*
-- ADR
 Every design or planning material is under version control and where possible offered under in plain-text.
 
-Commits.* [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/).
+- Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/).
+- Decision records: Architecture decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: seed ADR ([[file:adr/0000-use-adrs.md][=adr/0000-use-adrs.md=]]) in place.
 
-TODO: version tagging, automated release notes.
-
-*Decision records.* Architecture decisions land in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: seed ADR ([[file:adr/0000-use-adrs.md][=adr/0000-use-adrs.md=]]) in place.
+```
+- **Title**: Short noun phrase (in filename and heading)
+- **Status**: `proposed`, `accepted`, `deprecated`, or `superseded`
+- **Context**: The forces at play, stated neutrally
+- **Decision**: What we will do, stated in active voice
+- **Consequences**: All effects (positive, negative, neutral)
+```
 
 ** DONE 6.2 Toolchain
 Github was selected on our behalf as project repository and we chose  Jirafor issue tracking and not Github's in-built option. Choosing to accept a small increase in task-switching overhead by having seperate version control and issue tracking in exchange for exposure to a more popular industry tool. However, we reissted this approach for communications. We used Whatsapp for discussions and resisted temptation to move to an industry focussed tool, like Slack. Referencing, the first value of the Agile Manifesto: "Individuals and interactions over processes and tools" means it's important for the team and not a tool to drive development. As we all often and generally use Whatsapp we felt it would improve communication efficiency to stay on that platform and because we used ~Docs-as-Code~, all major text material was accessible from GitHub.
