@@ -56,7 +56,7 @@ As a team we then playtested both paper prototypes and made our final selection 
 
 - [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
 
-Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the adversarial produced more social and engaging play than the puzzle. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important because of the need for 'twists' that we had not yet decided on.
+Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the adversarial component of /Artillery/ produced more social and engaging play than the /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important because of the need for 'twists' that we had not yet decided on.
 
 | Criterion                      | Weight | Puzzles | Artillery |
 |--------------------------------+--------+---------+-----------|
@@ -654,7 +654,7 @@ Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md
 What we do know from a decade of DORA surveys is the stability of software and the speed of the software development process is highly and positively correlatted. Indicating the technical capabalities underlying prescriptive management process is a signficant factor for successful development outcomes. With that in mind, we tried to implemnt a worflow of solid dev-ops practices. Which focussed mainly on =continuous intergration and deployment= and =docs-as-code=.
 
 *Branching*
-Trunk-based development with short-lived feature branches. =main= is always deployable. Feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At aggregation time the repo has four live branches; the authorial branch of this report is =report=, rebased periodically onto =SE-20= during the implementation push.
+Trunk-based development with short-lived feature branches. =main= is always deployable. Feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At the time of writing the repo has four live branches; the development branch of this report is =report=, rebased periodically from Main.
 
 *Pull requests*
 Each PR must branch from =main=, reference a Jira issue (=Closes SE-42=), and collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced verbatim below as a contract:
@@ -673,7 +673,7 @@ A feature is done when:
 An implicit requirement of sprints is a syncronised schedule between team members. Given competition from other modules and the =MSc summer project= in particular we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
 
 *Docs as Code*
-Every design or planning material is under version control and where possible offered under in plain-text.
+Every design or planning material is under version control and where possible offered under in plain-text. For example, this report is an example of literate programming: where the source code and the report text and 'tangled', meaning what the project does (source) and why it does (report) evolve together.
 
 - Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/).
 - Decision records: Architecture decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: seed ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
