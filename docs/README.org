@@ -1,4 +1,4 @@
-#+TITLE:  COMSM0166 Project Report
+#+TITLE: Project Report
 #+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
 #+OPTIONS: toc:2 num:t ^:nil
 #+STARTUP: overview
@@ -100,7 +100,7 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
 #+RESULTS: fig:idea-funnel
 [[file:report/figures/funnel.png]]
 
-** DONE 2.2 Stakeholders
+** DONE Stakeholders
 We described stakeholders in Week 4 ([[file:Week4_Requirements][Week4_Requirements]]) and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
 
 #+CAPTION: Stakeholder onion for /Merchant Fighters/.
