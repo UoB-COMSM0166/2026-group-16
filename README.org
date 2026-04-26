@@ -19,10 +19,6 @@
 :WORD_COUNT: 153
 :END:
 
-#+BEGIN_QUOTE
-A two-player continuous-input artillery duel where the lecturers fight back
-#+END_QUOTE
-
 [[file:docs/design/splash.jpeg]]
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
