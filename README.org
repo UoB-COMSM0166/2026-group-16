@@ -1,15 +1,9 @@
-#+TITLE:  COMSM0166 Project Report
+#+TITLE:  Project Report
 #+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
 #+OPTIONS: toc:2 num:t ^:nil
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-* DONE Front matter
-** DONE Subtitle
-/A two-player continuous-input artillery duel where the lecturers fight back./
-** TODO Deployment
-TODO: link to GitHub Pages
-** TODO Demo video
 ** TODO Team
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
@@ -20,10 +14,13 @@ TODO: link to GitHub Pages
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | TODO          |
 
-* DONE 1. Introduction                                  :target_250w:rubic_5:
+* DONE Introduction                                     :target_250w:rubic_5:
 :PROPERTIES:
 :WORD_COUNT: 153
 :END:
+
+/A two-player continuous-input artillery duel where the lecturers fight back./
+
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - We replace a turn-based state machine with continuous two-player, AI input
 - We replace ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
@@ -33,8 +30,8 @@ Meaning the roots of this game format predates UNIX, C programming language and 
 
 Merchant Fighter pits technologies and the lecturers that teach them against each other in an artilerry battle set within Merchan Ventures itself, where last HP standing takes all.
 
-* DONE 2. Requirements                                 :target_750w:rubic_15:
-** DONE 2.1 Concept Design
+* DONE Requirements                                    :target_750w:rubic_15:
+** DONE Concept Design
 We considered self-determination theory (Ryan & Deci, 2000) as applied to games by using Przybylski et al. Motivational Model of Video Game Engagement (2010) to search for and evaluate concepts.
 
 Our shortlist of ideas (below) is not exhuastive: missing genres include economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
@@ -100,10 +97,9 @@ Scores were given from 1-5 and /Artillery/ was ultimately selected. We felt the 
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:idea-funnel
-[[file:docs/report/figures/funnel.png]]
+[[file:docs/report/figures/funnel.png][funnel.png]]
 
-** DONE 2.2 Stakeholders
+** DONE Stakeholders
 We described stakeholders in [[file:./docs/assignments/week4-requirements.md][week4-requirements]] and classified them by /proximity/ to the game using an onion model. Inner rings are stakeholders who touch the code daily; outer rings are those the game reaches once shipped.
 
 #+CAPTION: Stakeholder onion for /Merchant Fighters/.
@@ -134,10 +130,9 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:stakeholder-onion
-[[file:docs/report/figures/onion.png]]
+[[file:docs/report/figures/onion.png][onion.png]]
 
-** DONE 2.3 Use cases
+** DONE Use cases
 Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:./docs/design/ui_flow.md][design/ui_flow.md]].
 #+CAPTION: UML use-case diagram. Both players share the same use-case set (aim, charge, fire, move, consume HUD) but bind distinct keys; the Spectator has a read-only view onto the Battle and Victory/Defeat screens.
 #+NAME: fig:use-case
@@ -183,10 +178,9 @@ Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spe
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:use-case
-[[file:docs/report/figures/use_case.png]]
+[[file:docs/report/figures/use_case.png][use-case.png]]
 
-** DONE 2.4 User stories
+** DONE User stories
 Stories are lifted from the Week 4 requirement workshop. ([[file:Week4_Requirements][Week4_Requirements]]) and re-formatted to:
 /As a <role>, I want <goal> so that <value>/
 
@@ -207,7 +201,7 @@ User stories and epics all descend from a goal to build a two-player continuous-
 - *US-08. Accessibility:  reduced flashing.* As a player with photosensitivity, I want a "reduce flashing" toggle, so that ricochets do not trigger a visual reaction.
   - /Given/ reduce-flashing is ON, /When/ a projectile ricochets, /Then/ no full-screen white flash occurs within any 100 ms window.
 
-** DONE 2.5 Prioritisation
+** DONE Prioritisation
 MoSCoW below, scoped to the submission window. /Must/ items are the marking-line; /Should/ items landed during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
 
 | Priority | Story | Requirement                                | Status as of 2026-04-22      |
@@ -224,8 +218,8 @@ MoSCoW below, scoped to the submission window. /Must/ items are the marking-line
 | COULD    | —    | Difficulty × character-selection routes    | Done                         |
 | WON'T    | —    | Online multiplayer / WebRTC                | Deferred                     |
 
-* DONE 3. Design                                       :target_750w:rubic_15:
-** DONE 3.1 Overview
+* DONE Design                                          :target_750w:rubic_15:
+** DONE  Overview
 The runtime is a single p5.js page reading a continuous keystate vector and producing a single rendered frame per tick. Three responsibilities are kept separated: /Input/ (what each player is pressing /right now/), /Simulation/ (where the world is, given that input) and /Render/ (paint the world).
 
 The simulation layer holds all game logic: angle, power, projectile motion, collision detection and is only a function of the current input and the previous world state. The render layer is 'dumb', given a world it draws sprites, the HUD  and the background.
@@ -264,10 +258,9 @@ This permits a continuous state in the simulation, just a tick that runs every f
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:three-layer
-[[file:docs/report/figures/three_layer.png]]
+[[file:docs/report/figures/three_layer.png][overview]]
 
-** DONE 3.2 Class diagram
+** DONE Class diagram
 The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root: it owns the /Game Controller/ for the lifetime of the session and dispatches to a /UI Manager/ for rendering. The /Game Controller/ is orchestrator and  polls the /InputHandler/ each frame and manages the lifecycle of the three domain entities (/Player/, /Weapon/, /Projectile/). Methods on the controller (=checkStartGame=, =checkGameOver=, =checkCollision=) implement the continuous-input FSM described, below.
 
 #+CAPTION: Class diagram for /Merchant Fighters/. Filled diamond denotes composition; dashed arrows denote /uses/; solid arrows denote /manages/.
@@ -339,9 +332,9 @@ The game runtime is shown in figure [[fig:class-diagram]]. /Setup/ acts as root:
 #+END_SRC
 
 #+RESULTS: fig:class-diagram
-[[file:docs/report/figures/class_diagram.png]]
+[[docs/report/figures/class_diagram.png][class-diagram]
 
-** DONE 3.3 Behavioural view
+** DONE Behavioural view
 The behavioural difference between classical artillery and our game is captured in figure [[fig:fsm-contrast]]. A normal FSM treats players as mutually-exclusive: the active player passes through /Aim, Charge/ and /Fire/ and then /Wait for opponent/, during which their input is ignored. Our game removes wait state and runs two parallel regions, one per player, each ticking every frame, such that both players' inputs are sampled simultaneously.
 
 #+CAPTION: Classical vs our continuous-input model
@@ -454,7 +447,7 @@ A representative end-to-end interaction is shown in figure [[fig:sequence]]: P1 
 
 #+RESULTS: fig:sequence
 [[file:docs/report/figures/sequence.png]]
-** DONE 3.4 Visual style
+** DONE Visual style
 *** DONE Visual style
 The game is set on a 1920×1080 canvas in pixel art, with two parallel art routes selected by difficulty. /Easy/ and /Medium/ occur across Fantasy Route: a Western-fantasy castle aesthetic with bow-and-arrow combat.
 
@@ -482,13 +475,13 @@ The full screen-navigation graph is given in figure [[fig:screen-flow]]: from /S
 
 A complete asset inventory including  backgrounds, portraits, sprite sheets, weapons/projectiles and buttons is maintained in =docs/design/ArtAssetList.md= and tracked for completion in =docs/design/asset-tracker.xlsx=.
 
-* TODO 4. Implementation                                        :target_750w:weight_15pc:
-** DONE 4.1 Overview
+* TODO Implementation                               :target_750w:weight_15pc:
+** DONE Overview
 The game is a single-page p5.js application. Entry is =whitebox-prototype/index.html=, which loads a vendored p5.js=, =p5.sound.min.js=, and our own =sketch.js= (725 lines at time of writing). Deployment is GitHub Pages from the repository's =docs/= folder.
 
 p5.js shaped our archirectual decisions:: one =setup()= for boot, one =draw()= for per-frame tick, with three supporting classes:  =ANGLE= (aim), =POWER= (charge), and =CollisionDetection= (world) encapsulate the bits that benefit from encapsulation. We added a Nix flake (=flake.nix=, =flake.lock=) so the dev shell is reproducible across machines: anyone who runs ~nix develop~ and gets identical Node + http-server versions.
 
-** DONE 4.2 Opponent AI
+** DONE Opponent AI
 
 The first challenge was developing the opponent AI component of the continuous state machine. Chiefly:
 •⁠  ⁠Logic for realistic behaviour across difficulty levels
@@ -514,7 +507,7 @@ Resulted behavior: ai player is not wandering randomly but is designed to move b
 
 Going through the above stages, we ensure the enemy behavior of the ai is more human-like and enhanced the sense of immersion of the game even in the single player mode
 
-** DONE 4.3 Ricochet physics
+** DONE Ricochet physics
 The second challenge is /reflective/ projectile physics: shots ricochet off walls rather than detonating on impact. The physics pipeline is three-stage per frame:
 
 1. *Integrate*
@@ -556,10 +549,10 @@ Finally, the reflection of a ricochet is given by:
 \[ \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \]
 where \(\mathbf{v}\) is the incoming velocity vector, \(\hat{\mathbf{n}}\) is the unit surface normal at the point of collision, and \(\mathbf{v'}\) is the reflected velocity.
 
-** TODO 4.4 Assets
+** TODO Assets
 TODO
-* DONE 5. Evaluation                                  :target_750w:weight_15:
-** DONE 5.1 Qualitative  Evaluation
+* DONE Evaluation                                     :target_750w:weight_15:
+** DONE Qualitative  Evaluation
 We ran Nielsen's Ten Usability Heuristics (Nielsen 1994)7 and recorded the findings in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along  Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale.
 
 Twelve findings were captured:
@@ -568,7 +561,7 @@ Twelve findings were captured:
 
 The three positive findings (aim trajectory visibility, win screen clarity, collision accuracy) all scored 1.0 and all converge on H1 "Visibility of system status". This is evidence that the simulation trajectory  preview and the win-screen block work as intended.
 
-*** DONE 5.1.1 Negative findings, ranked by severity
+*** DONE Negative findings
 | # | Area       | Issue                                                          | Heuristic                            | Severity |
 |---+------------+----------------------------------------------------------------+--------------------------------------+----------|
 | 1 | Gameplay   | Unbalanced power between players: unfair advantage             | H4 Consistency                       |      3.3 |
@@ -581,19 +574,13 @@ The three positive findings (aim trajectory visibility, win screen clarity, coll
 | 8 | Characters | No distinct features per character. Why have them?             | H7 Flexibility and efficiency of use |      2.3 |
 | 9 | UI         | No visual separation between players on screen                 | H1 Visibility of system status       |      2.0 |
 
-*** DONE 5.1.2 Traceability
-Several observations have a specifc cause:
-- 1. Unbalanced power because  ~windAccel = 50~ which provides constant rightward acceleration, i.e. player 1 shoots with the wind, player 2 shoots against.
-- 4. Restricted fire: the angle clamb  ~minDeg: 0, maxDeg: 80~
-- 7. Confusing Instructions:  single-line HUD ~Move: A/D | Aim: ↑↓ | Charge & Fire: Space~ assumes players take-turns, the continuous-input requires two key-hint blocks, one per side.
-
-*** DONE 5.1.3 H7 cluster
+*** DONE H7 cluster
 Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. Suggests development priority should priotise art asset creation.
 
-** DONE 5.2 Quantitative: NASA-TLX and SUS
+** DONE Quantitative: NASA-TLX and SUS
 Raw data captured in-session on 10 and 12 March 2026; 24 valid responses split across difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See raw responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]]
 
-*** DONE 5.2.1 NASA-TLX results
+*** DONE NASA-TLX results
 | Subscale           | Easy (n=11) | Hard (n=13) |
 |--------------------+-------------+-------------|
 | Mental demand      |         2.7 |         3.6 |
@@ -622,7 +609,7 @@ Mann-Whitney U (one-sided: Hard > Easy):
 #+CAPTION: NASA-TLX subscale means by difficulty (0–10 raw Likert). /Performance/ is shown inverted so higher = worse for all six bars. Hard increases  /Mental/, /Physical/, /Temporal/ and /Effort/ uniformly; /Frustration/ low in both modes.
 #+NAME: fig:tlx-bars
 [[file:docs/report/figures/tlx_bars.png]]
-*** DONE 5.2.2 System Usability Scale
+*** DONE System Usability Scale
 Scored per Brooke (1996):  odd = positive: /x/−1,  even = negative: 5−/x/, sum × 2.5 -> 0–100).
 
 | Statistic          | Easy (n=11) | Hard (n=13) |
@@ -634,11 +621,11 @@ Scored per Brooke (1996):  odd = positive: /x/−1,  even = negative: 5−/x/, s
 
 Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfortably in the /good/ band with individual sessions reaching /excellent/. The convergence of Easy and Hard mean is interesting: difficulty did not penalise perceived usability, consistent with the TLX Frustration floor above.
 
-*** DONE 5.2.3 Limitations
+*** DONE Limitations
 - Sample: n = 24, self-selecting playtesters which surely skew toward technically competent given they are Computer Science students
 - Drift:  TLX was shortened to raw ratings (no pairwise weighted step) so scores are /RAW-TLX/ in Byers/Bittner (1989) terms, not the weighted original
 - Order: respondents were not counter-balanced across difficulty
-** DONE 5.3 Testing
+** DONE Testing
 Testing on this project is /pragmatic/ not /exhaustive/. we didn't have time to produce an automated test suite and the CI pipeline does not build automatically. ~Wait double check this~. Three areas of manual testing compensate:
 
 1. Exploratory Play: each merged feature is walked through at the Thursday workshop; defects surface as Jira tasks (61 created, 56 Done)
@@ -660,8 +647,8 @@ In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDete
 | 7 | Both players charge simultaneously | ?  | ?  | Both spawn in same frame  | ?                |
 | 8 | HP reaches 0                       | ✓  | ✓  | Win-screen overlay drawn  | Pass             |
 
-* TODO 6. Process                                               :target_750w:weight_15pc:
-** DONE 6.1 Workflow
+* TODO Process                                      :target_750w:weight_15pc:
+** DONE Workflow
 Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and summarised here continuity. We opted to take an empircally guided approach to process. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban) empircal evidence of their utility is uncertain, at best. For example, SAFe has not shown, in any rigorous sense to outperform alternatives, even in enterprise contexts (Conboy & Caroll, 2019). Scrum and Kabnan similarly.
 
 What we do know from a decade of DORA surveys is the stability of software and the speed of the software development process is highly and positively correlatted. Indicating the technical capabalities underlying prescriptive management process is a signficant factor for successful development outcomes. With that in mind, we tried to implemnt a worflow of solid dev-ops practices. Which focussed mainly on =continuous intergration and deployment= and =docs-as-code=.
@@ -699,11 +686,11 @@ Every design or planning material is under version control and where possible of
 - **Consequences**: All effects (positive, negative, neutral)
 ```
 
-** DONE 6.2 Toolchain
+** DONE Toolchain
 Github was selected on our behalf as project repository and we chose  Jirafor issue tracking and not Github's in-built option. Choosing to accept a small increase in task-switching overhead by having seperate version control and issue tracking in exchange for exposure to a more popular industry tool. However, we reissted this approach for communications. We used Whatsapp for discussions and resisted temptation to move to an industry focussed tool, like Slack. Referencing, the first value of the Agile Manifesto: "Individuals and interactions over processes and tools" means it's important for the team and not a tool to drive development. As we all often and generally use Whatsapp we felt it would improve communication efficiency to stay on that platform and because we used ~Docs-as-Code~, all major text material was accessible from GitHub.
 
-** DONE 6.3 Metrics
-*** DONE 6.3.1 Issue Tracking
+** DONE Metrics
+*** DONE Issue Tracking
 Numbers below are derived from a live query of the Jira Cloud REST API for project ~SE~ on =tangiprapulla.atlassian.net= and =git log= on the GitHub repository, aggregated 2026-04-22. The analysis script (Appendix F) pulls the Atlassian API token from 1Password on demand so credentials are not exposed in plain text.
 
 
@@ -731,7 +718,7 @@ Creation cadence by month (issue `created` timestamp):
 
 A  March spike is apparent (branch =SE-15-Continuous-Two-Player-Input= opened 2026-03-08) where roughly half the project's tickets were raised which is  potentially indictive of 'crunch'.
 
-*** DONE 6.3.2 Assignee distribution
+*** DONE Assignee distribution
 | Assignee             | Issues |
 |----------------------+--------|
 | Helen Wong           |     11 |
@@ -744,15 +731,15 @@ A  March spike is apparent (branch =SE-15-Continuous-Two-Player-Input= opened 20
 
 The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew (Gini ≈ 0.14 over the six assignees). The 17 unassigned tickets (25% of the backlog) are mostly research or documentation spikes and have not been picked up by an owner at aggregation time.
 
-*** DONE 6.3.3 Git activity
+*** DONE Git activity
 =git log --oneline= at the time of writing records 84 commits across 4 branches by 6 contributors and peak commit months mirror the Jira pattern.
 
 #+CAPTION: Cumulative flow for project SE. Blue = issues created; green = issues transitioned to Done; red band = work-in-flight.
 #+NAME: fig:jira-cumulative
 [[file:docs/report/figures/jira_cumulative.png]]
 
-** TODO 6.4 Reflection
-* TODO 7. Sustainability                                        :target_500w:
+** TODO Reflection
+* TODO Sustainability                                           :target_500w:
 ** TODO 7.1 Approach
 I have no idea what I'm doing.
 
@@ -794,7 +781,7 @@ https://patterns.greensoftware.foundation/catalog/ and explain how they were int
 - *Ethics*
   real-person likeness: depicting named lecturers in combat raises consent and reputational concerns. Policy: we provided opt-in per lecturer;
   neutral "generic" sprites as fallback.
-* TODO 8. Conclusion                                  :target_500w:weight_10:
+* TODO Conclusion                                     :target_500w:weight_10:
 ** TODO 8.1 Lessons
 ** TODO  8.2 Immediate next steps
 TODO: missing sound, missing end-state screens, difficulty routes
@@ -802,7 +789,7 @@ TODO: missing sound, missing end-state screens, difficulty routes
 ** TODO 8.3 Sequel / what-if
 TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
 
-* TODO 9. Contribution statement
+* TODO Contribution statement
 | Name                 | Role          | Key contributions                          |
 |----------------------+---------------+--------------------------------------------|
 | Helen Wong           | TODO          | TODO                                       |
