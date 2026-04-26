@@ -1,4 +1,4 @@
-#+TITLE:  Project Report
+#+TITLE:  Merchant Fighters Project Report
 #+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
 #+OPTIONS: toc:2 num:t ^:nil
 #+STARTUP: overview
@@ -22,6 +22,8 @@
 #+BEGIN_QUOTE
 A two-player continuous-input artillery duel where the lecturers fight back
 #+END_QUOTE
+
+[[file:docs/design/splashjpeg]]
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved arillery genre. Classically an artillery game is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - We replace a turn-based state machine with continuous two-player, AI input
@@ -819,9 +821,8 @@ TODO: BibTeX-style list. Seeds:
 -
 * DONE Appendices
 ** DONE A. Diagrams
-Sources under =docs/design/= (PlantUML/mermaid), exports under =docs/figures/=.
-** DONE B. NASA-TLX and SUS raw
-
+Sources under =docs/design/=, exports under =docs/figures/=.
+** DONE B. NASA-TLX
 *** DONE B.1 Easy: TLX (0–10) and SUS (0–100)
 |  # | Timestamp   | Mental | Physical | Temporal | Perf | Effort | Frustration |   SUS |
 |----+-------------+--------+----------+----------+------+--------+-------------+-------|
@@ -855,32 +856,28 @@ Sources under =docs/design/= (PlantUML/mermaid), exports under =docs/figures/=.
 | 13 | 12/03 21:53:54  |      4 |        1 |        6 |    6 |      7 |           1 | 82.5 |
 
 ** DONE C. Jira data
-Source: live query of the Jira Cloud REST API at =https://tangiprapulla.atlassian.net/rest/api/3/= for project key ~SE~ (project id ~10002~, created 2026-01-30). The Atlassian API token is held in Josh Thompson's 1Password (vault =Developer=, item =COMSM1066_listener=) and fetched at analysis time via =op read=, this way I don't expose API keys in commits (or this appendix)
+
+Source is query of Jira Cloud REST API at =https://tangiprapulla.atlassian.net/rest/api/3/= for project key ~SE~ (project id ~10002~). The Atlassian API token is held in the author's 1Password (vault =Developer=, item =COMSM1066_listener=) and fetched at analysis time via =op read=, this way I don't expose API keys in commits (or in this appendix)
+
 Endpoints:
 - =GET /rest/api/3/search/jql= (=fields=created,status,assignee,issuetype=)
 - =GET /rest/api/3/issue/{key}/changelog=
 
 *** DONE Ouput
 - =docs/report/data/jira_cumulative.csv=
-daily cumulative counts of issues /created/ and /transitioned to Done/ (28 rows at aggregation).
 - =docs/report/figures/jira_cumulative.png=
-rendered cumulative-flow plot
 ** DONE D. Paper-prototype videos
-- [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
+[[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
 ** DONE E. ADRs
-Index under [[file:docs/adr/0000-use-adrs.md][docs/adr/]].
+[[file:docs/adr/0000-use-adrs.md][docs/adr/]].
 ** DONE F. Analysis
 *** DONE Inputs
-*NASA*
 ~docs/report/data/nasa_tlx_sus.csv~
-Fields:
-  =difficulty, timestamp, mental, physical, temporal, performance,
-  effort, frustration, sus=.
-*Jira*
-Project ~SE~ on =tangiprapulla.atlassian.net=, queried via REST API.
+Fields: =difficulty, timestamp, mental, physical, temporal, performance, effort, frustration, sus=.
+Jira Project: ~SE~ on =tangiprapulla.atlassian.net=, queried via REST API.
 
 *** DONE Code
-First run ~M-x org-babel-tangle~ and then execute  ~uv run analyse.py~
+Instructions: first run ~M-x org-babel-tangle~ and then execute ~uv run analyse.py~
 #+BEGIN_SRC python :tangle report/analyse.py :mkdirp yes
 # /// script
 # requires-python = ">=3.11"
@@ -919,13 +916,13 @@ RED   = "#C0392B"
 GREEN = "#4A8B5C"
 
 
-# 1Password helper ------------------------------------------------------------
+# 1Password helper
 
 def op_read(ref: str) -> str:
     return subprocess.check_output(["op", "read", ref], text=True).strip()
 
 
-# NASA-TLX and SUS ------------------------------------------------------------
+# NASA-TLX and SUS
 
 def load_nasa(path: Path) -> dict[str, list[dict]]:
     groups: dict[str, list[dict]] = {"Easy": [], "Hard": []}
@@ -1038,7 +1035,7 @@ def write_significance_org(rows: list[tuple], out: Path) -> None:
             f.write(f"| {lab} | {me:.1f} | {mh:.1f} | {u:.0f} | {p:.3f}{star} |\n")
 
 
-# Jira ------------------------------------------------------------------------
+# Jira
 
 JIRA_BASE = "https://tangiprapulla.atlassian.net"
 
@@ -1115,7 +1112,7 @@ def jira_report(issues, events, fig_out: Path, csv_out: Path) -> None:
     fig.tight_layout(); fig.savefig(fig_out); plt.close(fig)
 
 
-# Entry -----------------------------------------------------------------------
+# Entry
 
 if __name__ == "__main__":
     FIG_DIR.mkdir(parents=True, exist_ok=True)
