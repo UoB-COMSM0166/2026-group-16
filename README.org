@@ -132,7 +132,7 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 \end{tikzpicture}
 #+END_SRC
 
-[[file:docs/report/figures/onion.png][onion.png]]
+[[file:docs/report/figures/onion.png]]
 
 ** DONE Use cases
 Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:./docs/design/ui_flow.md][design/ui_flow.md]].
