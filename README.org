@@ -4,10 +4,6 @@
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-TODO
-- Jira workflow diagram
-- Git Branch diagram
-- Fix velocity latex
 
 ** DONE Team
 | Name                 | Email                 | Primary role  |
@@ -76,6 +72,9 @@ Scores were given on 1-5 scale  and /[[file:./docs/assignments/week3-paper-proto
 #+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}")
 #+HEADER: :fit yes :border 2mm
 #+BEGIN_SRC latex
+% Source - https://www.printlnhello.world/blog/marketing-funnels-in-latex/
+% Retrieved 2026-04-27
+
 \begin{tikzpicture}
     % Funnel shape
     \foreach \sgn in {-,+}
@@ -106,6 +105,9 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 #+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}")
 #+HEADER: :fit yes :border 2mm
 #+BEGIN_SRC latex
+% Source - https://tex.stackexchange.com/a/51230
+% Posted by percusse
+% Retrieved 2026-04-27, License - CC BY-SA 3.0
 \begin{tikzpicture}[every node/.style={align=center}]
   % Rings (outer to inner so inner draws over outer)
   \draw[ink] (0,0) circle (4.2);
@@ -127,6 +129,10 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 #+END_SRC
 
 [[file:docs/report/figures/onion.png]]
+
+
+
+
 
 ** DONE Use Case
 Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:./docs/design/ui_flow.md][design/ui_flow.md]].
@@ -652,9 +658,67 @@ For example, SAFe has not shown, in any rigorous sense, to outperform alternativ
 DORA, however, is the largest and longest running research programme on software practice. What we know from a decade of DORA surveys is that the stability of software and the speed of development is highly and positively correllated. This suggests the technical capabalities underlying a process is a significant factor in successful outcomes. With that in mind, we tried to implement a number of good dev-ops practices, focussing mainly on =continuous intergration and deployment= and =docs-as-code=.
 
 *Branching*
-We seelected a standard trunk-based git strategy using short-lived feature branches. =Main= is always deployable (we hope) and feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At the time of writing the repo has four live branches. The development branch of this report is =report= and is rebased periodically from =Main=.
+We seelected a standard trunk-based git strategy using short-lived feature branches. =Main= is always deployable (we hope) and feature branches fork main, accumulate commits following =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes) and ideally merge back, quickly.  At the time of writing the repo has four live branches. The development branch of this report is =report= and is rebased periodically from =Main=.
 
-TODO Diagram
+#+CAPTION: Trunk-based development with short-lived feature branches.
+#+NAME: fig:branch-strategy
+#+HEADER: :results file graphics :file docs/report/figures/branch_strategy.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}" "\\usetikzlibrary{calc}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+% Citation
+% Git SCM Cheat Sheet: https://git-scm.com/cheat-sheet
+
+\begin{tikzpicture}[
+    commit/.style    = {circle, draw=ink, fill=paper, line width=0.5pt,
+                        minimum size=4mm, inner sep=0pt},
+    maincmt/.style   = {commit, fill=accentBlue!15, draw=accentBlue},
+    feata/.style     = {commit, fill=accentPink!15, draw=accentPink},
+    featb/.style     = {commit, fill=accentGreen!15, draw=accentGreen},
+    mainline/.style  = {accent-pos, line width=1pt},
+    branchA/.style   = {accent-alt, line width=0.8pt},
+    branchB/.style   = {accent-alt2, line width=0.8pt},
+    tag/.style       = {font=\small\rmfamily\itshape},
+  ]
+  % Main trunk
+  \foreach \i/\x in {0/0, 1/1.5, 2/3.0, 3/4.5, 4/6.0, 5/7.5, 6/9.0}
+    \node[maincmt] (m\i) at (\x, 0) {};
+  \foreach \i/\j in {0/1, 1/2, 2/3, 3/4, 4/5, 5/6}
+    \draw[mainline] (m\i) -- (m\j);
+
+  \node[tag, accentBlue, right=2mm of m6] {\texttt{main}};
+  \node[tag, left=2mm of m0] {$\cdots$};
+
+  % feat/auth: forks at m1, two commits, merges into m3
+  \node[feata] (a1) at (2.0, -1.2) {};
+  \node[feata] (a2) at (3.5, -1.2) {};
+  \draw[branchA] (m1) to[out=-30, in=180] (a1);
+  \draw[branchA] (a1) -- (a2);
+  \draw[branchA] (a2) to[out=0, in=-150] (m3);
+  \node[tag, accentPink, below=1mm of a1, xshift=-2mm] {\texttt{feat/auth}};
+
+  % feat/ui: forks at m4, one commit, merges into m6
+  \node[featb] (b1) at (7.0, -1.2) {};
+  \draw[branchB] (m4) to[out=-30, in=180] (b1);
+  \draw[branchB] (b1) to[out=0, in=-150] (m6);
+  \node[tag, accentGreen, below=1mm of b1, xshift=2mm] {\texttt{feat/ui}};
+
+  % Fork/merge annotations
+  \node[tag, ink!80, above=4mm of m1] {fork};
+  \node[tag, ink!80, above=4mm of m3] {merge};
+  \node[tag, ink!80, above=4mm of m4] {fork};
+  \node[tag, ink!80, above=4mm of m6] {merge};
+  \draw[faint, -{Latex[length=1.2mm]}, shorten >=1pt] ($(m1)+(0,3mm)$) -- ($(m1)+(0,1.5mm)$);
+  \draw[faint, -{Latex[length=1.2mm]}, shorten >=1pt] ($(m3)+(0,3mm)$) -- ($(m3)+(0,1.5mm)$);
+  \draw[faint, -{Latex[length=1.2mm]}, shorten >=1pt] ($(m4)+(0,3mm)$) -- ($(m4)+(0,1.5mm)$);
+  \draw[faint, -{Latex[length=1.2mm]}, shorten >=1pt] ($(m6)+(0,3mm)$) -- ($(m6)+(0,1.5mm)$);
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:branch-strategy
+[[file:docs/report/figures/branch_strategy.png]]
 
 *Pull requests*
 Each PR must branch from =main= and reference a Jira issue (=Closes SE-42=). Mirroring issue slugs and pull-request IDs is extremely important for orchestrating dependencies and raising bug tickets, in particular. Finally, a PR must collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced below and functions as a /contract/:
@@ -669,8 +733,138 @@ A feature is done when:
 - [ ] CI pipeline succeeds
 #+END_QUOTE
 
+We used =git merge --squash= to collapse commits on a feature branch into a single new commit on =main=. We are quite inexperienced so this strategy served us well, it means noisy commits (looking at you /Fix: add final fix to fix the last attempt at finally fixing typo/) don't pollute main and therefore the mainline history is easier to read.
+
+#+NAME: fig:merge-strategy
+#+HEADER: :results file graphics :file docs/report/figures/merge_strategy.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}" "\\usetikzlibrary{calc,fit}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+% Citation
+% Git handbook: https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project.html#_private_managed_team
+\begin{tikzpicture}[
+    cmt/.style       = {draw=ink, line width=0.5pt, rounded corners=1pt,
+                        minimum size=7mm, inner sep=1pt, font=\rmfamily\small,
+                        fill=paper},
+    fcmt/.style      = {cmt, draw=accentBlue, fill=accentBlue!10},
+    scmt/.style      = {cmt, draw=accentGreen, fill=accentGreen!12,
+                        minimum width=7mm, minimum height=11mm,
+                        align=center, font=\rmfamily\small},
+    edge/.style      = {accent-pos, line width=0.8pt},
+    fedge/.style     = {accent-alt, line width=0.8pt},
+    arrow/.style     = {-{Latex[length=2mm]}, draw=ink!70, line width=0.4pt},
+    lab/.style       = {font=\rmfamily\itshape},
+  ]
+  % ===== BEFORE =====
+  \node[lab, anchor=west] at (-0.4, 1.6) {\textbf{Before}};
+  \node[cmt]  (A) at (0, 1)   {A};
+  \node[cmt]  (B) at (1.4, 1) {B};
+  \node[cmt]  (C) at (2.8, 1) {C};
+  \draw[edge] (A) -- (B);
+  \draw[edge] (B) -- (C);
+  \node[lab, accentBlue, right=2mm of C] {\texttt{main}};
+
+  \node[fcmt] (D) at (2.8, -0.4) {D};
+  \node[fcmt] (E) at (4.2, -0.4) {E};
+  \draw[fedge] (B.south east) to[out=-30, in=180] (D.west);
+  \draw[fedge] (D) -- (E);
+  \node[lab, accentPink, right=2mm of E] {\texttt{banana}};
+
+  % ===== AFTER =====
+  \node[lab, anchor=west] at (-0.4, -2.4) {\textbf{After}};
+  \node[cmt]  (A2) at (0, -3.0)   {A};
+  \node[cmt]  (B2) at (1.4, -3.0) {B};
+  \node[cmt]  (C2) at (2.8, -3.0) {C};
+  \node[scmt] (DE) at (4.2, -3.0) {D\\E};
+  \draw[edge] (A2) -- (B2);
+  \draw[edge] (B2) -- (C2);
+  \draw[edge] (C2) -- (DE);
+  \node[lab, accentBlue, right=2mm of DE] {\texttt{main}};
+
+  \node[fcmt] (D2) at (2.8, -4.4) {D};
+  \node[fcmt] (E2) at (4.2, -4.4) {E};
+  \draw[fedge] (B2.south east) to[out=-30, in=180] (D2.west);
+  \draw[fedge] (D2) -- (E2);
+  \node[lab, accentPink, right=2mm of E2] {\texttt{banana}};
+
+  % "squashed" callout
+  \node[lab, accentGreen, font=\rmfamily\small\itshape,
+        below=1mm of DE.north, anchor=north east, xshift=10mm, yshift=-12mm]
+        (sqlabel) {squashed};
+  \draw[arrow, accentGreen, dashed] (sqlabel.west) to[bend left=10] (DE.east);
+
+  % Command box
+  \node[draw=ink!50, rounded corners=2pt, line width=0.4pt,
+        font=\ttfamily\small, align=left, inner sep=4pt,
+        anchor=north west] at (6.5, 1.6)
+        {git switch main\\
+         git merge --squash banana\\
+         git commit};
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:merge-strategy
+[[file:docs/report/figures/merge_strategy.png]]
+
+
 *Issue Transitions*
-TODO DIAGRAM
+Tickets flow forward through four states; any non-terminal state can regress one step backward (e.g. a QA failure returns the ticket to /In Progress/) and any state can be closed as /Won't Do/.
+
+#+NAME: fig:issue-workflow
+#+HEADER: :results file graphics :file docs/report/figures/issue_workflow.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}" "\\usetikzlibrary{calc}")
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\begin{tikzpicture}[
+    state/.style = {draw=ink, line width=0.6pt, rounded corners=3pt,
+                    minimum width=2.4cm, minimum height=0.9cm, align=center,
+                    font=\rmfamily},
+    fwd/.style   = {accent-pos, -{Latex[length=2mm]}, shorten >=2pt, shorten <=2pt},
+    back/.style  = {accent-neg, -{Latex[length=2mm]}, shorten >=2pt, shorten <=2pt,
+                    dashed},
+    drop/.style  = {accent-alt, -{Latex[length=2mm]}, shorten >=2pt, shorten <=2pt,
+                    dotted},
+  ]
+  % Forward lane
+  \node[state] (todo)  at (0, 0)  {TODO};
+  \node[state, right=1.2 of todo]  (prog) {In Progress};
+  \node[state, right=1.2 of prog]  (qa)   {QA};
+  \node[state, right=1.2 of qa]    (done) {Done};
+
+  % Won't Do sink, centred below
+  \node[state, below=2.0 of prog, xshift=1.8cm] (wont) {Won't Do};
+
+  % Forward
+  \draw[fwd] (todo) -- (prog);
+  \draw[fwd] (prog) -- (qa);
+  \draw[fwd] (qa)   -- (done);
+
+  % Backward (curve above)
+  \draw[back] (prog) to[bend left=35] (todo);
+  \draw[back] (qa)   to[bend left=35] (prog);
+  \draw[back] (done) to[bend left=35] (qa);
+
+  % Won't Do drop from any non-terminal state
+  \draw[drop] (todo.south) to[bend right=10] (wont.west);
+  \draw[drop] (prog.south) -- (wont.north west);
+  \draw[drop] (qa.south)   -- (wont.north east);
+
+  % Edge labels
+  \node[font=\small\itshape, above=1pt of $(prog)!0.5!(todo)$, yshift=10pt] {};
+  \node[font=\small\itshape, above=1pt of $(qa)!0.5!(prog)$,   yshift=10pt] {review tennis};
+  \node[font=\small\itshape, above=1pt of $(done)!0.5!(qa)$,   yshift=10pt] {};
+  \node[font=\small\itshape, accentPink] at ($(wont)+(0,-0.7)$) {drop as ``Won't Do''};
+\end{tikzpicture}
+#+END_SRC
+
+#+RESULTS: fig:issue-workflow
+[[file:docs/report/figures/issue_workflow.png]]
+
+
 
 *Agile Ceremonies*
 An implicit requirement of sprints is a syncronised schedule between team members. Given demands from other modules and the =MSc summer project= in particular, we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
