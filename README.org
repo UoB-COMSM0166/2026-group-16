@@ -717,7 +717,6 @@ We seelected a standard trunk-based git strategy using short-lived feature branc
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:branch-strategy
 
 [[file:docs/report/figures/branch_strategy.png]]
 
