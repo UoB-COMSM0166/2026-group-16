@@ -4,21 +4,26 @@
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-** TODO Team
+TODO
+- Jira workflow diagram
+- Git Branch diagram
+- Fix velocity latex
+
+** DONE Team
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
-| Helen Wong           | bs25971@bristol.ac.uk | TODO          |
-| Prapulla Naidu Tangi | sz25875@bristol.ac.uk | TODO          |
+| Helen Wong           | bs25971@bristol.ac.uk | AI            |
+| Prapulla Naidu Tangi | sz25875@bristol.ac.uk | Systems       |
 | Rishabh Gautam       | jk25370@bristol.ac.uk | TODO          |
-| Ciyang Weng          | qe25002@bristol.ac.uk | TODO          |
+| Ciyang Weng          | qe25002@bristol.ac.uk | Gameplay      |
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
-| Ziquan Liu           | nb25183@bristol.ac.uk | TODO          |
+| Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
+
 
 * DONE Introduction                                     :target_250w:rubic_5:
 :PROPERTIES:
 :WORD_COUNT: 153
 :END:
-
 [[file:docs/design/splash.jpeg]]
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved artillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
@@ -31,7 +36,7 @@ The artillery genre is one of earliest computer game formats. The earliest known
 ** DONE Concept
 We considered self-determination theory (Ryan & Deci, 2000) as applied to games by using Przybylski et al. Motivational Model of Video Game Engagement (2010) to search for and evaluate concepts.
 
-Our shortlist of ideas (below) is not exhuastive: missing wonderful genres include economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
+Our [[file:./docs/assignments/week1-ideas.md][shortlist]] of ideas is not exhuastive: missing many  genres including economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
 
 | Genre            | Description                   | Primary Need | Area of challenge            |
 |------------------+-------------------------------+--------------+------------------------------|
@@ -47,16 +52,10 @@ Our shortlist of ideas (below) is not exhuastive: missing wonderful genres inclu
 |------------------+-------------------------------+--------------+------------------------------|
 | Hyper-casual     | e.g. /Fruit Ninja/, /Angry Birds/ | Competence   | Pattern Recognition          |
 
-[[file:./docs/assignments/week1-ideas.md][week1-ideas.md]]
 
-We narrowed this list to two candidates:  /Puzzles/ and /Artillery/ on the basis of technical feasibility and the SDTs covered. From here, we developed a paper prototype for both.
+We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two candidates]]: /Puzzles/ and /Artillery/ on the basis of technical feasibility and the SDTs covered. From here, we developed a paper prototype for both. As a team we playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with a criteria derived from the project brief, SDTs and the paper prototype session.
 
- [[file:./docs/assignments/week2-game-ideas.md][week2-game-ideas.md]]
-As a team we playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with a criteria derived from the project brief, SDTs and the paper prototype session.
-
-- [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]
-
-Scores were given on 1-5 scale  and /Artillery/ was ultimately selected. We thought the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
+Scores were given on 1-5 scale  and /[[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]/ was ultimately selected as the winner. We felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
 
 | Criterion                      | Weight | Puzzles | Artillery |
 |--------------------------------+--------+---------+-----------|
@@ -646,14 +645,16 @@ In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDete
 
 * TODO Process                                      :target_750w:weight_15pc:
 ** DONE Workflow
-Our way of working was codified in [[file:CONTRIBUTING.md][=docs/CONTRIBUTING.md=]] at the start of the project and briefly summarised, here. We opted to take an empirical approach in selecting processes. Despite the popularity of many software focussed project management methodologies and in particular those related to the Agile Manifesto (Scrum, SAFe and Kanban), empirical evidence of their value remains uncertain.
+Our way of working was codified in [[file:CONTRIBUTING.md][docs/CONTRIBUTING.md]] at the start of the project and is briefly summarised, here. We tried to take an empirical approach to selecting processes. This is because despite the popularity of many "modern" software focussed project management methodologies e.g. Scrum, SAFe and (to a lesser extent) Kanban, empirical evidence of their value remains uncertain.
 
-For example, SAFe has not shown, in any rigorous sense, to outperform alternatives even in the enterprise contexts for which it was designed (Conboy & Caroll, 2019). Systematic reviews of Scrum and Kanban productivity find that the relationship may be positive but the evidence remains limited, composed largely of anecdotal case studies, often from consultancy organisations whose primary business depends on their benefits. (Cardozo et al., 2010; Ahmad et al., 2018).
+For example, SAFe has not shown, in any rigorous sense, to outperform alternatives. This includes in the enterprise contexts for which it was designed (Conboy & Caroll, 2019). Systematic reviews of Scrum and Kanban productivity find that the relationship may be positive but the evidence remains limited and is composed largely of anecdotal case studies. These studies are often published by consultancy organisations with a related business interest. (Cardozo et al., 2010; Ahmad et al., 2018).
 
 DORA, however, is the largest and longest running research programme on software practice. What we know from a decade of DORA surveys is that the stability of software and the speed of development is highly and positively correllated. This suggests the technical capabalities underlying a process is a significant factor in successful outcomes. With that in mind, we tried to implement a number of good dev-ops practices, focussing mainly on =continuous intergration and deployment= and =docs-as-code=.
 
 *Branching*
 We seelected a standard trunk-based git strategy using short-lived feature branches. =Main= is always deployable (we hope) and feature branches follow =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes). At the time of writing the repo has four live branches. The development branch of this report is =report= and is rebased periodically from =Main=.
+
+TODO Diagram
 
 *Pull requests*
 Each PR must branch from =main= and reference a Jira issue (=Closes SE-42=). Mirroring issue slugs and pull-request IDs is extremely important for orchestrating dependencies and raising bug tickets, in particular. Finally, a PR must collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced below and functions as a /contract/:
@@ -669,7 +670,7 @@ A feature is done when:
 #+END_QUOTE
 
 *Issue Transitions*
-TODO
+TODO DIAGRAM
 
 *Agile Ceremonies*
 An implicit requirement of sprints is a syncronised schedule between team members. Given demands from other modules and the =MSc summer project= in particular, we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
@@ -679,9 +680,11 @@ All design and planning material are under version control and where possible of
 
 Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
 
-In software engineering architectural decisions are design decisions that address architecturally significant requirements; they are considered to be hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant architectural decisions made during the design and development of system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat among others.
+In software engineering, architectural decisions are design decisions that address system-level requirements; they are considered hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant decisions made during the design and development of software system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat - among others.
 
-Ahmeti et al. (2024) show difficulties of documentation culture,  knowledge transfer and  prioritization of information to be documented is well addressed by ADRs and finding cooperation between developers improved as a consequence of using them. Our decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See: starting ADR ([[file:adr/0000-use-adrs.md][=docs/adr/0000-use-adrs.md=]]) in place.
+Ahmeti et al. (2024) show that difficulties in creating a documentation culture, transferring knoweledge and prioritising which information to document can be well addresserd by ADRs. They find cooperation between developers improve as a result of using them.
+
+Our decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions][Nygard-template]] markdown files. See starting ADR ([[file:adr/0000-use-adrs.md][docs/adr/0000-use-adrs.md]]) in place.
 
 #+BEGIN_QUOTE
 - *Title*: Short noun phrase (in filename and heading)
@@ -751,6 +754,15 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 [[file:docs/report/figures/jira_cumulative.png]]
 
 ** TODO Reflection
+- containerisation?
+- Literate environments e.g. Nix
+- Linters
+- AB Testing
+- Unit testing
+- Refactoring
+- git usage
+
+
 * TODO Sustainability                                           :target_500w:
 ** TODO Approach
 I have no idea what I'm doing.
@@ -838,7 +850,6 @@ Cardozo, E. S. F., Araújo Neto, J. B. F., França, A. C. C., & da Silva, F. Q. 
 Ahmad, M. O., Dennehy, D., Conboy, K., & Oivo, M. (2018). Kanban in Software Engineering: A Systematic Mapping Study. Journal of Systems and Software, 137, 96–113.
 
 Hart, S. G., & Staveland, L. E. (1988). Development of NASA-TLX (Task Load Index): Results of empirical and theoretical research. Advances in Psychology, 139–183. https://doi.org/10.1016/s0166-4115(08)62386-9.
-
 
 * DONE Appendices
 ** DONE A. Diagrams
@@ -1163,3 +1174,150 @@ if __name__ == "__main__":
 # Local Variables:
 # org-latex-compiler: "lualatex"
 # End:
+
+
+
+A two-player continuous-input artillery duel where the lecturers fight back.
+
+
+
+
+#+TITLE: Merchant Fighters Demo Deck
+#+AUTHOR: Group 16
+#+OPTIONS: toc:nil num:nil
+
+* Slide 1:  Title
+:PROPERTIES:
+:END:
+
+- *Title*: MERCHANT FIGHTERS
+- *Subtitle*: A two-player artillery due wehre the lecturers fight back
+- *Footer*: Group 16,  COMSM0166, University of Bristol
+
+** Speaker
+Welcome. Merchant Fighters is a two-player artillery game set inside the Merchant Venturers building, where the lecturers who teach us square off against each other. Last HP standing wins.
+
+
+* Slide 2: The Novel Idea
+:PROPERTIES:
+:END:
+
+1. *Continuous, two-player input.* We replaced the turn-based state machine with parallel,  both player and AI aim, charge and fire dynamically
+2. *Reflective projectile physics.* Shots ricochet off walls and boundaries instead of detonating on impact creating chaos, banked shot and rich strategy.
+3. *Set in Merchant Venturers.* Four lecturers (John, Kira, Mat, Jo) battle across two art routes: a Fantasy castle and a Modern Linux lab.
+
+** Speaker
+The artillery genre dates back to 1965, where it was Text-based, turn-by-turn. We extended it in two ways: continuous player-AI input replacing the turn-based loop and reflective projectile physics so shots ricochet rather than detonate. The whole thing is set inside Merchant Venturers, with our lecturers as the competitors.
+
+
+
+* Slide 3: How It Plays
+:PROPERTIES:
+:END:
+
+Easy and Medium drop you into the Fantasy Route,  a Western-fantasy castle with bow-and-arrow combat. Hard takes you into the Modern Route: a contemporary computer lab with paper...with anything else?
+
+** Speaker
+Players pick a difficulty, which routes them through one of two art styles: Fantasy castle for Easy and Medium, Modern computer lab for Hard. Same four lecturer-characters in both, drawn twice so the aesthetic carries through from character select to the battle screen.
+
+
+* Slide 4: Challenge 1: Continuous FSM
+:PROPERTIES:
+:END:
+
+** On-slide
+- *Eyebrow*: Challenge 1
+- *Title*: Continuous-input AI state machine
+
+** Speaker
+First challenge: making artillery feel dynamic... add some stuff from helen
+
+* Slide 5: hallenge 2: Ricochet Physics
+:PROPERTIES:
+:END:
+
+*Three part process*, per frame
+
+1. *Integrate.* Explicit Euler with gravity and a horizontal wind term, dt-clamped at 33 ms so tab-focus jumps don't tunnel through walls.
+2. *Broad phase.* A 128-px uniform spatial grid prunes static-body candidates to the cells the projectile actually overlaps.
+3. *Narrow phase.* Circle-vs-AABB intersection returns a contact point and a surface normal, then v' = v − 2(v·n̂)n̂.
+
+** Speaker
+Second challenge: the ricochet. Three-stage pipeline every frame, we integrate position with gravity and wind, broad-phase collision check against a spatial grid, narrow-phase circle-vs-AABB returning a surface normal. The reflection itself is the standard v minus twice v dot n times n. The aim preview runs the same integrator so the dotted arc on screen helps the user fire.
+
+
+* Slide 6: Meet the Team
+:PROPERTIES:
+:TIMING: ~15s per member, ~90s total
+:NOTE: Duplicate this slide for each of the 6 team members
+:END:
+
+** On-slide (Josh's example)
+- *Eyebrow*: Meet the team
+- *Title*: Josh Thompson:  Documentation
+
+Some of the things I worked on:
+- Project documentation: =CONTRIBUTING.md=, ADRs and  the report
+- puzzle-game concept and the continuous-FSM design
+- heuristic evaluation,  NASA-TLX & SUS analysis
+
+
+
+* Slide 7:  The Process
+:PROPERTIES:
+:TIMING: ~20s
+:END:
+
+** On-slide
+- *Eyebrow*: How we worked
+- *Title*: Pragmatic, evidence-led process
+
+1. *Empirical method choices*
+2. *Trunk-based branching.*
+3. *Docs-as-code.*
+4. *Metrics .*
+** Speaker
+On process,  we tried to be evidence-led. priortising good dev-ops practices. Trunk-based git, conventional commits, ADRs. We experimented with literate programming for the report The report. 67 issues, 91% completion, 84 commits.
+
+
+* Slide 8:  Evaluation
+:PROPERTIES:
+:END:
+
+** On-slide: Did it work?
+- *Title*: Heuristic review + NASA-TLX + SUS
+
+- *78.8*:  SUS score (Hard). 'Good' band; sessions reaching 'excellent'.
+- *p = 0.043*: Hard > Easy on Raw TLX. Mann-Whitney U, one-sided.
+- *12 / 9 / 3*: Heuristic findings. Total / negative / positive (Nielsen).
+
+Caption: n=24 playtesters across two sessions. Both difficulties sit in the 'good' band on SUS; Hard significantly raised cognitive load on Raw TLX without raising frustration.
+
+** Speaker
+We ran Nielsen's heuristics:  twelve findings, nine negative, three positive and a NASA-TLX plus SUS playtest with 24 respondents. SUS landed at 78 across both modes, comfortably in the 'good' band. Raw TLX showed Hard significantly more demanding than Easy, but frustration stayed near floor in both, meaning the harder route raised cognitive load without irritating people.
+
+* Slide 9: What's Next
+:PROPERTIES:
+:TIMING: ~20s
+:END:
+
+** On-slide
+- *Eyebrow*: What's next?
+- *Title*: Three horizons
+
+*Horizon 1: Now: exams*
+- Address H7 cluster from heuristic review
+- Sound design pass
+
+*Horizon 2: Summer 2026*
+- Automated unit tests on simulation classes
+- CI/CD pipeline with auto-deploy to Pages
+- Counter-balanced playtest, larger n
+
+*Horizon 3L The distant future*
+- Online multiplayer over WebRTC
+- Procedural arenas beyond Merchant Venturers
+- Tournament mode and persistent leaderboard
+
+** Speaker
+Three horizons. Near-term we want to address the heuristic findings, add sound, and ship the accessibility toggle. Mid-term: automated tests, CI/CD, a larger playtest. Long-term: online multiplayer, procedural arenas, persistent leaderboards
