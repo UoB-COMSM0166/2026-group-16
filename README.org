@@ -718,6 +718,7 @@ We seelected a standard trunk-based git strategy using short-lived feature branc
 #+END_SRC
 
 #+RESULTS: fig:branch-strategy
+
 [[file:docs/report/figures/branch_strategy.png]]
 
 *Pull requests*
@@ -806,6 +807,7 @@ We used =git merge --squash= to collapse commits on a feature branch into a sing
 #+END_SRC
 
 #+RESULTS: fig:merge-strategy
+
 [[file:docs/report/figures/merge_strategy.png]]
 
 
@@ -862,6 +864,7 @@ Tickets flow forward through four states; any non-terminal state can regress one
 #+END_SRC
 
 #+RESULTS: fig:issue-workflow
+
 [[file:docs/report/figures/issue_workflow.png]]
 
 
