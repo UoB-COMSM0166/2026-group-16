@@ -5,9 +5,7 @@
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
 
-- [ ] Latex snippets should not export an inline link to the file.
 - [ ] Latex snippets in Annex should have idiomatic list numbers.
-- [X] Velocity equation should be exported as image so it renders in Github. There is already a link, in place.
 - [ ] Collect references and citations and link properly.
 
 ** DONE Team
@@ -19,7 +17,6 @@
 | Ciyang Weng          | qe25002@bristol.ac.uk | Gameplay      |
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
-
 
 * DONE Introduction                                     :target_250w:rubic_5:
 :PROPERTIES:
@@ -76,7 +73,6 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 
 
 [[file:docs/report/figures/onion.png]]
-
 
 
 
@@ -255,7 +251,7 @@ Finally, the reflection of a ricochet is given by:
 
 [[file:docs/report/figures/ricochet_reflection.png]]
 
-where `v` is the incoming velocity vector, `ň`  is the unit surface normal at the point of collision, and `v'` is the reflected velocity.
+where /v/ is the incoming velocity vector, /ň/ is the unit surface normal at the point of collision, and /v'/ is the reflected velocity.
 
 ** TODO Assets
 TODO
@@ -336,15 +332,37 @@ Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfort
 - Drift: TLX was shortened to raw ratings (no pairwise weighted step) so scores are /RAW-TLX/ in Byers/Bittner (1989) terms and not the weighted original
 - Order: respondents were not counter-balanced across difficulty
 ** DONE Test Strategy
-Testing on this project is /pragmatic/ not /exhaustive/. we didn't have time to produce an automated test suite and the CI pipeline does not build automatically. ~Wait double check this~. Three areas of manual testing compensate:
+Testing on this project is /pragmatic/ not /exhaustive/ but comprises both an automated and manual test strategy.
+*** *Automated Testing*
+We analysed /method-level/ coverage using a runtime probe. Every method on the protototype of each test target was wrapped in a conuter and the suite was invoked. Methods whose counter remained '0' were recorded as unexercised.
 
+| Class              | Methods covered |    % |
+|--------------------+-----------------+------|
+| ANGLE              | 2 / 2           | 100% |
+| POWER              | 3 / 3           | 100% |
+| CollisionDetection | 9 / 11          |  82% |
+| WEAPONS            | 3 / 3           | 100% |
+| AutoPlayer         | 6 / 27          |  22% |
+| Navigator          | 4 / 7           |  57% |
+| Language           | 2 / 2           | 100% |
+|--------------------+-----------------+------|
+| *Total*              | *29 / 55*         |  *53%* |
+|                    |                 |      |
+
+The total (/53%)/ is dragged down by a single class: =AutoPlayer= which is heavily asserted in some areas but has 21 as yet untested private helpers. AI development and our class,  =AutoPlayer=, was a new experience for us and as a result we were learning and experimenting as we went. In this context, TTD while ideal, is quite difficult to achieve in practice.
+
+Treating =AutoPlayer= as an outlier, our class average is 88% with the simulation classes achieving  full coverage. With probe instrumentation in place =runAll()= reports *129 / 137 assertions passing (94.2%)*
+
+*Limitations*
+Method coverage is a proxy. The probe records whether a method is ever called. Comprehensive line-by-line and branch coverage would require something more sophisticated like Jest.
+
+*** *Manual Testing*
 1. Exploratory Play: each merged feature is walked through at the Thursday workshop; defects surface as Jira tasks (61 created, 56 Done)
 2. Heuristic review: one session, all ten heuristics, twelve findings
 3. Quantitative playtest: The TLX + SUS instrument can be used as a regression test in future
 
-In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDetection=) would be a good place to begin automated unit testing.
 
-*Smoke-test Matrix*
+*Smoke-Test Matrix*
 
 | # | Scenario                           | P1 | P2 | Predicted outcome         | Predicted status |
 |---+------------------------------------+----+----+---------------------------+------------------|
@@ -352,7 +370,7 @@ In future, the simulation classes for instance (=ANGLE=, =POWER=, =CollisionDete
 | 2 | Charge above cap                   | ✓  | ✓  | =POWER= clamps at max=100   | Pass             |
 | 3 | Aim at ceiling or floor            | ✓  | ✓  | =ANGLE= clamps to [0°, 80°] | Pass             |
 | 4 | Projectile vs opponent             | ✓  | ✓  | −15 HP, "-15" float text  | Pass             |
-| 5 | Projectile vs wall                 | ✓  | ✓  | Projectile despawns       | No?              |
+| 5 | Projectile vs wall                 | ✓  | ✓  | Projectile despawns       | No               |
 | 6 | Projectile vs ground               | ✓  | ✓  | Despawn, turn rotates     | Pass             |
 | 7 | Both players charge simultaneously | ?  | ?  | Both spawn in same frame  | ?                |
 | 8 | HP reaches 0                       | ✓  | ✓  | Win-screen overlay drawn  | Pass             |
@@ -487,7 +505,6 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 - Refactoring
 - git usage
 
-
 * TODO Sustainability                                           :target_500w:
 ** TODO Approach
 I have no idea what I'm doing.
@@ -577,7 +594,6 @@ The team has a diversity of lived professional and academic experience from all 
 |----------------+-------------------------------------------------------------------------------------------------------------|
 | Ziquan Liu     |                                                                                                             |
 |                |                                                                                                             |
-
 
 * TODO References
 TODO: BibTeX-style list. Notes:
@@ -1093,7 +1109,6 @@ Sources under =docs/design/=, exports under =docs/figures/=.
 
 #+RESULTS: fig:ricochet-reflection
 [[file:docs/report/figures/ricochet_reflection.png]]
-
 
 ** DONE B. NASA-TLX Data
 *** DONE B.1 Easy: TLX (0–10) and SUS (0–100)
