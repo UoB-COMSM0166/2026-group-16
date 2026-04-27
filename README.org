@@ -1,13 +1,9 @@
-#+TITLE:  Merchant Fighters
+#+TITLE:  Project Report
 #+AUTHOR: Helen Wong, Prapulla Naidu Tangi, Rishabh Gautam, Ciyang Weng, Josh Thompson, Ziquan Liu
 #+OPTIONS: toc:2 num:t ^:nil
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-
-- [ ] Latex snippets in Annex should have idiomatic list numbers.
-- [ ] Collect references and citations and link properly.
-
 ** DONE Team
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
