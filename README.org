@@ -6,7 +6,7 @@
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
 
 * TODO Snags
-- [ ] Latex snippets should not export an inline link to the file.
+- [X] Latex snippets should not export an inline link to the file.
 - [ ] Latex snippets in Annex should have idiomatic list numbers.
 - [ ] Velocity equation should be exported as image so it renders in Github. There is already a link, in place.
 - [ ] Collect references and citations and link properly.
@@ -253,8 +253,10 @@ if (hit) { p.alive = false; return; }
 #+END_SRC
 
 Finally, the reflection of a ricochet is given by:
-\[ \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \]
-where \(\mathbf{v}\) is the incoming velocity vector, \(\hat{\mathbf{n}}\) is the unit surface normal at the point of collision, and \(\mathbf{v'}\) is the reflected velocity.
+
+[[file:docs/report/figures/ricochet_reflection.png]]
+
+where `v` is the incoming velocity vector, `ň`  is the unit surface normal at the point of collision, and `v'` is the reflected velocity.
 
 ** TODO Assets
 TODO
@@ -1079,6 +1081,17 @@ Sources under =docs/design/=, exports under =docs/figures/=.
   \node[font=\small\itshape, accentPink] at ($(wont)+(0,-0.7)$) {drop as ``Won't Do''};
 \end{tikzpicture}
 #+END_SRC
+
+#+NAME: fig:ricochet-reflection
+#+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}" "\\definecolor{midgrey}{HTML}{808080}")
+#+HEADER: :results file graphics :file docs/report/figures/ricochet_reflection.png :imagemagick yes
+#+HEADER: :iminoptions -density 600 -background none
+#+HEADER: :imoutoptions -quality 100
+#+HEADER: :fit yes :border 2mm
+#+BEGIN_SRC latex
+\textcolor{midgrey}{\( \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \)}
+#+END_SRC
+
 
 ** DONE B. NASA-TLX Data
 *** DONE B.1 Easy: TLX (0–10) and SUS (0–100)
