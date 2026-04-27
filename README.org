@@ -48,9 +48,12 @@ Our [[file:./docs/assignments/week1-ideas.md][shortlist]] of ideas is not exhuas
 | Hyper-casual     | e.g. /Fruit Ninja/, /Angry Birds/ | Competence   | Pattern Recognition          |
 
 
-We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two candidates]]: /Puzzles/ and /Artillery/ on the basis of technical feasibility and the SDTs covered. From here, we developed a paper prototype for both. As a team we playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with a criteria derived from the project brief, SDTs and the paper prototype session.
+We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two candidates]]: /[[file:./docs/design/concepts/DINS.png][Puzzles]] and Artillery/ on the basis of technical feasibility and the SDTs covered. From here, we developed a paper prototype for both. As a team we playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with a criteria derived from the project brief, SDTs and the paper prototype session.
 
-Scores were given on 1-5 scale  and /[[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Artillery]]/ was ultimately selected as the winner. We felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
+Scores were given on 1-5 scale and /Artillery/ was ultimately selected as the winner. We felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
+
+[[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4]]
+
 
 | Criterion                      | Weight | Puzzles | Artillery |
 |--------------------------------+--------+---------+-----------|
@@ -70,7 +73,6 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 
 
 [[file:docs/report/figures/onion.png]]
-
 
 
 
@@ -150,11 +152,11 @@ A representative end-to-end interaction is shown in figure [[fig:sequence]]: P1 
 ** DONE Art Style
 The game is set on a 1920×1080 canvas in pixel art, with two parallel art routes selected by difficulty. /Easy/ and /Medium/ occur across Fantasy Route: a Western-fantasy castle aesthetic with bow-and-arrow combat.
 
-/Hard/ runs occurs across a modern style: a contemporary computer-lab classroom with paper-scroll, red-pen and error-popup projectiles representing pedagogical hazard. Four lecturer-come-characters: =John= =Kira=, =Matt= and =Jo= are drawn in both routes (figure [[fig:characters-1]] shows John and Kira; figure [[fig:characters-2]] shows Mat and Jo). The same character has a Fantasy portrait and a "serious" Modern portrait so that the route choice carries through to character select before the player reaches the battle screen.
-
 #+CAPTION: John (left pair) and Kira (right pair). Top row: Fantasy portraits and sprites. Bottom row: Modern Route equivalents.
 #+NAME: fig:characters-1
 [[file:docs/design/character-1.jpg]]
+
+/Hard/ runs occurs across a modern style: a contemporary computer-lab classroom with paper-scroll, red-pen and error-popup projectiles representing pedagogical hazard. Four lecturer-come-characters: =John= =Kira=, =Matt= and =Jo= are drawn in both routes (figure [[fig:characters-1]] shows John and Kira; figure [[fig:characters-2]] shows Mat and Jo). The same character has a Fantasy portrait and a "serious" Modern portrait so that the route choice carries through to character select before the player reaches the battle screen.
 
 #+CAPTION: Mat (left pair) and Jo (right pair), Fantasy and Modern routes.
 #+NAME: fig:characters-2
