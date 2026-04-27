@@ -62,6 +62,6 @@ function drawIntroScreen() {
   fill(hoverBack ? color(100, 100, 160) : color(70, 70, 110));
   rect(backX, backY, backW, backH, 12);
   fill(255); textSize(18); textAlign(CENTER, CENTER);
-  text("← BACK", backX + backW / 2, backY + backH / 2);
+  text(LANG.t("btnBack"), backX + backW / 2, backY + backH / 2);
   pop();
 }
