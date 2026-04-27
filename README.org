@@ -22,7 +22,8 @@
 :PROPERTIES:
 :WORD_COUNT: 153
 :END:
-[[file:docs/design/splash.jpeg]]
+[[file:./media/screenshot.png]]
+
 
 /Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved artillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - Replacing a turn-based state machine with continuous player, AI input
@@ -582,7 +583,7 @@ The team has a diversity of lived professional and academic experience from all 
 | Josh Thompson  | I used NotebookLLM for parsing and summarising literature on research methods.                         |
 |                | I used Claude for learning and debugging LaTex and structuring an API query to Jira.                   |
 |                | I used Claude to write: a piece of regex and to link my bibliography to the inline citations, post-hoc |
-|                | these were two things that are too tedious and complicated, in this author's opinion.                  |
+|                | these were  things that are both, in this author's opinion, too tedious or complicated to do myself    |
 |----------------+--------------------------------------------------------------------------------------------------------|
 | Helenm Wong    |                                                                                                        |
 |----------------+--------------------------------------------------------------------------------------------------------|
