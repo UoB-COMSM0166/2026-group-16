@@ -7,11 +7,20 @@ function drawIntroScreen() {
   }
 
   // bg
-  if (imgIntroBg) {
-    drawImageCover(imgIntroBg, 0, 0, 1600, 900);
-  } else {
-    background(0);
+  if (LANG.current==="ZH"){
+    if (imgIntroZhBg) {
+      drawImageCover(imgIntroZhBg, 0, 0, 1600, 900);
+    } else {
+      background(0);
+    }
+  }else{
+    if (imgIntroBg) {
+      drawImageCover(imgIntroBg, 0, 0, 1600, 900);
+    } else {
+      background(0);
+    }
   }
+
 
   // Start button
   const btnX = 634, btnY = 664, btnW = 305, btnH = 90;
@@ -21,12 +30,25 @@ function drawIntroScreen() {
   push();
   if (hoverStart) tint(200, 200, 255);
   else noTint();
-  if (imgIntroStartBtn) {
-    image(imgIntroStartBtn, btnX, btnY + floatOffset, btnW, btnH);
-  } else {
-    fill(0, 150, 200);
-    rect(btnX, btnY + floatOffset, btnW, btnH);
+
+
+
+  if (LANG.current==="ZH"){
+    if (imgIntroZhStartBtn) {
+      image(imgIntroZhStartBtn, btnX, btnY + floatOffset, btnW, 204);
+    } else {
+      fill(0, 150, 200);
+      rect(btnX, btnY + floatOffset, btnW, btnH);
+    }
+  }else{
+    if (imgIntroStartBtn) {
+      image(imgIntroStartBtn, btnX, btnY + floatOffset, btnW, btnH);
+    } else {
+      fill(0, 150, 200);
+      rect(btnX, btnY + floatOffset, btnW, btnH);
+    }
   }
+
   noTint();
   pop();
 

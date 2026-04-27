@@ -111,7 +111,7 @@ let bioM_John, bioM_Kira, bioM_Mat, bioM_Jo;
 
 //start screen animation
 let imgStartBg, imgTitle, imgBtnStart, imgBtnIntro;
-let imgIntroBg, imgIntroStartBtn;
+let imgIntroBg, imgIntroStartBtn, imgIntroZhBg, imgIntroZhStartBtn;
 let introAnim;
 let startAnim;
 let levelAnim;
@@ -322,7 +322,9 @@ function preload() {
   imgDButton = loadImage("assets/images/SingleDouble/d_button.png");
 
   imgIntroBg = loadImage("assets/images/IntroControls/intro_bg.png");
+  imgIntroZhBg = loadImage("assets/images/IntroControls/intro_zh_bg.png");
   imgIntroStartBtn = loadImage("assets/images/IntroControls/start_button.png");
+  imgIntroZhStartBtn = loadImage("assets/images/IntroControls/start_button_zh.png");
 }
 
 function setup() {
