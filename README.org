@@ -5,10 +5,9 @@
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
 
-* TODO Snags
-- [X] Latex snippets should not export an inline link to the file.
+- [ ] Latex snippets should not export an inline link to the file.
 - [ ] Latex snippets in Annex should have idiomatic list numbers.
-- [ ] Velocity equation should be exported as image so it renders in Github. There is already a link, in place.
+- [X] Velocity equation should be exported as image so it renders in Github. There is already a link, in place.
 - [ ] Collect references and citations and link properly.
 
 ** DONE Team
@@ -1086,7 +1085,7 @@ Sources under =docs/design/=, exports under =docs/figures/=.
 #+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}" "\\definecolor{midgrey}{HTML}{808080}")
 #+HEADER: :results file graphics :file docs/report/figures/ricochet_reflection.png :imagemagick yes
 #+HEADER: :iminoptions -density 600 -background none
-#+HEADER: :imoutoptions -quality 100
+#+HEADER: :imoutoptions -quality 100 -resize 200x
 #+HEADER: :fit yes :border 2mm
 #+BEGIN_SRC latex
 \textcolor{midgrey}{\small\( \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \)}
