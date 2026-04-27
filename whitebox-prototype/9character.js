@@ -231,6 +231,7 @@ function drawCharacterScreen() {
     fill(150, 150, 150); rect(btnX, btnY, btnW, btnH, 20);
     fill(255); textSize(24); textAlign(CENTER, CENTER);
     textFont(pixelFont);
+    if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
     text("← BACK", 1600 / 2, btnY + btnH / 2);
   }
 
@@ -294,6 +295,7 @@ function drawCharacterScreen() {
 
       if (pixelFont) textFont(pixelFont);
       else textFont(isModern ? 'Courier New' : 'Georgia');
+      if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
       textStyle(NORMAL);
       textSize(fontSize);
       fill(40, 25, 10);
@@ -304,6 +306,7 @@ function drawCharacterScreen() {
       const textAreaY = panelY + panelH * 0.65;
       let startY = textAreaY;
 
+      if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
       // Word-wrap the bio text
       let words = bioStr.split(' ');
       let lines = [];

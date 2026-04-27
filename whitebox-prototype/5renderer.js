@@ -171,6 +171,7 @@ function drawBackBtn(y) {
   fill(0, 0, 0, 120); noStroke(); rect(bkX + 3, y + 3, bkW, bkH, 14);
   fill(80, 80, 100); rect(bkX, y, bkW, bkH, 14);
   fill(255); textSize(18); textAlign(CENTER, CENTER); noStroke();
+  if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
   text("← BACK", 1600 / 2, y + bkH / 2);
   pop();
 }

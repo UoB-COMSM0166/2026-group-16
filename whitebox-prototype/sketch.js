@@ -241,7 +241,10 @@ function preload() {
   imgDiffMedium = loadImage("assets/images/DifficultySelect/medium_button.png");
   imgDiffHard = loadImage("assets/images/DifficultySelect/hard_button.png");
 
+  //all the screen used pixelFont, weapon used pixelFont_intro
+  //pixelFont_intro can display chinese but font size becomes too small
   pixelFont = loadFont('assets/font/Press_Start_2P/PressStart2P-Regular.ttf');
+  pixelFont_CN = loadFont('assets/font/NotoSansSC-VariableFont_wght.ttf');
   pixelFont_intro = loadFont('assets/font/ZLabsBitmap_12px_CN.ttf');
 
   const BIO_F_BASE = "assets/images/CharacterSelect/fantasy/";

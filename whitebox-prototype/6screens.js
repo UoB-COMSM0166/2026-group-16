@@ -212,7 +212,7 @@ function drawPlayScreen() {
 
     // "BLACKOUT" label
     fill(255, 60, 60); textAlign(CENTER, CENTER); textSize(48); textStyle(pixelFont); noStroke();
-    text("⚫ BLACKOUT", 1600 / 2, 900 / 2);
+    text("BLACKOUT", 1600 / 2, 900 / 2);
     textStyle(pixelFont);
     pop();
   }
@@ -269,7 +269,9 @@ function drawPlayScreen() {
     const winnerHP = winnerIsRish ? catHP : dogHP;
     const winnerImg = winnerIsRish ? imgPlayer : imgTarget;
 
-    push(); textFont(pixelFont); fill(0, 0, 0, 180); rect(0, 0, 1600, 900);
+    push();
+    if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
+    fill(0, 0, 0, 180); rect(0, 0, 1600, 900);
     const px = 1600 / 2, py = 900 / 2 - 60, ps = 200;
     drawContain(winnerImg, px - ps / 2, py - ps / 2, ps, ps);
     textAlign(CENTER, CENTER);
@@ -397,7 +399,7 @@ function drawStartScreen() {
   pop();
 
   push();
-  textFont(pixelFont);
+  if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
   textSize(28);
   fill(225, 225, 225, btnAlpha);
   textAlign(CENTER, CENTER);
@@ -438,7 +440,7 @@ function drawLevelScreen() {
 
   // title
   push();
-  textFont(pixelFont);
+  if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
   textSize(70);
   textAlign(CENTER, CENTER);
   fill(255, 220, 50);
@@ -483,7 +485,7 @@ function drawLevelScreen() {
 
     // draw button text (centered)
     push();
-    textFont(pixelFont);
+    if (LANG.current==="ZH"){textFont(pixelFont_CN);}else{textFont(pixelFont);}
     textSize(30);
     textAlign(CENTER, CENTER);
     fill(0);
