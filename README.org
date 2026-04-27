@@ -52,7 +52,7 @@ We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two cand
 
 Scores were given on 1-5 scale and /Artillery/ was ultimately selected as the winner. We felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
 
-[[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4]]
+[[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Paper Prototype Video]]
 
 
 | Criterion                      | Weight | Puzzles | Artillery |
