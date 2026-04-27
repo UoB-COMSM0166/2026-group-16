@@ -805,8 +805,6 @@ We used =git merge --squash= to collapse commits on a feature branch into a sing
 \end{tikzpicture}
 #+END_SRC
 
-#+RESULTS: fig:merge-strategy
-
 [[file:docs/report/figures/merge_strategy.png]]
 
 
@@ -861,8 +859,6 @@ Tickets flow forward through four states; any non-terminal state can regress one
   \node[font=\small\itshape, accentPink] at ($(wont)+(0,-0.7)$) {drop as ``Won't Do''};
 \end{tikzpicture}
 #+END_SRC
-
-#+RESULTS: fig:issue-workflow
 
 [[file:docs/report/figures/issue_workflow.png]]
 
