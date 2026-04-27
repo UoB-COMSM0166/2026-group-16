@@ -1089,8 +1089,11 @@ Sources under =docs/design/=, exports under =docs/figures/=.
 #+HEADER: :imoutoptions -quality 100
 #+HEADER: :fit yes :border 2mm
 #+BEGIN_SRC latex
-\textcolor{midgrey}{\( \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \)}
+\textcolor{midgrey}{\small\( \mathbf{v'} = \mathbf{v} - 2(\mathbf{v} \cdot \hat{\mathbf{n}})\hat{\mathbf{n}} \)}
 #+END_SRC
+
+#+RESULTS: fig:ricochet-reflection
+[[file:docs/report/figures/ricochet_reflection.png]]
 
 
 ** DONE B. NASA-TLX Data
