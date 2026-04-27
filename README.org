@@ -563,37 +563,37 @@ TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
 The team has a diversity of lived professional and academic experience from all over the world. This includes .NET development, game development, finance and behavioural research. However, we tried where possible, to assign work according to our interests as well as our strengths.
 
 
-| Name                 | Role          | Key contributions                         |
-|----------------------+---------------+-------------------------------------------|
-| Helen Wong           | TODO          | TODO                                      |
-| Prapulla Naidu Tangi | TODO          | TODO                                      |
-| Rishabh Gautam       | TODO          | TODO                                      |
-| Ciyang Weng          | TODO          | TODO                                      |
-|----------------------+---------------+-------------------------------------------|
-| Josh Thompson        | Documentation | contributing.md, analysis, report.org,    |
-|                      |               | puzzle game concept, continuous FSM       |
-|----------------------+---------------+-------------------------------------------|
-| Ziquan Liu           | UI Programmer | TODO                                      |
+| Name                 | Role          | Key contributions                      |
+|----------------------+---------------+----------------------------------------|
+| Helen Wong           | TODO          | TODO                                   |
+| Prapulla Naidu Tangi | TODO          | TODO                                   |
+| Rishabh Gautam       | TODO          | TODO                                   |
+| Ciyang Weng          | TODO          | TODO                                   |
+|----------------------+---------------+----------------------------------------|
+| Josh Thompson        | Documentation | CONTRIBUTING.md, analysis, README.org, |
+|                      |               | puzzle game concept, continuous FSM    |
+|----------------------+---------------+----------------------------------------|
+| Ziquan Liu           | UI Programmer | TODO                                   |
 
 ** AI Statement
 
-| Name           | Usage                                                                                                       |
-|----------------+-------------------------------------------------------------------------------------------------------------|
-| Josh Thompson  | I used NotebookLLM for parsing and summarising literature on research methods.                              |
-|                | I used Claude for learning and debugging LaTex and structuring an API query to Jira. I also forgot to       |
-|                | reference as I wrote this document  :( I used Claude to link my bibliography to inline citations post-hoc.  |
-|                | It was just too painful equally, I asked Claude to write some regex. Regex is just too grim to learn. Sorry |
-|----------------+-------------------------------------------------------------------------------------------------------------|
-| Helenm Wong    |                                                                                                             |
-|----------------+-------------------------------------------------------------------------------------------------------------|
-| Prapulla Tangi |                                                                                                             |
-|----------------+-------------------------------------------------------------------------------------------------------------|
-| Rishabh Gautam |                                                                                                             |
-|----------------+-------------------------------------------------------------------------------------------------------------|
-| Ciyang Weng    |                                                                                                             |
-|----------------+-------------------------------------------------------------------------------------------------------------|
-| Ziquan Liu     |                                                                                                             |
-|                |                                                                                                             |
+| Name           | Usage                                                                                                  |
+|----------------+--------------------------------------------------------------------------------------------------------|
+| Josh Thompson  | I used NotebookLLM for parsing and summarising literature on research methods.                         |
+|                | I used Claude for learning and debugging LaTex and structuring an API query to Jira.                   |
+|                | I used Claude to write: a piece of regex and to link my bibliography to the inline citations, post-hoc |
+|                | these were two things that are too tedious and complicated, in this author's opinion.                  |
+|----------------+--------------------------------------------------------------------------------------------------------|
+| Helenm Wong    |                                                                                                        |
+|----------------+--------------------------------------------------------------------------------------------------------|
+| Prapulla Tangi |                                                                                                        |
+|----------------+--------------------------------------------------------------------------------------------------------|
+| Rishabh Gautam |                                                                                                        |
+|----------------+--------------------------------------------------------------------------------------------------------|
+| Ciyang Weng    |                                                                                                        |
+|----------------+--------------------------------------------------------------------------------------------------------|
+| Ziquan Liu     |                                                                                                        |
+|                |                                                                                                        |
 
 * TODO References
 TODO: BibTeX-style list. Notes:
