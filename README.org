@@ -55,6 +55,10 @@ Scores were given on 1-5 scale and /Artillery/ was ultimately selected as the wi
 [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Paper Prototype Video]]
 
 
+<object data="./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4" height=300 width=300></object>
+
+
+
 | Criterion                      | Weight | Puzzles | Artillery |
 |--------------------------------+--------+---------+-----------|
 | Technical feasibility          |    20% |       4 |         4 |
