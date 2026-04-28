@@ -581,7 +581,6 @@ The team has a diversity of lived professional and academic experience from all 
 | Josh Thompson  | I used NotebookLLM for parsing and summarising literature on research methods.                         |
 |                | I used Claude for learning and debugging LaTex and structuring an API query to Jira.                   |
 |                | I used Claude to write: a piece of regex and to link my bibliography to the inline citations, post-hoc |
-|                | these were  things that are both, in this author's opinion, too tedious or complicated to do myself    |
 |----------------+--------------------------------------------------------------------------------------------------------|
 | Helenm Wong    |                                                                                                        |
 |----------------+--------------------------------------------------------------------------------------------------------|
