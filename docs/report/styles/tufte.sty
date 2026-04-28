@@ -1,23 +1,13 @@
-% tufte.sty -- shared aesthetics for TikZ figures
-% Use:  \usepackage{tufte}    (in a standalone preamble)
-%   or  \input{tufte.sty}     (in org-babel :headers blocks if you'd rather)
+% Use:  \usepackage{tufte}    (in a standalone)
+%   or  \input{tufte.sty}     (in org-babel :headers blocks)
 %
-% Provides:
-%   colours:  ink, accentBlue, accentRed, accentPink, accentGreen, paper
-%   styles:   ink, accent-pos, accent-neg, accent-alt, ringfill,
-%             uc (use-case), actor, sysbox, association, include
-%
-% Background is left transparent (no \pagecolor). When exporting to PNG via
-% imagemagick add  -background none  to the convert call.
-
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{tufte}[2026/04/26 Tufte-esque TikZ palette and styles]
-
 \RequirePackage{tikz}
 \RequirePackage{xcolor}
 \usetikzlibrary{positioning,shapes.geometric,arrows.meta}
 
-% ---- palette (matches tufte.mplstyle exactly) -------------------------------
+%  palette
 \definecolor{ink}{HTML}{6B6B6B}          % mid grey for axes/labels/strokes
 \definecolor{accentBlue}{HTML}{3B7BB8}
 \definecolor{accentRed}{HTML}{C0392B}
@@ -25,11 +15,10 @@
 \definecolor{accentGreen}{HTML}{4A8B5C}
 \definecolor{paper}{HTML}{FAF7F0}        % only used if you ever WANT a tinted bg
 
-% ---- global defaults --------------------------------------------------------
-% Every draw command picks up ink unless overridden, every node uses serif.
+%  global defaults
 \tikzset{
   every picture/.style = {
-    /utils/exec = \fontfamily{ppl}\selectfont,    % Palatino-ish serif fallback
+    /utils/exec = \fontfamily{ppl}\selectfont,
     semithick,
     color = ink,
     text  = ink,
@@ -49,8 +38,7 @@
   faint/.style        = {draw=ink!60, line width=0.4pt},
 }
 
-% ---- diagram-specific styles ------------------------------------------------
-% Use-case ellipse: no fill, just an outline. Tufte preferred outlines to fills.
+%  diagram-specific styles
 \tikzset{
   uc/.style = {
     draw=ink, line width=0.5pt,

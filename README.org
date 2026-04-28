@@ -9,7 +9,7 @@
 |----------------------+-----------------------+---------------|
 | Helen Wong           | bs25971@bristol.ac.uk | AI            |
 | Prapulla Naidu Tangi | sz25875@bristol.ac.uk | Systems       |
-| Rishabh Gautam       | jk25370@bristol.ac.uk | TODO          |
+| Rishabh Gautam       | jk25370@bristol.ac.uk | Gameplay      |
 | Ciyang Weng          | qe25002@bristol.ac.uk | Gameplay      |
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
@@ -53,10 +53,6 @@ We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two cand
 Scores were given on 1-5 scale and /Artillery/ was ultimately selected as the winner. We felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
 
 [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Paper Prototype Video]]
-
-
-<object data="./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4" height=300 width=300></object>
-
 
 
 | Criterion                      | Weight | Puzzles | Artillery |
@@ -649,7 +645,7 @@ Sources under =docs/design/=, exports under =docs/figures/=.
 #+CAPTION: Stakeholder onion for /Merchant Fighters/.
 #+NAME: fig:stakeholder-onion
 #+HEADER: :results file graphics :file docs/report/figures/onion.png :imagemagick yes
-#+HEADER: :iminoptions -density 600 -background none -alpha remove
+#+HEADER: :iminoptions -density 600 -background none
 #+HEADER: :imoutoptions -quality 100
 #+HEADER: :headers '("\\usepackage{./docs/report/styles/tufte}")
 #+HEADER: :fit yes :border 2mm
