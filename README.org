@@ -4,7 +4,7 @@
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-** DONE Team
+** DONE Meta
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
 | Helen Wong           | bs25971@bristol.ac.uk | AI            |
@@ -13,6 +13,10 @@
 | Ciyang Weng          | qe25002@bristol.ac.uk | Gameplay      |
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
+
+This report has a couple of features a curious reader may be interested in. All visual information is styled from a bespoke stylesheet. It was designed according to Tufte /Visual Display of Quantitative Information/ (1983). Tufte's data-ink ratio framework is widely adopted in scientific and information design.
+
+All visual information present is generated procedurally from code compiled from this report. This permits an interested reader to observe and run our analytic pipeline in full. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
 
 * DONE Introduction                                     :target_250w:rubic_5:
 :PROPERTIES:
