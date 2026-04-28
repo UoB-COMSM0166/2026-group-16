@@ -673,6 +673,9 @@ Sources under =docs/design/=, exports under =docs/figures/=.
 \end{tikzpicture}
 #+END_SRC
 
+#+RESULTS: fig:stakeholder-onion
+[[file:docs/report/figures/onion.png]]
+
 #+CAPTION: UML use-case diagram. Both players share the same use-case set (aim, charge, fire, move, consume HUD) but bind distinct keys; the Spectator has a read-only view onto the Battle and Victory/Defeat screens.
 #+NAME: fig:use-case
 #+HEADER: :results file graphics :file docs/report/figures/use_case.png :imagemagick yes
