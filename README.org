@@ -226,7 +226,7 @@ update(dt) {
 Development of movement can be described in three iterations:
 
 1. *Fixed-distance follow.* AI maintains a target offset from the human. Robotic; produced abrupt direction reversals which led to shots that hit the wall instead of the player.
-2. *Random  =Math.random()= wander and shot timing*: direction could flip within a single frame, producing visible jitter and random shot frequency often left the power bar undercharged so projectiles fell short of the centre wall.
+2. *Random*  =Math.random()= *walk and shot timing*: direction could flip within a single frame, producing visible jitter and random shot frequency often left the power bar undercharged so projectiles fell short of the centre wall.
 3. *Intent + Perlin noise + projectile choice*:
 
 The jitter in (2.) came from sampling an i.i.d. random variable every frame. We fixed this with: replace =Math.random()= with =noise()= so successive samples are temporally correlated and we commit to a chosen direction for a short interval rather than re-deciding every frame:
@@ -602,22 +602,51 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 - git usage
 - 3. Quantitative playtest: The TLX + SUS instrument which  we can be used as a regression test in future
 
-* TODO Sustainability                                           :target_500w:
-** TODO Approach
-I have no idea what I'm doing.
+* TODO Sustainability Awareness                                 :target_500w:
 
-TODO
-We applied the /Sustainability Awareness Framework (SusAF)/ across three? dimensions: =Social, Individual, Environmental, Economic, Technical= and three orders of effect  =immediate=, =enabling= and =structural=. For each dimension the framework prescribes five standard topics which our analysis conforms to.
+Toward the end of the project and over a ~workshop~ on sustainability we were introduced to the /Sustainability Awareness Framework (SusAF)/. We considered SusAF across three dimensions that resonanted most with us: =Social=, =Individual= and =Environmental= and over three time horizons: =direct=, =enabling= and =structural=.
 
-** TODO Impact analysis
-TODO
-Populate each cell from the team's SusAD workshop output. A  chain = /immediate fact -> enabling behaviour -> structural change/.
+| 1st order (immediate) | First-order effects are direct effects of the                         |
+|                       | production, operation, use, and disposal of IT solutions.             |
+|-----------------------+-----------------------------------------------------------------------|
+| 2nd order (indirect)  | Second-order effects are linked with the operation and.               |
+|                       | use of an IT-based system and include any change enabled or induce it |
+|-----------------------+-----------------------------------------------------------------------|
+| 3rd order (systemic)  | Third-order effects consist of structural changes caused by the       |
+|                       | ongoing operation and use of the IT-based sociotechnical solution.    |
+|                       |                                                                       |
+Orders of Effects according to Hilty and Aebischer
 
 *** TODO Social
+|--------------------|
+| Sense of community |
+|--------------------|
+| Trust              |
+|--------------------|
+| Inclusivity        |
+|--------------------|
+| Equity             |
+|--------------------|
+| Participation      |
+
+
 *** TODO Individual
+| Question          | Response                                                  |
+|-------------------+-----------------------------------------------------------|
+| Health            |                                                           |
+|-------------------+-----------------------------------------------------------|
+| Lifelong Learning |                                                           |
+|-------------------+-----------------------------------------------------------|
+| Privacy           | Tracking, cookies and fingerprinting                      |
+|-------------------+-----------------------------------------------------------|
+| Safety            | material: identifying information, in-app purchasing etc. |
+|                   | social function: chat moderation etc this applies to feel |
+|-------------------+-----------------------------------------------------------|
+| Agency            |                                                           |
+|-------------------+-----------------------------------------------------------|
+|                   |                                                           |
 *** TODO Environmental
-*** TODO Economic
-*** TODO Technical
+
 ** TODO Chain-of-effects (SusAD)
 FIG: hand-drawn or rendered SusAD showing  one chain per dimension
 
@@ -629,7 +658,7 @@ TODO: 3–5 stories added to Jira, each related  to the chain above. Example:
 
 - As a player with photosensitive epilepsy, I want a "reduce flashing" toggle so that I can play without triggering symptoms. Acceptance: Given reduce-flashing is ON, when a projectile ricochets, then no full-screen white flash occurs within any 100 ms window.
 
-** TODO Green Software Foundation patterns applied
+** TODO Green Software Foundation patterns
 We need to select ~3 patterns from
 https://patterns.greensoftware.foundation/catalog/ and explain how they were integrated.
 
@@ -639,14 +668,7 @@ https://patterns.greensoftware.foundation/catalog/ and explain how they were int
 | TODO: e.g. "Cache static data"                  | TODO       | TODO |
 | TODO: e.g. "Reduce the frequency of polling"    | TODO       | TODO |
 
-** TODO Accessibility and Ethics
-TODO
-- *Accessibility*
-  - keyboard-only by design; need remap UI, colour-blind palette check, subtitles for dialogue box, "reduce flashing" toggle.
-  - Chinese and English language support
-- *Ethics*
-  real-person likeness: depicting named lecturers in combat raises consent and reputational concerns. Policy: we provided opt-in per lecturer;
-  neutral "generic" sprites as fallback.
+
 * TODO Conclusion                                     :target_500w:weight_10:
 ** TODO Lessons
 TODO
