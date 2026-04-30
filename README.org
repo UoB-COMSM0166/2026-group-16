@@ -187,6 +187,30 @@ p5.js shaped our archirectual decisions:: one =setup()= for boot, one =draw()= f
 
 ** DONE Opponent AI
 
+*Background*
+
+Enemy AI design pattern in games.
+
+
+
+Resol
+
+
+State machines. Usually called finite state machines, or FSM. My favorite type of state machine is what I call a "stack machine," and it's something I use all over the place in my code, in everything from high level AI behavior to menu flow. I write about it extensively here: https://playtank.io/2023/11/12/state-space-prototyping/
+
+
+Planners. For example a goal-oriented action planner (GOAP) is a type of AI used inbclassic FPS like  F.E.A.R.  In this case, you use a graph where you represent desired game state ("PlayerDead:true") as nodes and AI actions ("ShootWithGun") as edges, and you then use goal-first A* to generate plans. It's a much more dynamic and much more interesting model than BTs.
+
+
+Utility systems. Actions are evaluated based on circumstances and the action that gets the highest estimated utility in a given moment is the one that gets executed. This is often in simulation games.
+
+
+
+
+
+
+
+
 The first challenge was developing the opponent AI component of the continuous state machine. Chiefly:
 •⁠  ⁠Logic for realistic behaviour across difficulty levels
 •⁠  ⁠Behaviour composition which we  split into movement (stafing) and shooting strategies
@@ -579,22 +603,27 @@ The team has a diversity of lived professional and academic experience from all 
 
 ** AI Statement
 
-| Name           | Usage                                                                                                  |
-|----------------+--------------------------------------------------------------------------------------------------------|
-| Josh Thompson  | I used NotebookLLM for parsing and summarising literature on research methods.                         |
-|                | I used Claude for learning and debugging LaTex and structuring an API query to Jira.                   |
-|                | I used Claude to write: a piece of regex and to link my bibliography to the inline citations, post-hoc |
-|----------------+--------------------------------------------------------------------------------------------------------|
-| Helenm Wong    |                                                                                                        |
-|----------------+--------------------------------------------------------------------------------------------------------|
-| Prapulla Tangi |                                                                                                        |
-|----------------+--------------------------------------------------------------------------------------------------------|
-| Rishabh Gautam |                                                                                                        |
-|----------------+--------------------------------------------------------------------------------------------------------|
-| Ciyang Weng    |                                                                                                        |
-|----------------+--------------------------------------------------------------------------------------------------------|
-| Ziquan Liu     |                                                                                                        |
-|                |                                                                                                        |
+| Name           | Usage                                                                                                    |
+|----------------+----------------------------------------------------------------------------------------------------------|
+| Josh Thompson  | I used NotebookLLM for parsing and summarising literature on research methods.                           |
+|                | I used Claude for learning and debugging LaTex and structuring an API query to Jira.                     |
+|                | I used Claude to write: a piece of regex and to link my bibliography to the inline citations, post-hoc   |
+|----------------+----------------------------------------------------------------------------------------------------------|
+| Helen Wong     | I used AI to generate virtual keyboard mapping. I also used AI to Chinese language pixel art for our     |
+|                | contol panel. I also used Gemini as part of my research for learning about idiomatic enemy AI behaviuors |
+|                | in game development.                                                                                     |
+|----------------+----------------------------------------------------------------------------------------------------------|
+| Prapulla Tangi | I used Codex for debugging .js. I generated weapon sprites using Codex.                                  |
+|----------------+----------------------------------------------------------------------------------------------------------|
+| Rishabh Gautam | I used Claude to generate a small gameplay mechanic: the screen will render #11111 on random(). This was |
+|                | an experiment to add chaos and fun to gameplay. I also used Claude for debugging, generally.             |
+|----------------+----------------------------------------------------------------------------------------------------------|
+| Ciyang Weng    | I used Gemini for learning .js features, syntax, generally. I also used Gemini for debugging. I resea-   |
+|                | simulation techniques for richchet physics.                                                              |
+|----------------+----------------------------------------------------------------------------------------------------------|
+| Ziquan Liu     | I made art assets including backgrounds and UI components using Doubao, this includes UI component       |
+|                | Like fade, expand or transition.                                                                         |
+|                |                                                                                                          |
 
 * TODO References
 TODO: BibTeX-style list. Notes:
@@ -879,6 +908,8 @@ Sources under =docs/design/=, exports under =docs/figures/=.
        at (3.0, -2.4) {};
 \end{tikzpicture}
 #+END_SRC
+
+
 
 #+CAPTION: A standard gameplay sequence.
 #+NAME: fig:sequence
