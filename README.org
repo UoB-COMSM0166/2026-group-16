@@ -6,7 +6,7 @@
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
 ** DONE Preamble
 
-*Team*
+*** Team
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
 | Helen Wong           | bs25971@bristol.ac.uk | AI            |
@@ -16,11 +16,11 @@
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
 
-*Artefacts*
+*** Artefacts
 [[li][PLAY GAME HERE]]
 [[.][WATCH DEMO VIDEO HERE]]
 
-*Meta*
+*** Meta
 This report has two features a curious reader might be interested in. We wrote a stylesheet referencing /Visual Display of Quantitative Information/ (Tufte, 1983), which was applied to all visual information. Tufte's data-ink ratio framework is widely used in science communication  design and empirically justified in MacEachren (2004). All analysis is produced procedurally from code compiled from this report. This permits an interested reader to observe (or run!) our analytic pipeline in full and in-situ. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
 
 * DONE Introduction                                     :target_250w:rubic_5:
@@ -306,7 +306,7 @@ The continuous-utility approach paid off in the areas we cared most about. Diffi
 ** DONE Ricochet physics
 The second challenge is /reflective/ projectile physics: shots ricochet off walls rather than detonating on impact. The physics pipeline is three-stage per frame:
 
-1. *Integrate*
+*- Integrate*
 Explicit Euler with gravity (=900 px/s²=) and a horizontal wind term (=50 px/s²=), clamped by a =dt= cap of 33 ms to prevent issues when the tab regains focus:
    #+BEGIN_SRC javascript
    p.vx += this.windAccel * dt;   // horizontal bias
@@ -314,13 +314,13 @@ Explicit Euler with gravity (=900 px/s²=) and a horizontal wind term (=50 px/s�
    p.x  += p.vx * dt;
    p.y  += p.vy * dt;
    #+END_SRC
-2. *Broad* Phase
+- *Broad* Phase
 A uniform spatial grid (128-px cells, hashed as ~"cx,cy"~) prunes static-body candidates to just the handful of cells the projectile overlaps. Grid build (~addStaticRect~ → ~_insertToGrid~) runs once at setup; per-frame queries are O(1) in cell count:
    #+BEGIN_SRC javascript
    _getCellRangeForAABB(aabb) { /* cx/cy range */ }
    _queryNearbyAABB(aabb)     { /* return id Set */ }
    #+END_SRC
-3. *Narrow* Phase
+- *Narrow* Phase
 Circle-vs-AABB intersection returns both a contact point and a surface /normal/:
    #+BEGIN_SRC javascript
    static circleAABBHit(circle, rect) {
@@ -349,7 +349,7 @@ where /v/ is the incoming velocity vector, /ň/ is the unit surface normal at th
 
 * DONE Evaluation                                     :target_750w:weight_15:
 ** DONE User Research
-The usability of our application was evaluated over several UX dimensions  qualitatively via survey and comprised playesting and analysis using: NASA TLX,  System Usability Scale (SUS) instruments and Nielsens Usability Heuristics (1994). The result of these tests on  merged feature facilitated surfacing of defects and this is reflected in Jira issues to that effect (61 created, 56 Done).
+The usability of our application was evaluated over several UX dimensions  qualitatively via survey and comprised playesting and analysis using: NASA TLX,  System Usability Scale (SUS) instruments and Nielsens Usability Heuristics (1994). The result of these tests on  merged features facilitated the surfacing of defects and this is reflected in Jira issues to that effect (61 created, 56 Done).
 
 *Usability Heuristics*
 We ran recorded the findings of the test in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale. Twelve findings were captured:
@@ -430,7 +430,7 @@ Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfort
 We implemented  a varied approach to quality assurance, in line with workshop content. The techniques used skewed toward white-box testing. I think this is a natural consequence of iterating quite heavily on core gameplay features, such that desired behaviour was uncomfirmed  whilst we still tried to maintain a test-driven approach to even work-in-progress implementation.
 
 *** DONE *Whitebox*
-We analysed our whitebox tests by writing a runtime probe to analyse /method-level coverage/ of the code base.
+We analysed our whitebox tests by writing a runtime probe to analyse /method-level coverage/ of /main/.
 
 Every method on the protototype of each target was wrapped in a counter and =GameTestSuite.runAll()= was invoked from ~testCases.js~. Methods whose counter remained '0' were recorded as unexercised.
 
@@ -479,13 +479,13 @@ For example, SAFe has not shown, in any rigorous sense, to outperform alternativ
 
 DORA, however, is the largest and longest running research programme on software practice. What we know from a decade of DORA surveys is that the stability of software and the speed of development is highly and positively correllated. This suggests the technical capabalities underlying a process is a significant factor in successful outcomes. With that in mind, we tried to implement a number of good dev-ops practices, focussing mainly on =continuous intergration and deployment= and =docs-as-code=.
 
-*Branching*
+*** Branching
 We seelected a standard trunk-based git strategy using short-lived feature branches. =Main= is always deployable (we hope) and feature branches fork main, accumulate commits following =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes) and ideally merge back, quickly.  At the time of writing the repo has four live branches. The development branch of this report is =report= and is rebased periodically from =Main=.
 
 
 [[file:docs/report/figures/branch_strategy.png]]
 
-*Pull requests*
+*** Merging
 Each PR must branch from =main= and reference a Jira issue (=Closes SE-42=). Mirroring issue slugs and pull-request IDs is extremely important for orchestrating dependencies and raising bug tickets, in particular. Finally, a PR must collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced below and functions as a /contract/:
 
 #+BEGIN_QUOTE
@@ -503,7 +503,7 @@ We used =git merge --squash= to collapse commits on a feature branch into a sing
 [[file:docs/report/figures/merge_strategy.png]]
 
 
-*Issue Transitions*
+*** Issue Management
 Tickets flow forward through four states; any non-terminal state can regress one step backward (e.g. a QA failure returns the ticket to /In Progress/) and any state can be closed as /Won't Do/.
 
 
@@ -514,12 +514,12 @@ Tickets flow forward through four states; any non-terminal state can regress one
 *Agile Ceremonies*
 An implicit requirement of sprints is a syncronised schedule between team members. Given demands from other modules and the =MSc summer project= in particular, we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
 
-*Docs as Code*
+*** Docs as Code
 All design and planning material are under version control and where possible offered in plain-text. For example, this report is an example of literate programming, which is to say, the source code and the report text are 'tangled' in the same file. This means what the project does (source) and why it does it (report), evolve together. Further examples of docs-as-code, include:
 
-Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
+*Commits*  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
 
-In software engineering, architectural decisions are design decisions that address system-level requirements; they are considered hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant decisions made during the design and development of software system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat - among others.
+*ADRs* In software engineering, architectural decisions are design decisions that address system-level requirements; they are considered hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant decisions made during the design and development of software system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat - among others.
 
 Ahmeti et al. (2024) show that difficulties in creating a documentation culture, transferring knoweledge and prioritising which information to document can be well addresserd by ADRs. They find cooperation between developers improve as a result of using them.
 
@@ -536,7 +536,7 @@ Our decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog
 ** DONE Tools
 Github was selected on our behalf as project repository and we chose  Jira for issue tracking. We chose not to use Github's built-in issue tracker, choosing to accept a small increase in task-switching overhead and complexity in exchange for exposure to an industry standard tool. Such that it is.
 
-However, we reisted this approach for communications and stuck to Whatsapp instead of Slack or Microsoft Teams. Referencing the first principle of the Agile Manifesto
+However, we resisted this approach for communications and stuck to Whatsapp instead of Slack or Microsoft Teams. Referencing the first principle of the Agile Manifesto
 #+BEGIN_QUOTE
 "Individuals and interactions over processes and tools"
 #+END_QUOTE
