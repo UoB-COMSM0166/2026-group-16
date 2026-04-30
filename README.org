@@ -4,7 +4,9 @@
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-** DONE Meta
+** DONE Preamble
+
+*Team*
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
 | Helen Wong           | bs25971@bristol.ac.uk | AI            |
@@ -14,16 +16,19 @@
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
 
-This report has a couple of features a curious reader might be interested in. All data visualisation use  a bespoke stylesheet referencing /Visual Display of Quantitative Information/ (Tufte, 1983). Tufte's data-ink ratio framework is widely cited in visual information design and empirically justified in MacEachren (2004).
+*Artefacts*
+[[li][PLAY GAME HERE]]
+[[.][WATCH DEMO VIDEO HERE]]
 
-All visualisations are generated procedurally from code compiled from this report. This permits an interested reader to observe (or run!) our analytic pipeline in full and in-situ. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
+*Meta*
+This report has two features a curious reader might be interested in. We wrote a stylesheet referencing /Visual Display of Quantitative Information/ (Tufte, 1983), which was applied to all visual information. Tufte's data-ink ratio framework is widely used in science communication  design and empirically justified in MacEachren (2004). All analysis is produced procedurally from code compiled from this report. This permits an interested reader to observe (or run!) our analytic pipeline in full and in-situ. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
 
 * DONE Introduction                                     :target_250w:rubic_5:
 :PROPERTIES:
 :WORD_COUNT: 153
 :END:
 [[file:./media/screenshot.png]]
-/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved artillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
+/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-known artillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
 - Continuous input from player and AI replace a turn-based state machine.
 - Reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries replace simple ballistic trajectories.
 
@@ -50,7 +55,6 @@ Our [[file:./docs/assignments/week1-ideas.md][shortlist]] of ideas  missing many
 | Platformers      | e.g. /The Illusionist's Dream/  | Autonomy     | Narrative and Embodiment     |
 |------------------+-------------------------------+--------------+------------------------------|
 | Hyper-casual     | e.g. /Fruit Ninja/, /Angry Birds/ | Competence   | Pattern Recognition          |
-
 
 We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two candidates]]: /[[file:./docs/design/concepts/DINS.png][Puzzles]] and Artillery/ on the basis of technical feasibility and the SDTs they covered. From here, we developed paper prototypes for both. As a team we play-tested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991). The criteria for the matrix was derived from the project brief, SDTs and the paper prototype session and weighted according to our understanding of the unit, scores were then awarded on a 1-5 likert scale.
 
