@@ -13,7 +13,7 @@
 </p>
 
 <div align="center">
-  <a href="https://uob-comsm0166.github.io/2026-group-16/whitebox-prototype/">
+  <a href="https://uob-comsm0166.github.io/2026-group-16/">
     <img 
       src="https://img.shields.io/badge/🎮%20PLAY%20GAME-red?style=for-the-badge&logo=gamepad"
       width="300"
