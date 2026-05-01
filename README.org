@@ -18,7 +18,7 @@
 
 *** Artefacts
 [[https://uob-comsm0166.github.io/2026-group-16/][PLAY GAME HERE]]
-[[.][WATCH DEMO VIDEO HERE]]
+[[https://youtu.be/joi-D88K8S8][WATCH DEMO VIDEO HERE]]
 
 *** Meta
 This report has two features a curious reader might be interested in. We wrote a stylesheet referencing /Visual Display of Quantitative Information/ (Tufte, 1983), which was applied to all visual information. Tufte's data-ink ratio framework is widely used in science communication  design and empirically justified in MacEachren (2004). All analysis is produced procedurally from code compiled from this report. This permits an interested reader to observe (or run!) our analytic pipeline in full and in-situ. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
