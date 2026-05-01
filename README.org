@@ -82,7 +82,6 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 
 [[file:docs/report/figures/onion.png]]
 
-
 ** DONE Use Case
 Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:./docs/design/ui_flow.md][design/ui_flow.md]].
 
@@ -113,19 +112,19 @@ User stories and epics all descend from a goal to build a two-player continuous-
 ** DONE Priorities
 MoSCoW below, with stories scoped to reflect term times and Easter break. /Must/ items reflect course requirements and/or professional pride. /Should/ items will land during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
 
-| Priority | Story | Requirement                                | Status as of 2026-04-22      |
-|----------+-------+--------------------------------------------+------------------------------|
-| MUST     | US-01 | Responsive continuous input (both players) | Done                         |
-| MUST     | US-03 | Single and two player modes                | In-progress: single-line HUD |
-| MUST     | US-06 | Varying levels of difficulty               | Done                         |
-| MUST     | US-07 | Branch protection + conventional commits   | Done (=CONTRIBUTING.md=)       |
-| SHOULD   | US-02 | Reflective projectile physics              | Done                         |
-| SHOULD   | US-04 | Merchant Venturers background art          | Done                         |
-| SHOULD   | US-05 | Lecturer opt-in + generic fallback         | Done                         |
-| COULD    | US-08 | Reduce-flashing accessibility toggle       | Deferred                     |
-| COULD    | —    | Sound design                               | Done                         |
-| COULD    | —    | Difficulty × character-selection routes    | Done                         |
-| WON'T    | —    | Online multiplayer / WebRTC                | Deferred                     |
+| Priority | Story | Requirement                                | Status as of 2026-04-22 |
+|----------+-------+--------------------------------------------+-------------------------|
+| SHOULD   | US-04 | Merchant Venturers background art          | Done                    |
+| SHOULD   | US-05 | Lecturer opt-in + generic fallback         | Done                    |
+| COULD    | US-08 | Reduce-flashing accessibility toggle       | Deferred                |
+| COULD    | —    | Sound design                               | Done                    |
+| COULD    | —    | Difficulty × character-selection routes    | Done                    |
+| WON'T    | —    | Online multiplayer / WebRTC                | Deferred                |
+| MUST     | US-01 | Responsive continuous input (both players) | Done                    |
+| MUST     | US-03 | Single and two player modes                | DONED                   |
+| MUST     | US-06 | Varying levels of difficulty               | Done                    |
+| MUST     | US-07 | Branch protection + conventional commits   | Done                    |
+| SHOULD   | US-02 | Reflective projectile physics              | Done                    |
 
 * DONE Design                                          :target_750w:rubic_15:
 ** DONE  Overview
@@ -600,73 +599,116 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 - Unit testing
 - Refactoring
 - git usage
+- PBR for more interesting richochet
 - 3. Quantitative playtest: The TLX + SUS instrument which  we can be used as a regression test in future
 
 * TODO Sustainability Awareness                                 :target_500w:
 
-Toward the end of the project and over a ~workshop~ on sustainability we were introduced to the /Sustainability Awareness Framework (SusAF)/. We considered SusAF across three dimensions that resonanted most with us: =Social=, =Individual= and =Environmental= and over three time horizons: =direct=, =enabling= and =structural=.
+Toward the end of the project and over a ~workshop~ on sustainability we were introduced to the /Sustainability Awareness Framework/ (SusAF, Betz et al. 2024). We considered SusAF across three dimensions that resonated most with us: =Social=, =Individual= and =Environmental= and over three time horizons: =direct=, =enabling= and =structural=.
 
-| 1st order (immediate) | First-order effects are direct effects of the                         |
-|                       | production, operation, use, and disposal of IT solutions.             |
-|-----------------------+-----------------------------------------------------------------------|
-| 2nd order (indirect)  | Second-order effects are linked with the operation and.               |
-|                       | use of an IT-based system and include any change enabled or induce it |
-|-----------------------+-----------------------------------------------------------------------|
-| 3rd order (systemic)  | Third-order effects consist of structural changes caused by the       |
-|                       | ongoing operation and use of the IT-based sociotechnical solution.    |
-|                       |                                                                       |
-Orders of Effects according to Hilty and Aebischer
+| 1st order (immediate) | Direct effects of the production, operation, use,    |
+|                       | and disposal of IT solutions.                        |
+|-----------------------+------------------------------------------------------|
+| 2nd order (indirect)  | Effects linked with the operation and use of an      |
+|                       | IT-based system, including any change it induces.    |
+|-----------------------+------------------------------------------------------|
+| 3rd order (systemic)  | Structural changes caused by the ongoing operation   |
+|                       | and use of the IT-based socio-technical solution.    |
 
-*** TODO Social
-|--------------------|
-| Sense of community |
-|--------------------|
-| Trust              |
-|--------------------|
-| Inclusivity        |
-|--------------------|
-| Equity             |
-|--------------------|
-| Participation      |
+Orders of Effects, after Hilty and Aebischer (2015).
+
+*** DONE Social
+| Topic              | Effect                                                                              |
+|--------------------+-------------------------------------------------------------------------------------|
+| Sense of community | Shared local-multiplayer at one keyboard encourages co-located play (direct);       |
+|                    | recognisable Bristol/MV setting reinforces belonging to UoB community (enabling).   |
+|--------------------+-------------------------------------------------------------------------------------|
+| Trust              | Open-source repo and conventional commits project  auditable (direct).              |
+|--------------------+-------------------------------------------------------------------------------------|
+| Inclusivity        | Browser-based delivery via GitHub Pages removes install/hardware barriers (direct); |
+|                    | absence of online multiplayer sidesteps risk of online harm (enabling).             |
+|--------------------+-------------------------------------------------------------------------------------|
+| Equity             | Continuous input from P1 and P2 and balanced character stats prevent first-mover    |
+|                    | advantage or assymetric advantage (direct).                                         |
+|--------------------+-------------------------------------------------------------------------------------|
+| Participation      | Spectator role supports over-the-shoulder play and discussion (direct);             |
+|                    | over time this shapes a small community of UoB players (structural).                |
+
+*** DONE Individual
+| Topic             | Effect                                                                          |
+|-------------------+---------------------------------------------------------------------------------|
+| Health            | Short, finite match length discourages   excessive sessions (direct);           |
+|                   | deferring  reduce-flashing  (US-08) for photosensitive                          |
+|                   | players colour grading for reduced vision are known limitations (enabling).     |
+|-------------------+---------------------------------------------------------------------------------|
+| Lifelong Learning | Reflective physics rewards informal reasoning about angle and momentum          |
+|                   | (enabling).                                                                     |
+|-------------------+---------------------------------------------------------------------------------|
+| Privacy           | No tracking, cookies, fingerprinting, or analytics; no account system (direct). |
+|-------------------+---------------------------------------------------------------------------------|
+| Safety            | No identifying information collected; no in-app purchases or chat to moderate   |
+|                   | (direct). Lecturer opt-in protects                                              |
+|                   | likeness (direct).                                                              |
+|-------------------+---------------------------------------------------------------------------------|
+| Agency            | Difficulty levels and character choice support self-paced engagement            |
+|                   | (direct); local-only play keeps the player in control of when and with whom     |
+|                   | they play with (enabling).                                                      |
+
+*** DONE Environmental
+| Topic                  | Effect                                                                     |
+|------------------------+----------------------------------------------------------------------------|
+| Material and resources | Vector and pixel art kept small. No asset bloat (direct).                  |
+|------------------------+----------------------------------------------------------------------------|
+| Energy                 | Client-side JS in a browser tab; no dedicated server, no continuous        |
+|                        | back-end compute (direct). At scale, a server-light artillery game         |
+|                        | meaningfully under-consumes relative to networked equivalents (enabling).  |
+|------------------------+----------------------------------------------------------------------------|
+| Logistics              | Distribution via GitHub Pages; no physical media, no installer (direct).   |
+|                        | Indirect: we have not considered the content delivery network of MS/GH and |
+|                        | if optimised for location of players. Long term we could consider edge     |
+|                        | delivery near to campus.                                                   |
+|------------------------+----------------------------------------------------------------------------|
+| Biodiversity           | No direct effect there is an indirect effect via data-centre consumption   |
+|                        | which is bounded by game architecture                                      |
 
 
-*** TODO Individual
-| Question          | Response                                                  |
-|-------------------+-----------------------------------------------------------|
-| Health            |                                                           |
-|-------------------+-----------------------------------------------------------|
-| Lifelong Learning |                                                           |
-|-------------------+-----------------------------------------------------------|
-| Privacy           | Tracking, cookies and fingerprinting                      |
-|-------------------+-----------------------------------------------------------|
-| Safety            | material: identifying information, in-app purchasing etc. |
-|                   | social function: chat moderation etc this applies to feel |
-|-------------------+-----------------------------------------------------------|
-| Agency            |                                                           |
-|-------------------+-----------------------------------------------------------|
-|                   |                                                           |
-*** TODO Environmental
+*** DONE Reflection
+The individual dimension carries the strongest /direct/ effects. An absence of accounts, tracking, and fingerprinting via cookies, browser details, or embedded third-party scripts in the game itself means we prioritise privacy in a stricter sense than GDPR or the ePrivacy directive require. We do not, however, control our content delivery network and users may incur privacy costs there that are invisible to us. Given the local-first and community element of /Merchant Fighters/, a longer-term indirect benefit would be delivery from the edge. Potentially via UoB compute and network infrastructure. The systemic effect, were this approach to be adopted widely, beginning with other MSc groups would be to partially decouple (and hedge against) small-scale software projects from the hyperscalers: student and community projects could be hosted on institutional infrastructure that already exists and is already poweredd instead of  provisioning capacity from 1 of 3 large US companies. All of whom adopt monopolistic practices, which have global socioeconomic consequences.  The strongest /enabling/ effect is environmental, where a client-side, server-free application necessarily requires less server-side compute than an a networked equivalent would require. However, there are many optimisations opportunities. We redraw the full scene every frame and manage an admittedly few projectiles ad-hoc rather than via an ECS. If the game were very popular this would aggregate to a measurable and unnecessary cost in electricity at the consumer.
 
-** TODO Chain-of-effects (SusAD)
-FIG: hand-drawn or rendered SusAD showing  one chain per dimension
+The clearest /structural/ risk is our limited support at present for photosensitivities, low vision and accessible input devices for players with reduced motor control. Standard keyboard input is in principle compatible with most assistive hardware that emulates a keyboard, including switches, sticks and sip-and-puff controllers. However our continous-input state likely increases cognitive load in comparison to turn-based FSM. In future we could return to a FSM as an accessibility option for users with executive function or intellectual disabilities.
 
-** TODO Threats, opportunities, and actions
-TODO: 2×2  table
+** DONE User Stories and  Acceptance Criteria
 
-** TODO Sustainability user stories and acceptance criteria
-TODO: 3–5 stories added to Jira, each related  to the chain above. Example:
+Three sustainability-driven stories were added to the backlog, each  can be located in the chain of effects identified in the SusAF analysis above. Stories follow the same /As a <role>, I want <goal> so that <value>/ format and have  one gherkin style acceptance criterion each.
 
-- As a player with photosensitive epilepsy, I want a "reduce flashing" toggle so that I can play without triggering symptoms. Acceptance: Given reduce-flashing is ON, when a projectile ricochets, then no full-screen white flash occurs within any 100 ms window.
+| ID     | Story                                                                                    | Dimension  | Acceptance criterion                                                         |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+| SU-01  | As a player with photosensitive epilepsy, I want a                                       | Individual | /Given/ reduce-flashing is ON, /when/ a projectile ricochets,                    |
+|        | "reduce flashing" toggle, so that I can  play without triggering symptoms.               | (health)   | then/ no full-screen white flash occurs within any 100 ms window.            |
+|        | without triggering symptoms                                                              |            |                                                                              |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+| SU-02  | As a player using assistive input hardware, I want to remap P1 and P2 key                | Individual | /Given/ the settings screen is open, /when/ I select a control and               |
+|        | bindings so that  I can control how switch interfaces, one-handed keyboards,             | (agency)   | press a new key, /then/ the new binding persists across the                    |
+|        | drive the game                                                                           |            | session and is reflected in the in-game HUD.                                 |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+| SU-03  | As a player with low vision, I want a high-contrast colour palette, so that projectiles, | Individual | /Given/ high-contrast mode is ON, /when/ the battle screen renders,              |
+|        | terrain, and HP bars remain distinguishable against the Merchant Venturers backdrop.     | (health)   | /then/ projectile,  terrain, and HP-bar colours each meet a                    |
+|        |                                                                                          |            | contrast ratio of ≥ 4.5:1 against the background which is in line with WCAG. |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
 
-** TODO Green Software Foundation patterns
-We need to select ~3 patterns from
-https://patterns.greensoftware.foundation/catalog/ and explain how they were integrated.
 
-| Pattern                                         | Applied in | How |
-|-------------------------------------------------+------------+-----|
-| TODO: e.g. "Avoid high-resolution images"       | TODO       | TODO |
-| TODO: e.g. "Cache static data"                  | TODO       | TODO |
-| TODO: e.g. "Reduce the frequency of polling"    | TODO       | TODO |
+From the Green Software Foundation catalogue we have selected the following tasks: Cache Static Data and Demand Shaping and provided an acceptance criteria for each.
+|        |                                                                                     |              |                                                                         |
+| GSF-04 | As an environmentally-conscious player, I want the game to pause                    | Energy       | /Given/ the browser tab is hidden or the window is unfocused, /when/ 1s     |
+|        | it's render loop when the tab is unfocusssed.                                       |              | elapses /then/ =requestAnimationFrame= halts                                |
+|--------+-------------------------------------------------------------------------------------+--------------+-------------------------------------------------------------------------|
+| GSF-05 | As an environmentally-conscious player, I want game assets served with              | Energy       | /Given/ a frequent player loads the game, /when/ the bundle is requested,   |
+|        | caching  so that replaying  avoid re-downloading binary files                       | (efficiency) | /then/ pixel art, audio, and JS bundles return =304 Not Modified=           |
+|        |                                                                                     |              |                                                                         |
+|--------+-------------------------------------------------------------------------------------+--------------+-------------------------------------------------------------------------|
+| GSF-06 | As an environmentally-conscious player, I want the game to update state on input or | Energy       | /Given/ no player input and no in-flight projectiles, /when/ 500 ms elapse, |
+|        | physics events rather than continuous polling, so that idle frames cost nothing.    | (efficiency) | /then/ the game loop holds for next input                                 |
+|        |                                                                                     |              |                                               |
 
 
 * TODO Conclusion                                     :target_500w:weight_10:
@@ -687,7 +729,7 @@ The team has a diversity of lived professional and academic experience from all 
 | Helen Wong           | Project Manager   | AI simulation, game balance, privacy and GDPR |  0.16 |
 |                      |                   | team organisation and communication           |       |
 |----------------------+-------------------+-----------------------------------------------+-------|
-| Prapulla Naidu Tangi | TODO              | game architecture, weapon UI,                 |  0.16 |
+| Prapulla Naidu Tangi | Programmer        | game architecture, weapon UI,                 |  0.16 |
 |                      |                   | health bar, language support, game-mode logic |       |
 |----------------------+-------------------+-----------------------------------------------+-------|
 | Rishabh Gautam       | Gameplay Engineer | Sound, feature development inc. a "blackout"  |  0.16 |
