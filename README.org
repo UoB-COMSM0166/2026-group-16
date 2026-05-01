@@ -604,7 +604,7 @@ Three things worked less well:
 
 If we did it again a  lint and pre-commit hooks before the first feature branch and therefore use Jest from the beginning so coverage is comprehensive. We would keep the  the TLX+SUS instrument and analysis pipeline and use it as a regression test  against gameplay changes rather than a one-shot evaluation. We would also counter-balance playtest order with a larger, less CS-skewed sample. A Nix flake provides a reproducible dev shell we could extend this to a CI job. Finally, we would develop our CI pipeline to incoporate feature flags. This would enable us to perform playtesting across different ponteital feature choices, to incorporate A/B test paradigm.
 
-* TODO Sustainability Awareness                                 :target_500w:
+* DONE Sustainability Awareness                                 :target_500w:
 
 Toward the end of the project and over a ~workshop~ on sustainability we were introduced to the /Sustainability Awareness Framework/ (SusAF, Betz et al. 2024). We considered SusAF across three dimensions that resonated most with us: =Social=, =Individual= and =Environmental= and over three time horizons: =direct=, =enabling= and =structural=.
 
@@ -711,14 +711,12 @@ From the Green Software Foundation catalogue we have selected the following task
 |        | physics events rather than continuous polling, so that idle frames cost nothing.    | (efficiency) | /then/ the game loop holds for next input                                 |
 |        |                                                                                     |              |                                               |
 
-* TODO Conclusion                                     :target_500w:weight_10:
-TODO
+* DONE Conclusion                                     :target_500w:weight_10:
+Merchant Fighters is an attempt to make a turn-based genre dynamic via continuous input and reflective physics. Both of these features were a success. The two-player input ticks every frame, ricochets resolve against surface normals and the AI's utility model produces deliberate and interesting movement. Our NASA-TLX showed a significant overall workload difference between Easy and Hard with frustration near the floor in both which is great for player satisfaction.
 
-** TODO Future
+The process worked where we had the time to invest in it. Issues transitioned through our pipeline with good velocity and our  squash-merges kept main readable across 84 commits and six contributors. Our quality assurance and automated test strategy could mature via a standardised test and mocking framework but importantly this was the first time many in our team collaborated on delivering a non-trivial software project. The /most/ important thing in that situation is that it ships and ours did! The experience of doing so is  wonderful and will prove useful for all of us in the future.
 
-
-A/B testing
-- PBR for more interesting richochet
+For future development of the game, we would love to incorporate A/B testing through feature flags in CI. Which would allow us to do long ranging analysis of gameplay satisifaction and usability. Beyond this, if we can ensure we could do so while mitigating risks surfaced in SusAF we would consider online multiplayer as a means to foster community even when students are remote.
 
 * TODO Contribution statement
 The team has a diversity of lived professional and academic experience from all over the world. This includes .NET development, game development, finance and behavioural research. However, we tried where possible, to assign work according to our interests as well as our strengths.
