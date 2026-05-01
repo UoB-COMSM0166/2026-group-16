@@ -501,7 +501,6 @@ We used =git merge --squash= to collapse commits on a feature branch into a sing
 
 [[file:docs/report/figures/merge_strategy.png]]
 
-
 *** Issue Management
 Tickets flow forward through four states; any non-terminal state can regress one step backward (e.g. a QA failure returns the ticket to /In Progress/) and any state can be closed as /Won't Do/.
 
@@ -592,15 +591,18 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 [[file:docs/report/figures/jira_cumulative.png]]
 
 ** TODO Reflection
-- containerisation?
-- Literate environments e.g. Nix
-- Linters
-- AB Testing
-- Unit testing
-- Refactoring
-- git usage
-- PBR for more interesting richochet
-- 3. Quantitative playtest: The TLX + SUS instrument which  we can be used as a regression test in future
+
+Three things worked really well:
+- Trunk-based git with squash-merges and conventional commits kept =main= legible across 84 commits and six contributors.
+- Docs-as-code via Org-Babel meant the analysis pipeline, the figures and the prose via re-running =analyse.py= kept uptodate with the source code. Which made the report easier to write.
+- Committing early to a continuous-input model what made the later  AI work more tractable than it would have been otherwise.
+
+Three things worked less well:
+- The =CONTRIBUTING.md= /Definition of Done/ existed on paper but was aspirational in practice. linting in particular was specified but we never managed to make a pre-commit hook from it, so =testCases.js= grew without naming conventions and we locked ourselves out of Jest.
+- Branch coverage and standard mocking. The 53% method coverage figure could be improved. Branch hygiene was another cost with stale feature branches and unsquashed WIP made rebases more expensive than they needed to be and our  March ticket spike (32 issues, half the backlog) is partly crunch and partly the cost of not catching divergence earlier.
+- Third, =AutoPlayer= was developed exploratorily which is very  reasonable, given none of us had written game AI before but  we had 21 untested private helpers and this poses a bug regression risk.
+
+If we did it again a  lint and pre-commit hooks before the first feature branch and therefore use Jest from the beginning so coverage is comprehensive. We would keep the  the TLX+SUS instrument and analysis pipeline and use it as a regression test  against gameplay changes rather than a one-shot evaluation. We would also counter-balance playtest order with a larger, less CS-skewed sample. A Nix flake provides a reproducible dev shell we could extend this to a CI job. Finally, we would develop our CI pipeline to incoporate feature flags. This would enable us to perform playtesting across different ponteital feature choices, to incorporate A/B test paradigm.
 
 * TODO Sustainability Awareness                                 :target_500w:
 
@@ -671,7 +673,6 @@ Orders of Effects, after Hilty and Aebischer (2015).
 | Biodiversity           | No direct effect there is an indirect effect via data-centre consumption   |
 |                        | which is bounded by game architecture                                      |
 
-
 *** DONE Reflection
 The individual dimension carries the strongest /direct/ effects. An absence of accounts, tracking, and fingerprinting via cookies, browser details, or embedded third-party scripts in the game itself means we prioritise privacy in a stricter sense than GDPR or the ePrivacy directive require. We do not, however, control our content delivery network and users may incur privacy costs there that are invisible to us. Given the local-first and community element of /Merchant Fighters/, a longer-term indirect benefit would be delivery from the edge. Potentially via UoB compute and network infrastructure. The systemic effect, were this approach to be adopted widely, beginning with other MSc groups would be to partially decouple (and hedge against) small-scale software projects from the hyperscalers: student and community projects could be hosted on institutional infrastructure that already exists and is already poweredd instead of  provisioning capacity from 1 of 3 large US companies. All of whom adopt monopolistic practices, which have global socioeconomic consequences.  The strongest /enabling/ effect is environmental, where a client-side, server-free application necessarily requires less server-side compute than an a networked equivalent would require. However, there are many optimisations opportunities. We redraw the full scene every frame and manage an admittedly few projectiles ad-hoc rather than via an ECS. If the game were very popular this would aggregate to a measurable and unnecessary cost in electricity at the consumer.
 
@@ -710,15 +711,14 @@ From the Green Software Foundation catalogue we have selected the following task
 |        | physics events rather than continuous polling, so that idle frames cost nothing.    | (efficiency) | /then/ the game loop holds for next input                                 |
 |        |                                                                                     |              |                                               |
 
-
 * TODO Conclusion                                     :target_500w:weight_10:
-** TODO Lessons
 TODO
-** TODO Immediate
-TODO: missing sound, missing end-state screens, difficulty routes
 
 ** TODO Future
-TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
+
+
+A/B testing
+- PBR for more interesting richochet
 
 * TODO Contribution statement
 The team has a diversity of lived professional and academic experience from all over the world. This includes .NET development, game development, finance and behavioural research. However, we tried where possible, to assign work according to our interests as well as our strengths.
