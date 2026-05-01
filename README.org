@@ -4,7 +4,9 @@
 #+STARTUP: overview
 #+LATEX_COMPILER: lualatex
 #+LATEX_HEADER: \usepackage{./docs/report/style/tufte}
-** DONE Meta
+** DONE Preamble
+
+*** Team
 | Name                 | Email                 | Primary role  |
 |----------------------+-----------------------+---------------|
 | Helen Wong           | bs25971@bristol.ac.uk | AI            |
@@ -14,27 +16,31 @@
 | Josh Thompson        | kx25617@bristol.ac.uk | Documentation |
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
 
-This report has a couple of features a curious reader may be interested in. All visual information is styled from a bespoke stylesheet. It was designed according to Tufte /Visual Display of Quantitative Information/ (1983). Tufte's data-ink ratio framework is widely adopted in scientific and information design.
+*** Artefacts
+[[https://uob-comsm0166.github.io/2026-group-16/][PLAY GAME HERE]]
+[[.][WATCH DEMO VIDEO HERE]]
 
-All visual and tabular information is generated procedurally from code compiled from this report. This permits an interested reader to observe (or run!) our analytic pipeline in full and in-situ. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
+*** Meta
+This report has two features a curious reader might be interested in. We wrote a stylesheet referencing /Visual Display of Quantitative Information/ (Tufte, 1983), which was applied to all visual information. Tufte's data-ink ratio framework is widely used in science communication  design and empirically justified in MacEachren (2004). All analysis is produced procedurally from code compiled from this report. This permits an interested reader to observe (or run!) our analytic pipeline in full and in-situ. This is an example of literate programming (Knuth, 1984) and is made possible by =Org-Babel= a lisp class available from =emacs=.
 
 * DONE Introduction                                     :target_250w:rubic_5:
 :PROPERTIES:
 :WORD_COUNT: 153
 :END:
 [[file:./media/screenshot.png]]
+/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-known artillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
+- Continuous input from player and AI replace a turn-based state machine.
+- Reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries replace simple ballistic trajectories.
 
-/Merchant Fighters/ is a two-player real-time strategy-come-shooter from the well-loved artillery genre. Classically, the artillery format is turn-based with players taking aim along simple ballistic trajectories. Our work extends this in two ways:
-- Replacing a turn-based state machine with continuous player, AI input
-- Replacing ballistic with reflective physics trajectories, allowing projectiles to richochet off hard surfaces and game boundaries
+The artillery genre is one of earliest computer game formats. The earliest known example, /War 3/ (1965) was text-based and written in FOCAL. Subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET. The roots of this format predates UNIX, C  and possibly RISC architectures. Our version /Merchant Fighter/, pits these technologies and the lecturers that teach them, against each other in a battle set within Merchan Ventures itself, where last HP standing takes all.
 
-The artillery genre is one of earliest computer game formats. The earliest known example, /War 3/ (1965) was text-based and written in FOCAL. Subsequent art was produced for Microsoft BASIC, the Apple II and Comodore PET. The roots of this format predates UNIX, C  and possibly RISC architectures. Our version /Merchant Fighter/, pits these technologies, and the lecturers that teach them, against each other in a battle set within Merchan Ventures itself, where last HP standing takes all.
+This is a test [[ahmad2018][(Ref, 1765)]].
 
 * DONE Requirements                                    :target_750w:rubic_15:
-** DONE Concept
+** DONE Concept Design
 We considered self-determination theory (Ryan & Deci, 2000) as applied to games by using Przybylski et al. Motivational Model of Video Game Engagement (2010) to search for and evaluate concepts.
 
-Our [[file:./docs/assignments/week1-ideas.md][shortlist]] of ideas is not exhuastive: missing many  genres including economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/). It is however broad enough to cover the major psychological challenge types relevant to games.
+Our [[file:./docs/assignments/week1-ideas.md][shortlist]] of ideas  missing many popular  genres including economic reasoning (/Stardew Valley/), moral choice (/80 Days/) and rhythm (/Beat Sabre/) but was broad enough to cover the major psychological challenge types relevant to games.
 
 | Genre            | Description                   | Primary Need | Area of challenge            |
 |------------------+-------------------------------+--------------+------------------------------|
@@ -50,10 +56,9 @@ Our [[file:./docs/assignments/week1-ideas.md][shortlist]] of ideas is not exhuas
 |------------------+-------------------------------+--------------+------------------------------|
 | Hyper-casual     | e.g. /Fruit Ninja/, /Angry Birds/ | Competence   | Pattern Recognition          |
 
+We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two candidates]]: /[[file:./docs/design/concepts/DINS.png][Puzzles]] and Artillery/ on the basis of technical feasibility and the SDTs they covered. From here, we developed paper prototypes for both. As a team we play-tested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991). The criteria for the matrix was derived from the project brief, SDTs and the paper prototype session and weighted according to our understanding of the unit, scores were then awarded on a 1-5 likert scale.
 
-We narrowed this list to [[file:./docs/assignments/week2-game-ideas.md][two candidates]]: /[[file:./docs/design/concepts/DINS.png][Puzzles]] and Artillery/ on the basis of technical feasibility and the SDTs covered. From here, we developed a paper prototype for both. As a team we playtested both paper prototypes and made our final selection using a weighted decision matrix (Pugh, 1991) with a criteria derived from the project brief, SDTs and the paper prototype session.
-
-Scores were given on 1-5 scale and /Artillery/ was ultimately selected as the winner. We felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
+Artillery scored highest and was selected as a result. Qualitatively, we felt the adversarial component of /Artillery/ produced more social and engaging play than /Puzzle/. We also thought the design possibilities: weapon variety, terrain, opponent strategy etc. were more open to development. This was important as we knew we had to develop two 'twists'.
 
 [[file:./docs/assignments/week3-paper-prototype/idea-A/demo(CAT).mp4][Paper Prototype Video]]
 
@@ -76,8 +81,6 @@ We described stakeholders in [[file:./docs/assignments/week4-requirements.md][we
 
 
 [[file:docs/report/figures/onion.png]]
-
-
 
 ** DONE Use Case
 Three actors interact with the system: /Player 1/, /Player 2/ and a passive /Spectator/ (anyone watching over-the-shoulder or via the GitHub Pages URL). Players share a keyboard in local multiplayer, so every "player" use case is duplicated for P1 and P2. The use-case set is derived from the screen flow in [[file:./docs/design/ui_flow.md][design/ui_flow.md]].
@@ -109,19 +112,19 @@ User stories and epics all descend from a goal to build a two-player continuous-
 ** DONE Priorities
 MoSCoW below, with stories scoped to reflect term times and Easter break. /Must/ items reflect course requirements and/or professional pride. /Should/ items will land during the final sprint; /Could/ items are realistic within two more weeks; /Won't/ items are explicitly and unfortunatley deferred.
 
-| Priority | Story | Requirement                                | Status as of 2026-04-22      |
-|----------+-------+--------------------------------------------+------------------------------|
-| MUST     | US-01 | Responsive continuous input (both players) | Done                         |
-| MUST     | US-03 | Per-player HUD                             | In-progress: single-line HUD |
-| MUST     | US-06 | Crash-free 30-min session                  | Passes smoke test            |
-| MUST     | US-07 | Branch protection + conventional commits   | Done (=CONTRIBUTING.md=)       |
-| SHOULD   | US-02 | Reflective projectile physics              | Done                         |
-| SHOULD   | US-04 | Merchant Venturers background art          | Done                         |
-| SHOULD   | US-05 | Lecturer opt-in + generic fallback         | Done                         |
-| COULD    | US-08 | Reduce-flashing accessibility toggle       | Deferred                     |
-| COULD    | —    | Sound design                               | Done                         |
-| COULD    | —    | Difficulty × character-selection routes    | Done                         |
-| WON'T    | —    | Online multiplayer / WebRTC                | Deferred                     |
+| Priority | Story | Requirement                                | Status as of 2026-04-22 |
+|----------+-------+--------------------------------------------+-------------------------|
+| SHOULD   | US-04 | Merchant Venturers background art          | Done                    |
+| SHOULD   | US-05 | Lecturer opt-in + generic fallback         | Done                    |
+| COULD    | US-08 | Reduce-flashing accessibility toggle       | Deferred                |
+| COULD    | —    | Sound design                               | Done                    |
+| COULD    | —    | Difficulty × character-selection routes    | Done                    |
+| WON'T    | —    | Online multiplayer / WebRTC                | Deferred                |
+| MUST     | US-01 | Responsive continuous input (both players) | Done                    |
+| MUST     | US-03 | Single and two player modes                | DONED                   |
+| MUST     | US-06 | Varying levels of difficulty               | Done                    |
+| MUST     | US-07 | Branch protection + conventional commits   | Done                    |
+| SHOULD   | US-02 | Reflective projectile physics              | Done                    |
 
 * DONE Design                                          :target_750w:rubic_15:
 ** DONE  Overview
@@ -179,66 +182,130 @@ The full screen-navigation graph is given in figure [[fig:screen-flow]]: from /S
 
 A complete asset inventory including  backgrounds, portraits, sprite sheets, weapons/projectiles and buttons is maintained in =docs/design/ArtAssetList.md= and tracked for completion in =docs/design/asset-tracker.xlsx=.
 
-* TODO Implementation                               :target_750w:weight_15pc:
+* DONE Implementation                               :target_750w:weight_15pc:
 ** DONE Overview
 The game is a single-page p5.js application. Entry is =whitebox-prototype/index.html=, which loads a vendored p5.js=, =p5.sound.min.js=, and our own =sketch.js= (725 lines at time of writing). Deployment is GitHub Pages from the repository's =docs/= folder.
 
 p5.js shaped our archirectual decisions:: one =setup()= for boot, one =draw()= for per-frame tick, with three supporting classes:  =ANGLE= (aim), =POWER= (charge), and =CollisionDetection= (world) encapsulate the bits that benefit from encapsulation. We added a Nix flake (=flake.nix=, =flake.lock=) so the dev shell is reproducible across machines: anyone who runs ~nix develop~ and gets identical Node + http-server versions.
 
-** DONE Opponent AI
-
+** DONE AI Simulation
 *Background*
+As part of ~US-03~ we needed an AI opponent player. We began this work by researching common design strategies for solo and adversarial enemy AI in shooter games. These are summarised here:
 
-Enemy AI design pattern in games.
+*Finite State Machine*
+AI may exist deterministically in one explicit state from a set of potential states. They are memoryless in the sense that future state is a _function_ of current state (only). So given current state s_t and input symbol a_t, the transition function is given by δ(s_t, a_t).
 
+*Goal Orientated Planner (GOAP)*
+Express global state (=PlayerHit:true=, =SafeFromWall:true=) as nodes and actions (=Strafe=, =ChargeShot=) as edges, then plan with goal-first A* algorithim. This appears to produce very sophisticated effects, it's what F.E.A.R. famously used, however seems like overkill for a two-axis movement and one-button fire game.
 
+*Utility Systems*
+Decisions are analysed based on environmental variables and the action with the highest estimated utility is executed in a given frame. This is often used in simulation games. Such that each frame, scalar quantities: aim error, power error, projectile threat, time since last shot, are folded into a continuous decision. The difficulty level is then expressed as a parameter which sweeps the system.
 
-Resol
+We chose a utility system because it was  a naturally fit for the continuous input we had already implemented.
 
+*Architecture*
+The controller is a single =update(dt)= method that runs every frame and decomposes into two independent channels:  *movement* and *firing*, coupled only during a charging event where movement is locked.
 
-State machines. Usually called finite state machines, or FSM. My favorite type of state machine is what I call a "stack machine," and it's something I use all over the place in my code, in everything from high level AI behavior to menu flow. I write about it extensively here: https://playtank.io/2023/11/12/state-space-prototyping/
+#+BEGIN_SRC javascript
+update(dt) {
+  if (!this._canRunAI()) return;
+  const now = millis() / 1000;
+  this._applyDifficultyTweaks();              // sweep parameters
+  const overdue = (now - this.lastShotTime) >= this.forceShotAfter;
 
+  // movement locked while charging so aim doesn't drift
+  const lockMovement = this.fireHolding || (now < this.lockMoveUntil);
+  this._updateMovement(keys.KEY_LEFT, keys.KEY_RIGHT, dt, { lockMovement });
 
-Planners. For example a goal-oriented action planner (GOAP) is a type of AI used inbclassic FPS like  F.E.A.R.  In this case, you use a graph where you represent desired game state ("PlayerDead:true") as nodes and AI actions ("ShootWithGun") as edges, and you then use goal-first A* to generate plans. It's a much more dynamic and much more interesting model than BTs.
+  // ...
+}
+#+END_SRC
 
+*Movement*
+Development of movement can be described in three iterations:
 
-Utility systems. Actions are evaluated based on circumstances and the action that gets the highest estimated utility in a given moment is the one that gets executed. This is often in simulation games.
+1. *Fixed-distance follow.* AI maintains a target offset from the human. Robotic; produced abrupt direction reversals which led to shots that hit the wall instead of the player.
+2. *Random*  =Math.random()= *walk and shot timing*: direction could flip within a single frame, producing visible jitter and random shot frequency often left the power bar undercharged so projectiles fell short of the centre wall.
+3. *Intent + Perlin noise + projectile choice*:
 
+The jitter in (2.) came from sampling an i.i.d. random variable every frame. We fixed this with: replace =Math.random()= with =noise()= so successive samples are temporally correlated and we commit to a chosen direction for a short interval rather than re-deciding every frame:
 
+#+BEGIN_SRC javascript
+_setMoveIntent(dir, now, dur) {
+  this.moveIntent = dir;
+  this.moveIntentUntil = now + dur;
+}
 
+_applyMoveIntent(KEY_LEFT, KEY_RIGHT) {
+  if      (this.moveIntent < 0) { VKEY.press(KEY_LEFT);  VKEY.release(KEY_RIGHT); }
+  else if (this.moveIntent > 0) { VKEY.press(KEY_RIGHT); VKEY.release(KEY_LEFT);  }
+  else                          { VKEY.release(KEY_LEFT); VKEY.release(KEY_RIGHT); }
+}
+#+END_SRC
 
+The =moveIntent= is held for ~220 ms once committed, which is below human reaction time but well above the frame interval, which is long enough to remove jitter but short enough to remain responsive. The noise walk itself uses a deadzone so most samples idle:
 
+#+BEGIN_SRC javascript
+const v = noise(this.noiseTime) * 2 - 1;
+if (Math.random() < idleChance)  this.moveDir =  0;
+else if (v < -deadzone)          this.moveDir = -1;
+else if (v >  deadzone)          this.moveDir = +1;
+else                             this.moveDir =  0;
+#+END_SRC
 
+Movement priority are as follows:
+1. Escape incoming fire
+2. Stay a safe distance from boundaries
+3. Noisy walk
 
+The escape predicate uses a dot product to check whether a projectile is heading toward the AI and not nearby:
 
-The first challenge was developing the opponent AI component of the continuous state machine. Chiefly:
-•⁠  ⁠Logic for realistic behaviour across difficulty levels
-•⁠  ⁠Behaviour composition which we  split into movement (stafing) and shooting strategies
+#+BEGIN_SRC javascript
+const dx = dogBody.x - p.x, dy = dogBody.y - p.y;
+const dotProduct = dx * p.vx + dy * p.vy;     // > 0 ⇒ closing
+if (distToProjectile < triggerDist && dotProduct > 0 && projectileSpeed > 50) {
+  threatDetected = true;
+  escapeDir = p.vx > 0 ? -1 : +1;
+  ...
+}
+#+END_SRC
 
-The following approaches were considered for strafing behaviour
+*Firing*
+Fire is held to charge and  released to shoot and shoot-don't-shoot decision is a continuous confidence score:
 
-1.⁠ ⁠Maintaining a fixed distance between the human player and the ai player so that ai player will move according to human player
-Issue: very robotic behaviour and movement is not smooth + sudden change of direction leading to ai player producing ineffective attacks (e.g. attacking against the wall instead of the opponent)
+#+BEGIN_SRC javascript
+_computeConfidence(angleErr) {
+  const rawNoise   = noise(this.shootingNoiseTime);
+  const aimQuality = clamp(1 - Math.abs(angleErr) / this.aimOkDeg, 0, 1);
+  return rawNoise * 0.40 + aimQuality * 0.60;
+}
+#+END_SRC
 
-2.⁠ ⁠Random wandering of the ai player + random shooting frequency
-Issue: using random() to control the movement would lead to abrupt changes of movement direction of the ai within the same frame of the screen thus introducing jittering issue. On the other hand, given shooting frequency is random, this would lead to ineffective attacks (e.g. low attack frequency + insufficient charging of the attack, resulting in the attack not properly shooting to the opposite side of the screen)
+Where aim quality dominates the decision such that the AI doesn't appear to shoot blind. The noise term balances this and provides a firing rhythm with a human-ish irregularity. Difficulty level determines this threshold.
 
-3.⁠ ⁠Introduced
-a. movement intent mechanisms
-Resulted behavior: no abrupt changes of movement direction within the same frame
-b. lock movement during charging logic
-Resulted behavior: depending on the hit chance of each level, most of the attacks will be effective and have enough power to reach the opposite side
-c. force shot after dedicated time limit logic
-Resulted behavior: ensure the frequency of attack -> player wont be bored by the game
-d. Escape projectiles mechanism
-Resulted behavior: ai player is not wandering randomly but is designed to move based on stimulations from human player -> more reasonable and smooth movement
+Accuracy is a per-shot Bernoulli (=hitChance=, sampled once per shot, not per frame) and if missed has a  =_computeShot= offsets from the target of 150–250 px so the projectile misses "properly" and doesn't ricochet off the central wall back at the AI.
 
-Going through the above stages, we ensure the enemy behavior of the ai is more human-like and enhanced the sense of immersion of the game even in the single player mode
+*Binary search*
+A cool idea was implemented to balance targeting vs power selection. Rather than inverting the projectile maths, which could be a can-of-worms given we have a =wind= feature, the controller runs a 6-iteration binary search over the live simulator, with a penalty for landings near the central wall:
+
+#+BEGIN_SRC javascript
+for (let iteration = 0; iteration < 6; iteration++) {
+  const testPower = (minPower + maxPower_search) / 2;
+  const landing   = cd.simulateProjectileLanding(fromX, fromY, a, testPower, powerScale, windDir);
+
+  const nearWall  = landing.x < (this.wallR + this.wallKeepOut);
+  const penalty   = nearWall ? 99999 : 0;
+  const distError = Math
+
+#+END_SRC
+
+*Outcome*
+The continuous-utility approach paid off in the areas we cared most about. Difficulty is a 6-parameter sweep which feels rich and the AI moves smoothly because direction commitments have a longer interval then frame rendering. It was (and still is) a balancing act dialing hesitation on EASY and the sometimes-too-aggressive =startFactor= on HARD.
 
 ** DONE Ricochet physics
 The second challenge is /reflective/ projectile physics: shots ricochet off walls rather than detonating on impact. The physics pipeline is three-stage per frame:
 
-1. *Integrate*
+*- Integrate*
 Explicit Euler with gravity (=900 px/s²=) and a horizontal wind term (=50 px/s²=), clamped by a =dt= cap of 33 ms to prevent issues when the tab regains focus:
    #+BEGIN_SRC javascript
    p.vx += this.windAccel * dt;   // horizontal bias
@@ -246,13 +313,13 @@ Explicit Euler with gravity (=900 px/s²=) and a horizontal wind term (=50 px/s�
    p.x  += p.vx * dt;
    p.y  += p.vy * dt;
    #+END_SRC
-2. *Broad* Phase
+- *Broad* Phase
 A uniform spatial grid (128-px cells, hashed as ~"cx,cy"~) prunes static-body candidates to just the handful of cells the projectile overlaps. Grid build (~addStaticRect~ → ~_insertToGrid~) runs once at setup; per-frame queries are O(1) in cell count:
    #+BEGIN_SRC javascript
    _getCellRangeForAABB(aabb) { /* cx/cy range */ }
    _queryNearbyAABB(aabb)     { /* return id Set */ }
    #+END_SRC
-3. *Narrow* Phase
+- *Narrow* Phase
 Circle-vs-AABB intersection returns both a contact point and a surface /normal/:
    #+BEGIN_SRC javascript
    static circleAABBHit(circle, rect) {
@@ -279,11 +346,12 @@ Finally, the reflection of a ricochet is given by:
 
 where /v/ is the incoming velocity vector, /ň/ is the unit surface normal at the point of collision, and /v'/ is the reflected velocity.
 
-** TODO Assets
-TODO
 * DONE Evaluation                                     :target_750w:weight_15:
-** DONE Qualitative
-We ran Nielsen's Ten Usability Heuristics (Nielsen 1994)7 and recorded the findings in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along  Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale. Twelve findings were captured:
+** DONE User Research
+The usability of our application was evaluated over several UX dimensions  qualitatively via survey and comprised playesting and analysis using: NASA TLX,  System Usability Scale (SUS) instruments and Nielsens Usability Heuristics (1994). The result of these tests on  merged features facilitated the surfacing of defects and this is reflected in Jira issues to that effect (61 created, 56 Done).
+
+*Usability Heuristics*
+We ran recorded the findings of the test in ~docs/Week7_HeuristicEvaluation.pdf~. Each issue was scored along Nielsen's three-factor severity dimensions (/Frequency/, /Impact/, /Persistence/, each 0–4) and reduced to a composite of severity (/F + I + P/) / 3 on the same 0–4 scale. Twelve findings were captured:
 - nine /negative/
 - three /positive/
 
@@ -305,8 +373,8 @@ The three positive findings (aim trajectory visibility, win screen clarity, coll
 *** DONE H7 Cluster
 Four of nine negative findings cite H7 /Flexibility and efficiency of use/, all describing the same underlying lack of aesthetic content. It suggested our development priority should soon priotise art asset creation, which we did.
 
-** DONE Quantitative
-User feedback was captured in-session on 10th and 12th March 2026 and resulted in 24 valid responses across game difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Our hope was to realise a noticiable difference in perceived challenge between modes as it's known to significantly affect player enjoyment (Alexander et al., 2013).
+** DONE NASA TLX and SUS
+User feedback captured in-session on 10th and 12th March 2026 and resulted in 24 valid responses across game difficulty modes (/Easy/ n=11, /Medium/ n=0 (not sampled), /Hard/ n=13). Our hope was to realise a noticiable difference in perceived challenge between modes as it's known to significantly affect player enjoyment (Alexander et al., 2013).
 
 The workshop introduced the NASA Task Load Index (TLX) instrument for this prupsoe. TLX is known to be a reliable instrument for assessing game difficulty (Hart & Staveland, 1988; Ramkumar et al., 2016; Seyderhelm & Blackmore, 2023). Each respondent completed the six NASA-TLX subscales followed by the System Usability Scale (SUS, Brooke 1996). The TLX instrument was presented on a 0–10 integer Likert, inverted such that higher = worse. See responses in [[*B. NASA-TLX and SUS raw][B. NASA-TLX and SUS raw]].
 
@@ -357,10 +425,13 @@ Where mean SUS ≈ 68, "good" ≥ 73, "excellent" ≥ 85, both modes sit comfort
 - Sample: small /n/ (n = 24) with self-selecting playtesters, which surely skew toward technically minded given they are computer science students
 - Drift: TLX was shortened to raw ratings (no pairwise weighted step) so scores are /RAW-TLX/ in Byers/Bittner (1989) terms and not the weighted original
 - Order: respondents were not counter-balanced across difficulty
-** DONE Test Strategy
-Testing on this project is /pragmatic/ not /exhaustive/ but comprises both an automated and manual test strategy.
-*** *Automated Testing*
-We analysed /method-level/ coverage using a runtime probe. Every method on the protototype of each test target was wrapped in a conuter and the suite was invoked. Methods whose counter remained '0' were recorded as unexercised.
+** DONE Code Testing
+We implemented  a varied approach to quality assurance, in line with workshop content. The techniques used skewed toward white-box testing. I think this is a natural consequence of iterating quite heavily on core gameplay features, such that desired behaviour was uncomfirmed  whilst we still tried to maintain a test-driven approach to even work-in-progress implementation.
+
+*** DONE *Whitebox*
+We analysed our whitebox tests by writing a runtime probe to analyse /method-level coverage/ of /main/.
+
+Every method on the protototype of each target was wrapped in a counter and =GameTestSuite.runAll()= was invoked from ~testCases.js~. Methods whose counter remained '0' were recorded as unexercised.
 
 | Class              | Methods covered |    % |
 |--------------------+-----------------+------|
@@ -375,20 +446,18 @@ We analysed /method-level/ coverage using a runtime probe. Every method on the p
 | *Total*              | *29 / 55*         |  *53%* |
 |                    |                 |      |
 
-The total (/53%)/ is dragged down by a single class: =AutoPlayer= which is heavily asserted in some areas but has 21 as yet untested private helpers. AI development and our class,  =AutoPlayer=, was a new experience for us and as a result we were learning and experimenting as we went. In this context, TTD while ideal, is quite difficult to achieve in practice.
+The total (/53%)/ is pulled down by a single class: =AutoPlayer= which is heavily asserted in some areas but has 21 as yet untested private helpers. AI development was a new experience for us and as a result we were learning as we developed. In this case, TTD while obviously ideal, was quite difficult for us to implement in the =AutoPlayer= class.
 
-Treating =AutoPlayer= as an outlier, our class average is 88% with the simulation classes achieving  full coverage. With probe instrumentation in place =runAll()= reports *129 / 137 assertions passing (94.2%)*
+Treating =AutoPlayer= as an outlier, our class average is 88% with simulation classes achieving full coverage. =runAll()= reports *129 / 137 assertions passing (94.2%)*
 
 *Limitations*
-Method coverage is a proxy. The probe records whether a method is ever called. Comprehensive line-by-line and branch coverage would require something more sophisticated like Jest.
+Method coverage is a proxy. The probe records whether a method is ever called and it's result.
+This was an attempt to compensate for our slightly idiosyncratic test suite, ~testCases.js.~ We didn't consider the value of standardising on keywords, like =describe=, =test=, =expect= across test groups - each author named tests in a way they felt was sensible. We learn later that this meant we couldn't use common testing and mocking frameworks like Jest.
 
-*** *Manual Testing*
-1. Exploratory Play: each merged feature is walked through at the Thursday workshop; defects surface as Jira tasks (61 created, 56 Done)
-2. Heuristic review: one session, all ten heuristics, twelve findings
-3. Quantitative playtest: The TLX + SUS instrument can be used as a regression test in future
+In future, it would be great to refactor our test suite to implement Jest because that would allow us to see line-by-line and branch wide code coverage without rolling our own, naive, solution.
 
-
-*Smoke-Test Matrix*
+*** Blackbox
+A smoke-box matrix of functional tests implemented is offered below:
 
 | # | Scenario                           | P1 | P2 | Predicted outcome         | Predicted status |
 |---+------------------------------------+----+----+---------------------------+------------------|
@@ -401,7 +470,7 @@ Method coverage is a proxy. The probe records whether a method is ever called. C
 | 7 | Both players charge simultaneously | ?  | ?  | Both spawn in same frame  | ?                |
 | 8 | HP reaches 0                       | ✓  | ✓  | Win-screen overlay drawn  | Pass             |
 
-* TODO Process                                      :target_750w:weight_15pc:
+* DONE Process                                      :target_750w:weight_15pc:
 ** DONE Workflow
 Our way of working was codified in [[file:CONTRIBUTING.md][docs/CONTRIBUTING.md]] at the start of the project and is briefly summarised, here. We tried to take an empirical approach to selecting processes. This is because despite the popularity of many "modern" software focussed project management methodologies e.g. Scrum, SAFe and (to a lesser extent) Kanban, empirical evidence of their value remains uncertain.
 
@@ -409,13 +478,13 @@ For example, SAFe has not shown, in any rigorous sense, to outperform alternativ
 
 DORA, however, is the largest and longest running research programme on software practice. What we know from a decade of DORA surveys is that the stability of software and the speed of development is highly and positively correllated. This suggests the technical capabalities underlying a process is a significant factor in successful outcomes. With that in mind, we tried to implement a number of good dev-ops practices, focussing mainly on =continuous intergration and deployment= and =docs-as-code=.
 
-*Branching*
+*** Branching
 We seelected a standard trunk-based git strategy using short-lived feature branches. =Main= is always deployable (we hope) and feature branches fork main, accumulate commits following =feature/<issue-number>-short-description= (or =Fix/…= for bug fixes) and ideally merge back, quickly.  At the time of writing the repo has four live branches. The development branch of this report is =report= and is rebased periodically from =Main=.
 
 
 [[file:docs/report/figures/branch_strategy.png]]
 
-*Pull requests*
+*** Merging
 Each PR must branch from =main= and reference a Jira issue (=Closes SE-42=). Mirroring issue slugs and pull-request IDs is extremely important for orchestrating dependencies and raising bug tickets, in particular. Finally, a PR must collect at least one approving review before a squash-merge. The /Definition of Done/ checklist in CONTRIBUTING.md is reproduced below and functions as a /contract/:
 
 #+BEGIN_QUOTE
@@ -432,8 +501,7 @@ We used =git merge --squash= to collapse commits on a feature branch into a sing
 
 [[file:docs/report/figures/merge_strategy.png]]
 
-
-*Issue Transitions*
+*** Issue Management
 Tickets flow forward through four states; any non-terminal state can regress one step backward (e.g. a QA failure returns the ticket to /In Progress/) and any state can be closed as /Won't Do/.
 
 
@@ -444,12 +512,12 @@ Tickets flow forward through four states; any non-terminal state can regress one
 *Agile Ceremonies*
 An implicit requirement of sprints is a syncronised schedule between team members. Given demands from other modules and the =MSc summer project= in particular, we considered this an unrealistic assumption. Instead, we adopted a kanban process with a minimum of one weekly check-in, aligned with the Thursday workshop.
 
-*Docs as Code*
+*** Docs as Code
 All design and planning material are under version control and where possible offered in plain-text. For example, this report is an example of literate programming, which is to say, the source code and the report text are 'tangled' in the same file. This means what the project does (source) and why it does it (report), evolve together. Further examples of docs-as-code, include:
 
-Commits:  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
+*Commits*  [[https://www.conventionalcommits.org/][Conventional Commits]] are enforced by =commitlint= via a pre-commit hook. Types in use: =feat=, =fix=, =docs=, =refactor=, =chore=, =test=. Commit descriptions must use the imperative tense (/"add jump mechanic"/, not /"added…"/). In future we could use these semantically rich  commits for user documentation or to generate and circulate change-logs.
 
-In software engineering, architectural decisions are design decisions that address system-level requirements; they are considered hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant decisions made during the design and development of software system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat - among others.
+*ADRs* In software engineering, architectural decisions are design decisions that address system-level requirements; they are considered hard to make (Fowler, M., 2003) and expensive to change (Booch, 2016). Architectual Decision Records (ADRs) is a formal document, used to capture significant decisions made during the design and development of software system. ADRs are growing in popularity and are being utilsied by gov.uk, RedHat - among others.
 
 Ahmeti et al. (2024) show that difficulties in creating a documentation culture, transferring knoweledge and prioritising which information to document can be well addresserd by ADRs. They find cooperation between developers improve as a result of using them.
 
@@ -466,7 +534,7 @@ Our decisions are stored in =docs/adr/= as numbered [[https://cognitect.com/blog
 ** DONE Tools
 Github was selected on our behalf as project repository and we chose  Jira for issue tracking. We chose not to use Github's built-in issue tracker, choosing to accept a small increase in task-switching overhead and complexity in exchange for exposure to an industry standard tool. Such that it is.
 
-However, we reisted this approach for communications and stuck to Whatsapp instead of Slack or Microsoft Teams. Referencing the first principle of the Agile Manifesto
+However, we resisted this approach for communications and stuck to Whatsapp instead of Slack or Microsoft Teams. Referencing the first principle of the Agile Manifesto
 #+BEGIN_QUOTE
 "Individuals and interactions over processes and tools"
 #+END_QUOTE
@@ -523,85 +591,159 @@ The top-to-bottom ratio across assigned work is 2.2×, indicating a modest skew 
 [[file:docs/report/figures/jira_cumulative.png]]
 
 ** TODO Reflection
-- containerisation?
-- Literate environments e.g. Nix
-- Linters
-- AB Testing
-- Unit testing
-- Refactoring
-- git usage
 
-* TODO Sustainability                                           :target_500w:
-** TODO Approach
-I have no idea what I'm doing.
+Three things worked really well:
+- Trunk-based git with squash-merges and conventional commits kept =main= legible across 84 commits and six contributors.
+- Docs-as-code via Org-Babel meant the analysis pipeline, the figures and the prose via re-running =analyse.py= kept uptodate with the source code. Which made the report easier to write.
+- Committing early to a continuous-input model what made the later  AI work more tractable than it would have been otherwise.
 
-TODO
-We applied the /Sustainability Awareness Framework (SusAF)/ across three? dimensions: =Social, Individual, Environmental, Economic, Technical= and three orders of effect  =immediate=, =enabling= and =structural=. For each dimension the framework prescribes five standard topics which our analysis conforms to.
+Three things worked less well:
+- The =CONTRIBUTING.md= /Definition of Done/ existed on paper but was aspirational in practice. linting in particular was specified but we never managed to make a pre-commit hook from it, so =testCases.js= grew without naming conventions and we locked ourselves out of Jest.
+- Branch coverage and standard mocking. The 53% method coverage figure could be improved. Branch hygiene was another cost with stale feature branches and unsquashed WIP made rebases more expensive than they needed to be and our  March ticket spike (32 issues, half the backlog) is partly crunch and partly the cost of not catching divergence earlier.
+- Third, =AutoPlayer= was developed exploratorily which is very  reasonable, given none of us had written game AI before but  we had 21 untested private helpers and this poses a bug regression risk.
 
-** TODO Impact analysis
-TODO
-Populate each cell from the team's SusAD workshop output. A  chain = /immediate fact -> enabling behaviour -> structural change/.
+If we did it again a  lint and pre-commit hooks before the first feature branch and therefore use Jest from the beginning so coverage is comprehensive. We would keep the  the TLX+SUS instrument and analysis pipeline and use it as a regression test  against gameplay changes rather than a one-shot evaluation. We would also counter-balance playtest order with a larger, less CS-skewed sample. A Nix flake provides a reproducible dev shell we could extend this to a CI job. Finally, we would develop our CI pipeline to incoporate feature flags. This would enable us to perform playtesting across different ponteital feature choices, to incorporate A/B test paradigm.
 
-*** TODO Social
-*** TODO Individual
-*** TODO Environmental
-*** TODO Economic
-*** TODO Technical
-** TODO Chain-of-effects (SusAD)
-FIG: hand-drawn or rendered SusAD showing  one chain per dimension
+* DONE Sustainability Awareness                                 :target_500w:
 
-** TODO Threats, opportunities, and actions
-TODO: 2×2  table
+Toward the end of the project and over a ~workshop~ on sustainability we were introduced to the /Sustainability Awareness Framework/ (SusAF, Betz et al. 2024). We considered SusAF across three dimensions that resonated most with us: =Social=, =Individual= and =Environmental= and over three time horizons: =direct=, =enabling= and =structural=.
 
-** TODO Sustainability user stories and acceptance criteria
-TODO: 3–5 stories added to Jira, each related  to the chain above. Example:
+| 1st order (immediate) | Direct effects of the production, operation, use,    |
+|                       | and disposal of IT solutions.                        |
+|-----------------------+------------------------------------------------------|
+| 2nd order (indirect)  | Effects linked with the operation and use of an      |
+|                       | IT-based system, including any change it induces.    |
+|-----------------------+------------------------------------------------------|
+| 3rd order (systemic)  | Structural changes caused by the ongoing operation   |
+|                       | and use of the IT-based socio-technical solution.    |
 
-- As a player with photosensitive epilepsy, I want a "reduce flashing" toggle so that I can play without triggering symptoms. Acceptance: Given reduce-flashing is ON, when a projectile ricochets, then no full-screen white flash occurs within any 100 ms window.
+Orders of Effects, after Hilty and Aebischer (2015).
 
-** TODO Green Software Foundation patterns applied
-We need to select ~3 patterns from
-https://patterns.greensoftware.foundation/catalog/ and explain how they were integrated.
+*** DONE Social
+| Topic              | Effect                                                                              |
+|--------------------+-------------------------------------------------------------------------------------|
+| Sense of community | Shared local-multiplayer at one keyboard encourages co-located play (direct);       |
+|                    | recognisable Bristol/MV setting reinforces belonging to UoB community (enabling).   |
+|--------------------+-------------------------------------------------------------------------------------|
+| Trust              | Open-source repo and conventional commits project  auditable (direct).              |
+|--------------------+-------------------------------------------------------------------------------------|
+| Inclusivity        | Browser-based delivery via GitHub Pages removes install/hardware barriers (direct); |
+|                    | absence of online multiplayer sidesteps risk of online harm (enabling).             |
+|--------------------+-------------------------------------------------------------------------------------|
+| Equity             | Continuous input from P1 and P2 and balanced character stats prevent first-mover    |
+|                    | advantage or assymetric advantage (direct).                                         |
+|--------------------+-------------------------------------------------------------------------------------|
+| Participation      | Spectator role supports over-the-shoulder play and discussion (direct);             |
+|                    | over time this shapes a small community of UoB players (structural).                |
 
-| Pattern                                         | Applied in | How |
-|-------------------------------------------------+------------+-----|
-| TODO: e.g. "Avoid high-resolution images"       | TODO       | TODO |
-| TODO: e.g. "Cache static data"                  | TODO       | TODO |
-| TODO: e.g. "Reduce the frequency of polling"    | TODO       | TODO |
+*** DONE Individual
+| Topic             | Effect                                                                          |
+|-------------------+---------------------------------------------------------------------------------|
+| Health            | Short, finite match length discourages   excessive sessions (direct);           |
+|                   | deferring  reduce-flashing  (US-08) for photosensitive                          |
+|                   | players colour grading for reduced vision are known limitations (enabling).     |
+|-------------------+---------------------------------------------------------------------------------|
+| Lifelong Learning | Reflective physics rewards informal reasoning about angle and momentum          |
+|                   | (enabling).                                                                     |
+|-------------------+---------------------------------------------------------------------------------|
+| Privacy           | No tracking, cookies, fingerprinting, or analytics; no account system (direct). |
+|-------------------+---------------------------------------------------------------------------------|
+| Safety            | No identifying information collected; no in-app purchases or chat to moderate   |
+|                   | (direct). Lecturer opt-in protects                                              |
+|                   | likeness (direct).                                                              |
+|-------------------+---------------------------------------------------------------------------------|
+| Agency            | Difficulty levels and character choice support self-paced engagement            |
+|                   | (direct); local-only play keeps the player in control of when and with whom     |
+|                   | they play with (enabling).                                                      |
 
-** TODO Accessibility and Ethics
-TODO
-- *Accessibility*
-  - keyboard-only by design; need remap UI, colour-blind palette check, subtitles for dialogue box, "reduce flashing" toggle.
-  - Chinese and English language support
-- *Ethics*
-  real-person likeness: depicting named lecturers in combat raises consent and reputational concerns. Policy: we provided opt-in per lecturer;
-  neutral "generic" sprites as fallback.
-* TODO Conclusion                                     :target_500w:weight_10:
-** TODO Lessons
-TODO
-** TODO Immediate
-TODO: missing sound, missing end-state screens, difficulty routes
+*** DONE Environmental
+| Topic                  | Effect                                                                     |
+|------------------------+----------------------------------------------------------------------------|
+| Material and resources | Vector and pixel art kept small. No asset bloat (direct).                  |
+|------------------------+----------------------------------------------------------------------------|
+| Energy                 | Client-side JS in a browser tab; no dedicated server, no continuous        |
+|                        | back-end compute (direct). At scale, a server-light artillery game         |
+|                        | meaningfully under-consumes relative to networked equivalents (enabling).  |
+|------------------------+----------------------------------------------------------------------------|
+| Logistics              | Distribution via GitHub Pages; no physical media, no installer (direct).   |
+|                        | Indirect: we have not considered the content delivery network of MS/GH and |
+|                        | if optimised for location of players. Long term we could consider edge     |
+|                        | delivery near to campus.                                                   |
+|------------------------+----------------------------------------------------------------------------|
+| Biodiversity           | No direct effect there is an indirect effect via data-centre consumption   |
+|                        | which is bounded by game architecture                                      |
 
-** TODO Future
-TODO: multiplayer-over-WebRTC, A/B testing/unit tests, CI/CD
+*** DONE Reflection
+The individual dimension carries the strongest /direct/ effects. An absence of accounts, tracking, and fingerprinting via cookies, browser details, or embedded third-party scripts in the game itself means we prioritise privacy in a stricter sense than GDPR or the ePrivacy directive require. We do not, however, control our content delivery network and users may incur privacy costs there that are invisible to us. Given the local-first and community element of /Merchant Fighters/, a longer-term indirect benefit would be delivery from the edge. Potentially via UoB compute and network infrastructure. The systemic effect, were this approach to be adopted widely, beginning with other MSc groups would be to partially decouple (and hedge against) small-scale software projects from the hyperscalers: student and community projects could be hosted on institutional infrastructure that already exists and is already poweredd instead of  provisioning capacity from 1 of 3 large US companies. All of whom adopt monopolistic practices, which have global socioeconomic consequences.  The strongest /enabling/ effect is environmental, where a client-side, server-free application necessarily requires less server-side compute than an a networked equivalent would require. However, there are many optimisations opportunities. We redraw the full scene every frame and manage an admittedly few projectiles ad-hoc rather than via an ECS. If the game were very popular this would aggregate to a measurable and unnecessary cost in electricity at the consumer.
+
+The clearest /structural/ risk is our limited support at present for photosensitivities, low vision and accessible input devices for players with reduced motor control. Standard keyboard input is in principle compatible with most assistive hardware that emulates a keyboard, including switches, sticks and sip-and-puff controllers. However our continous-input state likely increases cognitive load in comparison to turn-based FSM. In future we could return to a FSM as an accessibility option for users with executive function or intellectual disabilities.
+
+** DONE User Stories and  Acceptance Criteria
+
+Three sustainability-driven stories were added to the backlog, each  can be located in the chain of effects identified in the SusAF analysis above. Stories follow the same /As a <role>, I want <goal> so that <value>/ format and have  one gherkin style acceptance criterion each.
+
+| ID     | Story                                                                                    | Dimension  | Acceptance criterion                                                         |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+| SU-01  | As a player with photosensitive epilepsy, I want a                                       | Individual | /Given/ reduce-flashing is ON, /when/ a projectile ricochets,                    |
+|        | "reduce flashing" toggle, so that I can  play without triggering symptoms.               | (health)   | then/ no full-screen white flash occurs within any 100 ms window.            |
+|        | without triggering symptoms                                                              |            |                                                                              |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+| SU-02  | As a player using assistive input hardware, I want to remap P1 and P2 key                | Individual | /Given/ the settings screen is open, /when/ I select a control and               |
+|        | bindings so that  I can control how switch interfaces, one-handed keyboards,             | (agency)   | press a new key, /then/ the new binding persists across the                    |
+|        | drive the game                                                                           |            | session and is reflected in the in-game HUD.                                 |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+| SU-03  | As a player with low vision, I want a high-contrast colour palette, so that projectiles, | Individual | /Given/ high-contrast mode is ON, /when/ the battle screen renders,              |
+|        | terrain, and HP bars remain distinguishable against the Merchant Venturers backdrop.     | (health)   | /then/ projectile,  terrain, and HP-bar colours each meet a                    |
+|        |                                                                                          |            | contrast ratio of ≥ 4.5:1 against the background which is in line with WCAG. |
+|--------+------------------------------------------------------------------------------------------+------------+------------------------------------------------------------------------------|
+
+
+From the Green Software Foundation catalogue we have selected the following tasks: Cache Static Data and Demand Shaping and provided an acceptance criteria for each.
+|        |                                                                                     |              |                                                                         |
+| GSF-04 | As an environmentally-conscious player, I want the game to pause                    | Energy       | /Given/ the browser tab is hidden or the window is unfocused, /when/ 1s     |
+|        | it's render loop when the tab is unfocusssed.                                       |              | elapses /then/ =requestAnimationFrame= halts                                |
+|--------+-------------------------------------------------------------------------------------+--------------+-------------------------------------------------------------------------|
+| GSF-05 | As an environmentally-conscious player, I want game assets served with              | Energy       | /Given/ a frequent player loads the game, /when/ the bundle is requested,   |
+|        | caching  so that replaying  avoid re-downloading binary files                       | (efficiency) | /then/ pixel art, audio, and JS bundles return =304 Not Modified=           |
+|        |                                                                                     |              |                                                                         |
+|--------+-------------------------------------------------------------------------------------+--------------+-------------------------------------------------------------------------|
+| GSF-06 | As an environmentally-conscious player, I want the game to update state on input or | Energy       | /Given/ no player input and no in-flight projectiles, /when/ 500 ms elapse, |
+|        | physics events rather than continuous polling, so that idle frames cost nothing.    | (efficiency) | /then/ the game loop holds for next input                                 |
+|        |                                                                                     |              |                                               |
+
+* DONE Conclusion                                     :target_500w:weight_10:
+Merchant Fighters is an attempt to make a turn-based genre dynamic via continuous input and reflective physics. Both of these features were a success. The two-player input ticks every frame, ricochets resolve against surface normals and the AI's utility model produces deliberate and interesting movement. Our NASA-TLX showed a significant overall workload difference between Easy and Hard with frustration near the floor in both which is great for player satisfaction.
+
+The process worked where we had the time to invest in it. Issues transitioned through our pipeline with good velocity and our  squash-merges kept main readable across 84 commits and six contributors. Our quality assurance and automated test strategy could mature via a standardised test and mocking framework but importantly this was the first time many in our team collaborated on delivering a non-trivial software project. The /most/ important thing in that situation is that it ships and ours did! The experience of doing so is  wonderful and will prove useful for all of us in the future.
+
+For future development of the game, we would love to incorporate A/B testing through feature flags in CI. Which would allow us to do long ranging analysis of gameplay satisifaction and usability. Beyond this, if we can ensure we could do so while mitigating risks surfaced in SusAF we would consider online multiplayer as a means to foster community even when students are remote.
 
 * TODO Contribution statement
 The team has a diversity of lived professional and academic experience from all over the world. This includes .NET development, game development, finance and behavioural research. However, we tried where possible, to assign work according to our interests as well as our strengths.
 
 
-| Name                 | Role          | Key contributions                      |
-|----------------------+---------------+----------------------------------------|
-| Helen Wong           | TODO          | TODO                                   |
-| Prapulla Naidu Tangi | TODO          | TODO                                   |
-| Rishabh Gautam       | TODO          | TODO                                   |
-| Ciyang Weng          | TODO          | TODO                                   |
-|----------------------+---------------+----------------------------------------|
-| Josh Thompson        | Documentation | CONTRIBUTING.md, analysis, README.org, |
-|                      |               | puzzle game concept, continuous FSM    |
-|----------------------+---------------+----------------------------------------|
-| Ziquan Liu           | UI Programmer | TODO                                   |
+| Name                 | Role              | Key contributions                             | Value |
+|----------------------+-------------------+-----------------------------------------------+-------|
+| Helen Wong           | Project Manager   | AI simulation, game balance, privacy and GDPR |  0.16 |
+|                      |                   | team organisation and communication           |       |
+|----------------------+-------------------+-----------------------------------------------+-------|
+| Prapulla Naidu Tangi | Programmer        | game architecture, weapon UI,                 |  0.16 |
+|                      |                   | health bar, language support, game-mode logic |       |
+|----------------------+-------------------+-----------------------------------------------+-------|
+| Rishabh Gautam       | Gameplay Engineer | Sound, feature development inc. a "blackout"  |  0.16 |
+|                      |                   | feature, features refactoring                 |       |
+|----------------------+-------------------+-----------------------------------------------+-------|
+| Ciyang Weng          | Gameplay Engineer | protoype, player simulation and               |  0.16 |
+|                      |                   | richochet physics                             |       |
+|----------------------+-------------------+-----------------------------------------------+-------|
+| Josh Thompson        | Product Owner     | CONTRIBUTING.md, README.org,                  |  0.16 |
+|                      |                   | puzzle game concept, continuous FSM           |       |
+|----------------------+-------------------+-----------------------------------------------+-------|
+| Ziquan Liu           | UI Programmer     | end-to-end UI and asset creation              |  0.16 |
+|                      |                   | all visual media and animation                |       |
 
 ** AI Statement
+Please find our AI usage on an author-by-author basis, below.
 
 | Name           | Usage                                                                                                    |
 |----------------+----------------------------------------------------------------------------------------------------------|
@@ -626,21 +768,57 @@ The team has a diversity of lived professional and academic experience from all 
 |                |                                                                                                          |
 
 * TODO References
-TODO: BibTeX-style list. Notes:
-- Munroe, R. (2020). xkcd #2347 "Dependency".
-- Penzenstadler, B. et al. (2014). The Karlskrona Manifesto.
-- Becker, C. et al. (2015). Sustainability Design and Software.
-- Hart, S. G. & Staveland, L. E. (1988). NASA-TLX.
-- Nielsen, J. (1994). Ten Usability Heuristics.
+<<ahmad2018>> Ahmad, M. O., Dennehy, D., Conboy, K., & Oivo, M. (2018). Kanban in software engineering: A systematic mapping study. Journal of Systems and Software, 137, 96–113. https://doi.org/10.1016/j.jss.2017.11.045
 
-Becker, C. et al. (2015) ‘Sustainability design and software: The Karlskrona Manifesto’, 2015 IEEE/ACM 37th IEEE International Conference on Software Engineering. doi:10.1109/icse.2015.179.
+<<ahmeti2024>> Ahmeti, B., Linder, M., Groner, R., & Wohlrab, R. (2024). Architecture Decision Records in Practice: An Action Research Study. In Software Architecture — Proceedings of ECSA 2024 (pp. 333–349). Springer. https://doi.org/10.1007/978-3-031-70797-1_22
 
-Cardozo, E. S. F., Araújo Neto, J. B. F., França, A. C. C., & da Silva, F. Q. B. (2010). SCRUM and Productivity in Software Projects: A Systematic Literature Review. Proceedings of the 14th International Conference on Evaluation and Assessment in Software Engineering (EASE).
+<<alexander2013>> Alexander, J. T., Sear, J., & Oikonomou, A. (2013). An investigation of the effects of game difficulty on player enjoyment. Entertainment Computing, 4(1), 53–62. https://doi.org/10.1016/j.entcom.2012.09.001
 
-Ahmad, M. O., Dennehy, D., Conboy, K., & Oivo, M. (2018). Kanban in Software Engineering: A Systematic Mapping Study. Journal of Systems and Software, 137, 96–113.
+<<becker2015>> Becker, C., Chitchyan, R., Duboc, L., Easterbrook, S. M., Penzenstadler, B., Seyff, N., & Venters, C. C. (2015). Sustainability Design and Software: The Karlskrona Manifesto. In Proceedings of the 37th International Conference on Software Engineering (ICSE 2015), Vol. 2, pp. 467–476. IEEE. https://doi.org/10.1109/ICSE.2015.179
 
-Hart, S. G., & Staveland, L. E. (1988). Development of NASA-TLX (Task Load Index): Results of empirical and theoretical research. Advances in Psychology, 139–183. https://doi.org/10.1016/s0166-4115(08)62386-9.
+<<bittner1989>> Bittner, A. C., Byers, J. C., Hill, S. G., Zaklad, A. L., & Christ, R. E. (1989). Generic workload ratings of a mobile air defense system (LOS-FH). Proceedings of the Human Factors Society Annual Meeting, 33(20), 1476–1480.
 
+<<booch2016>> Booch, G. (2016). The economics of architecture-first. IEEE Software, 33(5), 18–20.
+
+<<brooke1996>> Brooke, J. (1996). SUS: A "quick and dirty" usability scale. In P. W. Jordan, B. Thomas, B. A. Weerdmeester, & I. L. McClelland (Eds.), Usability Evaluation in Industry (pp. 189–194). Taylor & Francis.
+
+<<cardozo2010>> Cardozo, E. S. F., Araújo Neto, J. B. F., Barza, A., França, A. C. C., & da Silva, F. Q. B. (2010). SCRUM and productivity in software projects: A systematic literature review. In Proceedings of the 14th International Conference on Evaluation and Assessment in Software Engineering (EASE) (pp. 1–4). https://doi.org/10.14236/ewic/ease2010.16
+
+<<conboy2019>> Conboy, K., & Carroll, N. (2019). Implementing large-scale agile frameworks: Challenges and recommendations. IEEE Software, 36(2), 44–50. https://doi.org/10.1109/MS.2018.2884865
+
+<<fowler2003>> Fowler, M. (2003). Who needs an architect? IEEE Software, 20(5), 11–13. https://doi.org/10.1109/MS.2003.1231142
+
+<<grier2015>> Grier, R. A. (2015). How high is high? A meta-analysis of NASA-TLX global workload scores. Proceedings of the Human Factors and Ergonomics Society Annual Meeting, 59(1), 1727–1731. https://doi.org/10.1177/1541931215591373
+
+<<hart1988>> Hart, S. G., & Staveland, L. E. (1988). Development of NASA-TLX (Task Load Index): Results of empirical and theoretical research. In P. A. Hancock & N. Meshkati (Eds.), Human Mental Workload (Advances in Psychology, Vol. 52, pp. 139–183). North-Holland. https://doi.org/10.1016/S0166-4115(08)62386-9
+
+<<knuth1984>> Knuth, D. E. (1984). Literate programming. The Computer Journal, 27(2), 97–111. https://doi.org/10.1093/comjnl/27.2.97
+
+<<maceachren2004>> MacEachren, A. M. (2004). How Maps Work: Representation, Visualization, and Design. Guilford Press.
+
+<<munroe2020>> Munroe, R. (2020). Dependency. xkcd, no. 2347. https://xkcd.com/2347/
+
+<<nielsen1994>> Nielsen, J. (1994). Heuristic evaluation. In J. Nielsen & R. L. Mack (Eds.), Usability Inspection Methods (pp. 25–62). John Wiley & Sons.
+
+<<pugh1991>> Pugh, S. (1991). Total Design: Integrated Methods for Successful Product Engineering. Addison-Wesley.
+
+<<przybylski2010>> Przybylski, A. K., Rigby, C. S., & Ryan, R. M. (2010). A motivational model of video game engagement. Review of General Psychology, 14(2), 154–166. https://doi.org/10.1037/a0019440
+
+<<ramkumar2016>> Ramkumar, A., Stappers, P. J., Niessen, W. J., Adebahr, S., Schimek-Jasch, T., Nestle, U., & Song, Y. (2016). Using GOMS and NASA-TLX to evaluate human–computer interaction process in interactive segmentation. International Journal of Human–Computer Interaction, 33(2), 123–134.
+
+<<ryan2000>> Ryan, R. M., & Deci, E. L. (2000). Self-determination theory and the facilitation of intrinsic motivation, social development, and well-being. American Psychologist, 55(1), 68–78. https://doi.org/10.1037/0003-066X.55.1.68
+
+<<seyderhelm2023>> Seyderhelm, A. J. A., & Blackmore, K. L. (2023). How hard is it really? Assessing game-task difficulty through real-time measures of performance and cognitive load. Simulation & Gaming, 54(3), 294–321. https://doi.org/10.1177/10468781231169910
+
+<<tufte1983>> Tufte, E. R. (1983). The Visual Display of Quantitative Information. Graphics Press.
+
+<<agilemanifesto2001>> Beck, K., et al. (2001). Manifesto for Agile Software Development. https://agilemanifesto.org/
+
+<<nygard2011>> Nygard, M. (2011). Documenting Architecture Decisions. https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+
+<<conventionalcommits>> Conventional Commits Specification (v1.0.0). https://www.conventionalcommits.org/
+
+<<dora>> DORA / DevOps Research and Assessment Group. Accelerate State of DevOps Reports (2014–present). Google Cloud / DORA. https://dora.dev/research/
 * DONE Appendices
 ** DONE A. Figures
 Sources under =docs/design/=, exports under =docs/figures/=.
