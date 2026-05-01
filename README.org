@@ -733,7 +733,7 @@ The team has a diversity of lived professional and academic experience from all 
 |                      |                   | health bar, language support, game-mode logic |       |
 |----------------------+-------------------+-----------------------------------------------+-------|
 | Rishabh Gautam       | Gameplay Engineer | Sound, feature development inc. a "blackout"  |  0.16 |
-|                      |                   | feature                                       |       |
+|                      |                   | feature, features refactoring                 |       |
 |----------------------+-------------------+-----------------------------------------------+-------|
 | Ciyang Weng          | Gameplay Engineer | protoype, player simulation and               |  0.16 |
 |                      |                   | richochet physics                             |       |
