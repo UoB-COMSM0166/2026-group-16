@@ -17,7 +17,7 @@
 | Ziquan Liu           | nb25183@bristol.ac.uk | UI            |
 
 *** Artefacts
-[[li][PLAY GAME HERE]]
+[[https://uob-comsm0166.github.io/2026-group-16/][PLAY GAME HERE]]
 [[.][WATCH DEMO VIDEO HERE]]
 
 *** Meta
